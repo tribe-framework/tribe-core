@@ -9,8 +9,6 @@
 	<link href="/plugins/bootstrap-4.3.1-dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/plugins/fontawesome-free-5.12.0-web/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables-1.10.20/datatables.min.css" rel="stylesheet">
-	<link href="/plugins/datetimepicker/build/jquery.datetimepicker.min.css" rel="stylesheet">
-	<link href="/plugins/JavaScript-Load-Image/css/vendor/jquery.Jcrop.css" />
 	<link href="/css/custom.css" rel="stylesheet">
 </head>
 
