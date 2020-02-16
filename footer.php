@@ -5,10 +5,7 @@
   <script src="/plugins/bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
   <script src="/plugins/datatables-1.10.20/datatables.min.js"></script>
   <script src="/plugins/clipboard.min.js"></script>
-  
-  <script type="text/javascript">
-    new ClipboardJS('.copy_btn');
-  </script>
+  <script src="/js/custom.js"></script>
 
 </body>
 </html>
