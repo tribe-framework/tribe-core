@@ -1,1 +1,1 @@
-# hrln
+# wildfire blank template

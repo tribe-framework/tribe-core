@@ -11,8 +11,8 @@ $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
 
-$page_title='Human Rights Law Network | HRLN';
-$page_description='Editor dashboard.';
+$page_title='Wildfire Template';
+$page_description='Basic starting point for wildfire websites.';
 $page_url=BASE_URL;
 
 function curl_post ($url, array $post = NULL, array $options = array()) { 
