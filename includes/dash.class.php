@@ -19,6 +19,82 @@ class dash {
 		
 	}
 
+	function get_last_error () {
+		if (count(dash::$last_error)) {
+			$op=implode('<br>', dash::$last_error);
+			dash::$last_error=array();
+			return $op;
+		}
+		else
+			return '';
+	}
+
+	function get_last_info () {
+		if (count(dash::$last_info)) {
+			$op=implode('<br>', dash::$last_info);
+			dash::$last_info=array();
+			return $op;
+		}
+		else
+			return '';
+	}
+
+	function get_last_data () {
+		$arr=dash::$last_data;
+		dash::$last_data=array();
+		return $arr;
+	}
+
+	function get_last_redirect () {
+		$r=dash::$last_redirect;
+		dash::$last_redirect='';
+		return $r;
+	}
+
+	function push_content ($post) {
+		global $sql;
+		$updated_on=time();
+
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
+
+		if (!trim($post['id']) && $q[0]['id']) {
+			dash::$last_error[]='Same title exists in this content type.';
+			return 0;
+		}
+		else {
+			if (!trim($post['id'])) {
+				$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
+				$post['id']=$sql->lastInsertID();
+				$post['slug']=dash::do_slugify($post['title']);
+			}
+
+			$sql->executeSQL("UPDATE `data` SET `content`='".json_encode($post)."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
+			$id=$post['id'];
+
+			dash::$last_info[]='Content saved.';
+			dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id);
+			return 1;
+		}
+	}
+
+	function get_content ($id) {
+		global $sql;
+		$or=array();
+		$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$id'");
+		$or=array_merge(json_decode($q[0]['content'], true), $q[0]);
+		return $or;
+	}
+
+	function get_all_ids ($type) {
+		global $sql;
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY `id` DESC");
+	}
+
+	function get_date_ids ($publishing_date) {
+		global $sql;
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.publishing_date'='$publishing_date'");
+	}
+
 	function do_slugify ($string) {
 		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', $string)));
 		return $slug;

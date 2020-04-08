@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<title>Typeout</title>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+	<script src="https://blueimp.github.io/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
+	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.iframe-transport.js"></script>
+	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.fileupload.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="typeout.css">
+	<script type="text/javascript" src="typeout.js"></script>
+</head>
+
+<body>
+	<h2 contenteditable="true">#typeout title</h2>
+
+	<div class="typeout-menu" id="typeout-menu">
+		<button type="button" class="typeout typeout-input" data-typeout-command="insertImage" data-typeout-info="Enter image URL">image</button>
+		<button type="button" class="typeout typeout-input" data-typeout-command="insertHTML" data-typeout-info="Enter HTML">embed</button>
+		<button type="button" class="typeout typeout-input" data-typeout-command="createLink" data-typeout-info="Enter link URL">hyperlink</button>
+		<button type="button" class="typeout typeout-exec typeout-unlink" data-typeout-command="unlink">unlink</button>
+		<button type="button" class="typeout typeout-exec typeout-bold" data-typeout-command="bold">bold</button>
+		<button type="button" class="typeout typeout-exec typeout-italic" data-typeout-command="italic">italics</button>
+	</div><br>
+
+	<div class="typeout-content" id="typeout-content" contenteditable="true"></div>
+
+	<input id="fileupload" type="file" name="files[]" data-url="//jquery-file-upload.appspot.com/" multiple>
+
+</body>
+
+</html>

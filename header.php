@@ -6,9 +6,9 @@
 	<title><?php echo $page_title; ?></title>
 	<meta name="description" content="<?php echo $page_description; ?>">
 
-	<link href="/plugins/bootstrap-4.3.1-dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/plugins/fontawesome-free-5.12.0-web/css/all.min.css" rel="stylesheet">
-	<link href="/plugins/datatables-1.10.20/datatables.min.css" rel="stylesheet">
+	<link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
+	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
 	<link href="/css/custom.css" rel="stylesheet">
 </head>
 
