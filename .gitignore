@@ -1,2 +1,4 @@
 # Specify filepatterns you want git to ignore.
 sftp-config.json
+config-vars.php
+install.sql

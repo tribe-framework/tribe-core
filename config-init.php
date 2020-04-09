@@ -1,7 +1,7 @@
 <?php
 session_start();
 date_default_timezone_set('Asia/Kolkata');
-include_once('../config-vars.php');
+include_once('config-vars.php');
 
 if (!$_SESSION['language']) $_SESSION['language']='en';
 
@@ -14,8 +14,8 @@ $auth = new auth();
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
 
-include_once(ABSOLUTE_PATH.'/includes/youtube.class.php');
-$youtube = new youtube();
+include_once(ABSOLUTE_PATH.'/includes/google.class.php');
+$google = new google();
 
 $page_title='Wildfire Template';
 $page_description='Basic starting point for wildfire websites.';

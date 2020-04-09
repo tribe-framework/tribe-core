@@ -1,15 +1,15 @@
 <?php
-class youtube {
+class google {
 
 	private $access_token='';
 
 	function __construct() {
 		global $_SESSION;
-		$this->access_token=$_SESSION['youtube_token'];
+		$this->access_token=$_SESSION['google_token'];
 	}
 
 	function revoke_access () {
-		if ($auth->get_user_id_from_unique_id($this->access_token, 'youtube')) {
+		if ($auth->get_user_id_from_unique_id($this->access_token, 'google')) {
 			$params=array();
 			$params['token']=$this->access_token;
 			$url='https://oauth2.googleapis.com/revoke';
