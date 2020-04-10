@@ -105,10 +105,28 @@ if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
 		</div>
 		<?php endif; ?>
 
+		<?php if ($module->input_type=='tel'): ?>
+		<div class="input-group my-4">
+		  <div class="input-group-prepend">
+		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-phone"></span></span>
+		  </div>
+		  <input type="tel" name="<?php echo $module->input_slug; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>" value="<?php echo $post[$module->input_slug]; ?>">
+		</div>
+		<?php endif; ?>
+
+		<?php if ($module->input_type=='email'): ?>
+		<div class="input-group my-4">
+		  <div class="input-group-prepend">
+		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-envelope"></span></span>
+		  </div>
+		  <input type="email" name="<?php echo $module->input_slug; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>" value="<?php echo $post[$module->input_slug]; ?>">
+		</div>
+		<?php endif; ?>
+
 		<?php if ($module->input_type=='password'): ?>
 		<div class="input-group my-4">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
+		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-key"></span></span>
 		  </div>
 		  <input type="password" name="<?php echo $module->input_slug; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>" value="<?php echo $post[$module->input_slug]; ?>">
 		</div>

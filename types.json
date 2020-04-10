@@ -1,5 +1,36 @@
 {
+  "admin": {
+    "type": "user",
+    "slug": "admin",
+    "name": "admin",
+    "plural": "admins",
+    "modules": [
+      {
+        "input_slug": "username",
+        "input_type": "text",
+        "input_unique": true
+      },
+      {
+        "input_slug": "email",
+        "input_type": "email",
+        "input_unique": true
+      },
+      {
+        "input_slug": "password",
+        "input_placeholder": "Enter password",
+        "input_type": "password",
+        "input_unique": false
+      },
+      {
+        "input_slug": "cpassword",
+        "input_placeholder": "Confirm password",
+        "input_type": "password",
+        "input_unique": false
+      }
+    ]
+  },
   "topic": {
+    "type": "content",
     "slug": "topic",
     "name": "topic",
     "plural": "topics",
@@ -12,6 +43,7 @@
     ]
   },
   "format": {
+    "type": "content",
     "slug": "format",
     "name": "format",
     "plural": "formats",
@@ -24,6 +56,7 @@
     ]
   },
   "story": {
+    "type": "content",
     "slug": "story",
     "name": "story",
     "plural": "stories",
@@ -112,6 +145,7 @@
     ]
   },
   "event": {
+    "type": "content",
     "slug": "event",
     "name": "event",
     "plural": "events",
@@ -149,6 +183,7 @@
     ]
   },
   "page": {
+    "type": "content",
     "slug": "page",
     "name": "page",
     "plural": "pages",
