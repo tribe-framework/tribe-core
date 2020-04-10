@@ -14,6 +14,9 @@ $auth = new auth();
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
 
+include_once(ABSOLUTE_PATH.'/includes/theme.class.php');
+$theme = new theme();
+
 include_once(ABSOLUTE_PATH.'/includes/google.class.php');
 $google = new google();
 

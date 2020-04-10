@@ -13,4 +13,4 @@
 </head>
 
 <body>
-<?php include ('menu.php'); ?>
+<?php echo $theme->get_menu('main'); ?>
