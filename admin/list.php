@@ -1,8 +1,8 @@
 <?php
-include_once ('config-init.php');
+include_once ('../config-init.php');
 include_once ('header.php');
 
-$types=json_decode(file_get_contents('types.json', true));
+$types=json_decode(file_get_contents(ABSOLUTE_PATH.'/config/types.json', true));
 $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field', 'input_slug');
 $list_search=array_column((array) $types->{$_GET['type']}->modules, 'list_search', 'input_slug');
 $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', 'input_slug');

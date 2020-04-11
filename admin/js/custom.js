@@ -15,7 +15,7 @@ $( document ).ready(function() {
 	$(document).on('click', '.delete_btn', function(e) {
 		e.preventDefault();
 		if (confirm('Are you sure you wish to delete this content?')) {
-			$.post('json.php', {"class":"dash", "function":"do_delete", "lang_code":$(this).data('lang_code'), "section_file":$(this).data('section_file')}, function(data) {
+			$.post('/admin/json', {"class":"dash", "function":"do_delete", "lang_code":$(this).data('lang_code'), "section_file":$(this).data('section_file')}, function(data) {
 				process_json_out(data);
 			}, 'json');
 		};
