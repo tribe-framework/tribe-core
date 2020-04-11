@@ -1,6 +1,6 @@
 # wildfire cms
 
-##minimum requirements
+## minimum requirements
 apache, php7, mysql8 on any operating system
 
 ## installation
