@@ -1,6 +1,10 @@
+Options +FollowSymLinks
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R,L]
 RewriteCond %{REQUEST_FILENAME}\.php -f
-RewriteRule ^(.+)$ $1.php [L]
-RewriteRule  ^(.*)\.json$ $1.php [NC]
+RewriteRule (.*) $1\.php [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule (.*)$ index.php?ext=$1 [L,QSA]
+#RewriteRule  ^(.*)\.json$ $1.php [NC]
