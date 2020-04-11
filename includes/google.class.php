@@ -5,7 +5,7 @@ class google {
 
 	function __construct() {
 		global $_SESSION;
-		$this->access_token=$_SESSION['google_token'];
+		$this->access_token=$_SESSION['google_token'] ?? '';
 	}
 
 	function revoke_access () {
