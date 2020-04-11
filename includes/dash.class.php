@@ -55,6 +55,8 @@ class dash {
 		global $sql;
 		$updated_on=time();
 
+		//$post=array_map('mysqli_real_escape_string', array_fill(0, count($post), $sql->databaseLink), $post);
+
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
 
 		if (!trim($post['id']) && $q[0]['id']) {
@@ -68,7 +70,7 @@ class dash {
 				$post['slug']=dash::do_slugify($post['title']);
 			}
 
-			$sql->executeSQL("UPDATE `data` SET `content`='".json_encode($post)."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
+			$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
 			$id=$post['id'];
 
 			dash::$last_info[]='Content saved.';

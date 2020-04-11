@@ -1,9 +1,11 @@
 $( document ).ready(function() {
 
-	$(document).on('submit', '.edit_form', function(e) {
+	update_textarea($('#typeout-content').data('input-slug'));
+	$('#typeout-content').keyup(function() {update_textarea($('#typeout-content').data('input-slug'));});
+	$(document).on('blur', '#typeout-content', function() {update_textarea($('#typeout-content').data('input-slug'));});
+
+	$(document).on('submit', '#edit_form', function(e) {
 		e.preventDefault();
-		typeout_slug=$('#typeout-content').data('input-slug');
-		$('#edit_form input[name="'+typeout_slug+'"]').val($('#typeout-content').html());
 		btn_txt=spinner_start('#edit_form .submit_btn');
 		$.post('json.php', $(this).serialize(), function(data) {
 			process_json_out(data);
@@ -49,10 +51,10 @@ function process_json_out (data) {
 		$('#errors').removeClass('d-none').addClass('d-block').html(data.last_error);
 	}
 	if (data.last_info) {
-		if ($('input[name="id"]').val()=='') {
-			$('input[name="id"]').val(data.last_data.id);
-		}
+		if (!($('input[name="id"]').val()))
+			$('input[name="id"]').val(data.last_data[0].id);
 		$('#infos').removeClass('d-none').addClass('d-block').html(data.last_info);
+		scroll_to_anchor('infos');
 	}
 	if (data.last_redirect) {
 		$(location).attr('href', data.last_redirect);
@@ -79,4 +81,14 @@ function parseGoogleResponse (components) {
       }
     });
     return JSON.stringify(newComponents);
+}
+
+function update_textarea (typeout_slug) {
+	$('#edit_form input[name="'+typeout_slug+'"]').val(encodeURI($('#typeout-content').html()));
+	//.find('script, link, html, head, meta, title, body').remove()
+}
+
+function scroll_to_anchor (aid) {
+    var aTag = $("a[name='"+ aid +"']");
+    $('html,body').animate({scrollTop: aTag.offset().top},'slow');
 }

@@ -83,7 +83,7 @@ if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-content" data-input-slug="<?php echo $module->input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>"><?php echo $post[$module->input_slug]; ?></div>
+		<div class="typeout-content my-4 border-bottom" id="typeout-content" data-input-slug="<?php echo $module->input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>"><?php echo urldecode($post[$module->input_slug]); ?></div>
 		<input type="hidden" name="<?php echo $module->input_slug; ?>">
 		<?php endif; ?>
 

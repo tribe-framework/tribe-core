@@ -6,7 +6,7 @@
 	<script type="text/javascript" src="/plugins/typeout/typeout.js"></script>
 	<script src="/plugins/datatables/datatables.min.js"></script>
 	<script src="/plugins/clipboard.min.js"></script>
-	<script src="/js/custom.js"></script>
+	<script src="/js/custom.js?v=<?php echo time(); ?>"></script>
 
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.iframe-transport.js"></script>
