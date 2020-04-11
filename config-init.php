@@ -1,7 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Kolkata');
-include_once('config-vars.php');
+include_once('config/config-vars.php');
 
 if (!$_SESSION['language']) $_SESSION['language']='en';
 
@@ -19,6 +18,8 @@ $theme = new theme();
 
 include_once(ABSOLUTE_PATH.'/includes/google.class.php');
 $google = new google();
+
+include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
 $page_title='Wildfire Template';
 $page_description='Basic starting point for wildfire websites.';

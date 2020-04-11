@@ -21,7 +21,7 @@ class theme {
 
 	function get_menu ($slug='') {
 		if ($slug) {
-			$all_items=json_decode(file_get_contents('menus.json', true));
+			$all_items=json_decode(file_get_contents(ABSOLUTE_PATH.'/config/menus.json', true));
 			$items=$all_items->{$slug};
 		}
 		else
