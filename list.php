@@ -3,6 +3,9 @@ include_once ('config-init.php');
 include_once ('header.php');
 
 $types=json_decode(file_get_contents('types.json', true));
+$list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field', 'input_slug');
+$list_search=array_column((array) $types->{$_GET['type']}->modules, 'list_search', 'input_slug');
+$list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', 'input_slug');
 ?>
 
 <div class="container mt-3">
@@ -22,7 +25,7 @@ $types=json_decode(file_get_contents('types.json', true));
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Title</th>
+      <?php foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$key.'</td>':''); ?>
       <th scope="col"></th>
     </tr>
   </thead>
@@ -31,7 +34,9 @@ $types=json_decode(file_get_contents('types.json', true));
   $ids = $dash::get_all_ids($_GET['type']);
   foreach ($ids as $arr) {
     $post = $dash::get_content($arr['id']);
-    echo '<tr><th scope="row">'.$post['id'].'</th><td>'.$post['title'].'</td><td><a href="/edit.php?type='.$post['type'].'&id='.$post['id'].'">edit</a> | <a href="#">delete</a></td></tr>';
+    echo '<tr><th scope="row">'.$post['id'].'</th>';
+    foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$post[$key].'</td>':'');
+    echo '<td><a href="/edit?type='.$post['type'].'&id='.$post['id'].'">edit</a> | <a href="/single?type='.$post['type'].'&id='.$post['id'].'">view</a> | <a href="#">delete</a></td></tr>';
   }
   ?>
   </tbody>

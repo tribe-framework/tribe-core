@@ -38,7 +38,10 @@
       {
         "input_slug": "title",
         "input_type": "text",
-        "input_unique": true
+        "input_unique": true,
+        "list_field": true,
+        "list_search": false,
+        "list_sort": true
       }
     ]
   },
@@ -51,7 +54,10 @@
       {
         "input_slug": "title",
         "input_type": "text",
-        "input_unique": true
+        "input_unique": true,
+        "list_field": true,
+        "list_search": false,
+        "list_sort": true
       }
     ]
   },
@@ -64,7 +70,10 @@
       {
         "input_slug": "title",
         "input_type": "text",
-        "input_unique": true
+        "input_unique": true,
+        "list_field": true,
+        "list_search": true,
+        "list_sort": true
       },
       {
         "input_slug": "title_hindi",
@@ -110,7 +119,10 @@
       {
         "input_slug": "publishing_date",
         "input_type": "date",
-        "input_unique": false
+        "input_unique": false,
+        "list_field": true,
+        "list_search": true,
+        "list_sort": true
       },
       {
         "input_slug": "location",
