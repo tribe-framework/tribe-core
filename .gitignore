@@ -2,5 +2,6 @@
 sftp-config.json
 /config/config-vars.php
 /uploads/*
+!/uploads/index.php
 /themes/*
 !/themes/wildfire-2020
