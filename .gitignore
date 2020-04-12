@@ -1,3 +1,6 @@
 # Specify filepatterns you want git to ignore.
 sftp-config.json
-/config/*
+/config/config-vars.php
+/uploads/*
+/themes/*
+!/themes/wildfire-2020
