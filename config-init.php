@@ -32,6 +32,7 @@ if ($_GET['ext']) {
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug)); 
 }
 
+include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
 
 $page_title='Wildfire Template';
