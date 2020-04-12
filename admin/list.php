@@ -3,8 +3,6 @@ include_once ('../config-init.php');
 include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field', 'input_slug');
-$list_search=array_column((array) $types->{$_GET['type']}->modules, 'list_search', 'input_slug');
-$list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', 'input_slug');
 ?>
 
 <div class="container mt-3">
@@ -17,7 +15,12 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
   <thead>
     <tr>
       <th scope="col">#</th>
-      <?php foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$key.'</td>':''); ?>
+      <?php
+      $i=0;
+      foreach ($list_fields as $key => $value) {
+        echo ($value?'<td data-orderable="'.($types->{$_GET['type']}->modules[$i]->list_sortable?'true':'false').'" data-searchable="'.($types->{$_GET['type']}->modules[$i]->list_searchable?'true':'false').'">'.$key.'</td>':'');
+        $i++;
+      } ?>
       <th scope="col"></th>
     </tr>
   </thead>
@@ -28,7 +31,7 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
     $post = $dash::get_content($arr['id']);
     echo '<tr><th scope="row">'.$post['id'].'</th>';
     foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$post[$key].'</td>':'');
-    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'">edit</a> | <a target="new" href="/'.$post['type'].'/'.$post['slug'].'">view</a> | <a href="#">delete</a></td></tr>';
+    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a>&nbsp;<a href="#"><span class="fas fa-trash-alt"></span></a></td></tr>';
   }
   ?>
   </tbody>

@@ -21,7 +21,7 @@ $( document ).ready(function() {
 		};
 	});
 
-	$('.datatable').DataTable();
+	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
 
     $('#edit_form input[type=file]').fileupload({
         dataType: 'json',
