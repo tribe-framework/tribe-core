@@ -52,22 +52,22 @@ class dash {
 	}
 
 	function push_content ($post) {
-		global $sql;
+		global $sql, $types;
 		$updated_on=time();
 
 		//$post=array_map('mysqli_real_escape_string', array_fill(0, count($post), $sql->databaseLink), $post);
 
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
 
-		if (!trim($post['id']) && $q[0]['id']) {
-			dash::$last_error[]='Same title exists in this content type.';
+		if (!trim($post['id']) && $q[0]['id'] && $types->{$post['type']}->modules[0]->input_unique) {
+			dash::$last_error[]='Same title exists in '.$types->{$post['type']}->plural;
 			return 0;
 		}
 		else {
 			if (!trim($post['id'])) {
 				$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
 				$post['id']=$sql->lastInsertID();
-				$post['slug']=dash::do_slugify($post['title']);
+				$post['slug']=dash::do_slugify($post['title'], $types->{$post['type']}->modules[0]->input_unique);
 			}
 
 			$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
@@ -79,10 +79,13 @@ class dash {
 		}
 	}
 
-	function get_content ($id) {
+	function get_content ($val) {
 		global $sql;
 		$or=array();
-		$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$id'");
+		if (is_numeric($val))
+			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
+		else 
+			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
 		$or=array_merge(json_decode($q[0]['content'], true), $q[0]);
 		return $or;
 	}
@@ -97,8 +100,8 @@ class dash {
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.publishing_date'='$publishing_date'");
 	}
 
-	function do_slugify ($string) {
-		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', $string)));
+	function do_slugify ($string, $input_itself_is_unique=0) {
+		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', $string))).($input_itself_is_unique?'':'-'.uniqid());
 		return $slug;
 	}
 }

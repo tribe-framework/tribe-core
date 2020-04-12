@@ -84,7 +84,7 @@ function parseGoogleResponse (components) {
 }
 
 function update_textarea (typeout_slug) {
-	$('#edit_form input[name="'+typeout_slug+'"]').val(encodeURI($('#typeout-content').html()));
+	$('#edit_form input[name="'+typeout_slug+'"]').val($('#typeout-content').html());
 	//.find('script, link, html, head, meta, title, body').remove()
 }
 
