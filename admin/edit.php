@@ -13,7 +13,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 	<a name="infos"></a><div id="infos" class="d-none alert alert-info"></div>
 	<a name="errors"></a><div id="errors" class="d-none alert alert-danger"></div>
 
-	<form method="post" class="edit_form" id="edit_form" action="json">
+	<form method="post" class="edit_form" id="edit_form" action="/admin/json">
 
 		<?php if (count($types->{$_GET['type']}->modules)>3) { ?>
 		<div class="card mb-4"><div class="card-body p-0">
@@ -22,8 +22,8 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-save"></span>&nbsp;Save <?php echo $_GET['type']; ?></button>
 			</div>
 			<div class="btn-group">
-				<a href="edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
-				<a href="list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
+				<a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
+				<a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
 			</div>
 		</div>
 		</div></div>
@@ -341,8 +341,8 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-save"></span>&nbsp;Save <?php echo $_GET['type']; ?></button>
 			</div>
 			<div class="btn-group">
-				<a href="edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
-				<a href="list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
+				<a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
+				<a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
 			</div>
 		</div>
 		</div></div>

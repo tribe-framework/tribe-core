@@ -11,9 +11,21 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
 
 <div class="card mb-4"><div class="card-body p-0">
 <div class="btn-toolbar bg-light justify-content-between">
+  <div class="btn-group" role="group">
+    <button id="types-admin-dropdown" type="button" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg dropdown-toggle" data-toggle="dropdown">
+      Content types
+    </button>
+    <div class="dropdown-menu" aria-labelledby="types-admin-dropdown">
+      <?php
+      foreach ($types as $key => $value) {
+        echo '<a class="dropdown-item" href="/admin/list?type='.$types->{$key}->slug.'">'.$types->{$key}->plural.'</a>';
+      }
+      ?>
+    </div>
+  </div>
   <div class="btn-group">
-    <a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
     <a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
+    <a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
   </div>
 </div>
 </div></div>
