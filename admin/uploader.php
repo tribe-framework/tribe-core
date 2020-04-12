@@ -11,5 +11,5 @@
  */
 
 error_reporting(E_ALL | E_STRICT);
-require('../config-init.php');
-$upload_handler = new UploadHandler(array('upload_dir'=>ABSOLUTE_PATH.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D').'/', 'upload_url'=>BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D').'/'));
+include_once ('../config-init.php');
+$upload_handler = new UploadHandler(array('script_url'=>ABSOLUTE_PATH.'/admin/uploader.php', 'upload_dir'=>ABSOLUTE_PATH.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D').'/', 'upload_url'=>BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D').'/'));
