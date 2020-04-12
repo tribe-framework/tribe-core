@@ -5,7 +5,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
-if ($post['type']==$_GET['type']): ?>
+if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 
 	<link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
