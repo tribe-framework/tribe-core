@@ -18,7 +18,7 @@ $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field'
       <?php
       $i=0;
       foreach ($list_fields as $key => $value) {
-        echo ($value?'<td data-orderable="'.($types->{$_GET['type']}->modules[$i]->list_sortable?'true':'false').'" data-searchable="'.($types->{$_GET['type']}->modules[$i]->list_searchable?'true':'false').'" '.($types->{$_GET['type']}->modules[$i]->input_primary?'style="max-width:50%"':'').'>'.$key.'</td>':'');
+        echo ($value?'<th scope="col" class="pl-2" data-orderable="'.($types->{$_GET['type']}->modules[$i]->list_sortable?'true':'false').'" data-searchable="'.($types->{$_GET['type']}->modules[$i]->list_searchable?'true':'false').'" '.($types->{$_GET['type']}->modules[$i]->input_primary?'style="max-width:50%"':'').'>'.$key.'</th>':'');
         $i++;
       } ?>
       <th scope="col"></th>
