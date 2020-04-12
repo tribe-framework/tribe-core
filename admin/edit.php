@@ -15,19 +15,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 
 	<form method="post" class="edit_form" id="edit_form" action="/admin/json">
 
-		<?php if (count($types->{$_GET['type']}->modules)>3) { ?>
-		<div class="card mb-4"><div class="card-body p-0">
-		<div class="btn-toolbar bg-light justify-content-between">
-			<div class="btn-group">
-				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-save"></span>&nbsp;Save <?php echo $_GET['type']; ?></button>
-			</div>
-			<div class="btn-group">
-				<a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
-				<a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
-			</div>
-		</div>
-		</div></div>
-		<?php } ?>
+		<?php if (count($types->{$_GET['type']}->modules)>3) { echo get_admin_menu('edit', $_GET['type']); } ?>
 
 		<h2>Edit <?php echo $types->{$_GET['type']}->name; ?></h2>
 
@@ -335,17 +323,8 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<div class="card mb-4"><div class="card-body p-0">
-		<div class="btn-toolbar bg-light justify-content-between">
-			<div class="btn-group">
-				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-save"></span>&nbsp;Save <?php echo $_GET['type']; ?></button>
-			</div>
-			<div class="btn-group">
-				<a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
-				<a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
-			</div>
-		</div>
-		</div></div>
+		<?php echo get_admin_menu('edit', $_GET['type']); ?>
+		<p>&nbsp;</p>
 	</form>
 
 	</div>
