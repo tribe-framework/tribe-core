@@ -1,8 +1,6 @@
 <?php
 include_once ('../config-init.php');
 include_once (ABSOLUTE_PATH.'/admin/header.php');
-
-$list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field', 'input_slug');
 ?>
 
 <div class="container mt-3">
@@ -17,8 +15,8 @@ $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field'
       <th scope="col">#</th>
       <?php
       $i=0;
-      foreach ($list_fields as $key => $value) {
-        echo ($value?'<th scope="col" class="pl-2" data-orderable="'.($list_sortable[$i]?'true':'false').'" data-searchable="'.($list_searchable[$i]?'true':'false').'" '.($types->{$_GET['type']}->modules[$i]->input_primary?'style="max-width:50%"':'').'>'.$key.'</th>':'');
+      foreach ($types->{$_GET['type']}->modules as $module) {
+        echo ($module->list_field?'<th scope="col" class="pl-2" data-orderable="'.($module->list_sortable?'true':'false').'" data-searchable="'.($module->list_searchable?'true':'false').'" '.($module->input_primary?'style="max-width:50%"':'').'>'.$module->input_slug.'</th>':'');
         $i++;
       } ?>
       <th scope="col" data-orderable="false" data-searchable="false"></th>
@@ -30,7 +28,8 @@ $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field'
   foreach ($ids as $arr) {
     $post = $dash::get_content($arr['id']);
     echo '<tr><th scope="row">'.$post['id'].'</th>';
-    foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$post[$key].'</td>':'');
+    foreach ($types->{$_GET['type']}->modules as $module)
+      echo ($module->list_field?'<td>'.$post[$module->input_slug].'</td>':'');
     echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a>&nbsp;<a href="#"><span class="fas fa-trash-alt"></span></a></td></tr>';
   }
   ?>
