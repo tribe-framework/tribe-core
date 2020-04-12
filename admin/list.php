@@ -1,8 +1,7 @@
 <?php
 include_once ('../config-init.php');
-include_once ('header.php');
+include_once (ABSOLUTE_PATH.'/admin/header.php');
 
-$types=json_decode(file_get_contents(ABSOLUTE_PATH.'/config/types.json', true));
 $list_fields=array_column((array) $types->{$_GET['type']}->modules, 'list_field', 'input_slug');
 $list_search=array_column((array) $types->{$_GET['type']}->modules, 'list_search', 'input_slug');
 $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', 'input_slug');
@@ -13,8 +12,8 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
 <div class="card mb-4"><div class="card-body p-0">
 <div class="btn-toolbar bg-light justify-content-between">
   <div class="btn-group">
-    <a href="list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
-    <a href="edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
+    <a href="/admin/list?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-list"></span>&nbsp;List <?php echo $types->{$_GET['type']}->plural; ?></a>
+    <a href="/admin/edit?type=<?php echo $_GET['type']; ?>" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-edit"></span>&nbsp;New <?php echo $_GET['type']; ?></a>
   </div>
 </div>
 </div></div>
@@ -36,7 +35,7 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
     $post = $dash::get_content($arr['id']);
     echo '<tr><th scope="row">'.$post['id'].'</th>';
     foreach ($list_fields as $key => $value)  echo ($value?'<td>'.$post[$key].'</td>':'');
-    echo '<td><a href="/edit?type='.$post['type'].'&id='.$post['id'].'">edit</a> | <a href="/single?type='.$post['type'].'&id='.$post['id'].'">view</a> | <a href="#">delete</a></td></tr>';
+    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'">edit</a> | <a target="new" href="/'.$post['type'].'/'.$post['slug'].'">view</a> | <a href="#">delete</a></td></tr>';
   }
   ?>
   </tbody>
@@ -44,4 +43,4 @@ $list_sort=array_column((array) $types->{$_GET['type']}->modules, 'list_sort', '
 
 </div>
 
-<?php include_once ('footer.php'); ?>
+<?php include_once (ABSOLUTE_PATH.'/admin/footer.php'); ?>

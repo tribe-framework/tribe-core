@@ -1,10 +1,11 @@
 <?php
 include_once ('../config-init.php');
-include_once ('header.php');
+include_once (ABSOLUTE_PATH.'/admin/header.php');
 
-$types=json_decode(file_get_contents(ABSOLUTE_PATH.'/config/types.json', true));
-if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
-?>
+if ($_GET['id'])
+	$post = $dash::get_content($_GET['id']);
+
+if ($post['type']==$_GET['type']): ?>
 
 	<link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
@@ -83,7 +84,7 @@ if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-content" data-input-slug="<?php echo $module->input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>"><?php echo urldecode($post[$module->input_slug]); ?></div>
+		<div class="typeout-content my-4 border-bottom" id="typeout-content" data-input-slug="<?php echo $module->input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module->input_placeholder?$module->input_placeholder:ucfirst($types->{$_GET['type']}->name).' '.$module->input_slug); ?>"><?php echo $post[$module->input_slug]; ?></div>
 		<input type="hidden" name="<?php echo $module->input_slug; ?>">
 		<?php endif; ?>
 
@@ -184,7 +185,7 @@ if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
 			<span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="inputGroupFileAddon01"><span class="fas fa-upload"></span></span>
 			</div>
 			<div class="custom-file border-top-0 border-left-0 border-right-0 rounded-0">
-			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module->input_slug; ?>" name="<?php echo $module->input_slug; ?>[]" data-url="/uploads/" multiple>
+			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module->input_slug; ?>" name="<?php echo $module->input_slug; ?>[]" data-url="/admin/uploader" multiple>
 			<label class="custom-file-label border-top-0 border-left-0 border-right-0 rounded-0" for="fileupload">Choose file</label>
 			</div>
 		</div>
@@ -349,4 +350,6 @@ if ($_GET['id'])	$post = $dash::get_content($_GET['id']);
 
 	</div>
 
-<?php include_once ('footer.php'); ?>
+<?php endif; ?>
+
+<?php include_once (ABSOLUTE_PATH.'/admin/footer.php'); ?>
