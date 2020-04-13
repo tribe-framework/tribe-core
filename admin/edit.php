@@ -123,7 +123,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 
 		<?php if ($module->input_type=='select'): ?>
 		<div class="my-4">
-			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module->input_slug; ?>" name="<?php echo $module->input_slug; ?>"><option <?php echo ($post[$module->input_slug]?'':'selected="selected"'); ?>>Select <?php echo $module->input_slug; ?></option>
+			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module->input_slug; ?>" name="<?php echo $module->input_slug; ?>"><option <?php echo ($post[$module->input_slug]?'':'selected="selected"'); ?>><?php echo ($module->input_placeholder?$module->input_placeholder:'Select '.$module->input_slug); ?></option>
 				<?php 
 				if ($options=$module->input_options) {
 					foreach ($options as $opt)
@@ -142,7 +142,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 		<?php endif; ?>
 
 		<?php if ($module->input_type=='multi_select'): ?>
-		<div class="my-4">Select <?php echo $module->input_slug; ?>
+		<div class="my-4"><?php echo ($module->input_placeholder?$module->input_placeholder:'Select '.$module->input_slug); ?>
 			<?php 
 			if ($options=$module->input_options) {
 				$i=0;
