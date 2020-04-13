@@ -1,7 +1,7 @@
 # wildfire
 
 ## minimum requirements
-apache, php7, mysql8 on any operating system
+apache, php7, mysql8 (LAMP server) on any operating system
 
 ## install instructions
 1. use config/install.sql for mysql database structure
