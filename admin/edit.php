@@ -15,7 +15,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 
 	<form method="post" class="edit_form" id="edit_form" action="/admin/json">
 
-		<?php if (count($types->{$_GET['type']}->modules)>3) { echo get_admin_menu('edit', $_GET['type']); } ?>
+		<?php echo get_admin_menu('edit', $_GET['type']); ?>
 
 		<h2>Edit <?php echo $types->{$_GET['type']}->name; ?></h2>
 
@@ -125,11 +125,16 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 		<div class="my-4">
 			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module->input_slug; ?>" name="<?php echo $module->input_slug; ?>"><option <?php echo ($post[$module->input_slug]?'':'selected="selected"'); ?>>Select <?php echo $module->input_slug; ?></option>
 				<?php 
-				if (!($options=$module->input_options))
+				if ($options=$module->input_options) {
+					foreach ($options as $opt)
+						echo '<option value="'.$opt.'" '.(($post[$module->input_slug]==$opt)?'selected="selected"':'').'>'.$opt.'</option>';
+				}
+				else {
 					$options=$dash::get_all_ids($module->input_slug);
-				foreach ($options as $opt) {
-					$option=$dash::get_content($opt['id']);
-					echo '<option value="'.$option['slug'].'" '.(($post[$module->input_slug]==$option['slug'])?'selected="selected"':'').'>'.$option['title'].'</option>';
+					foreach ($options as $opt) {
+						$option=$dash::get_content($opt['id']);
+						echo '<option value="'.$option['slug'].'" '.(($post[$module->input_slug]==$option['slug'])?'selected="selected"':'').'>'.$option['title'].'</option>';
+					}
 				}
 				?>
 			</select>
@@ -323,7 +328,7 @@ if (($_GET['id'] && $post['type']==$_GET['type']) || !$_GET['id']): ?>
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<?php echo get_admin_menu('edit', $_GET['type']); ?>
+		<?php if (count($types->{$_GET['type']}->modules)>3) { echo get_admin_menu('edit', $_GET['type']); } ?>
 		<p>&nbsp;</p>
 	</form>
 
