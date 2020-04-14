@@ -24,37 +24,16 @@ $google = new google();
 
 include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
+include_once(ABSOLUTE_PATH.'/admin/functions.php');
+include_once(THEME_PATH.'/functions.php');
+
 if (isset($_GET['ext'])) {
 	$ext=explode('/', $_GET['ext']);
 	$type=$ext[0];
 	$slug=$ext[1];
-	$typedata=$types[$type];
-	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
-	$postdata_modified=$postdata;
-
-	$headmeta_title=$types[$type]['headmeta_title'];
-	$headmeta_description=$types[$type]['headmeta_description'];
-
-	$append_phrase='';
-	if ($types[$type]['headmeta_title_append']) {
-		foreach ($types[$type]['headmeta_title_append'] as $appendit) {
-			$key=$appendit['type']; $value=$appendit['slug'];
-			$append_phrase.=' '.$types[$type]['headmeta_title_glue'].' '.$types[$key][$value];
-		}
-	}
-	$prepend_phrase='';
-	if ($types[$type]['headmeta_title_prepend']) {
-		foreach ($types[$type]['headmeta_title_prepend'] as $prependit) {
-			$key=$prependit['type']; $value=$prependit['slug'];
-			$prepend_phrase.=$types[$key][$value].' '.$types[$type]['headmeta_title_glue'].' ';
-		}
-	}
-	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 }
 else if (isset($_GET['type'])) {
 	$type=$_GET['type'];
 }
 
-include_once(ABSOLUTE_PATH.'/admin/functions.php');
-include_once(THEME_PATH.'/functions.php');
 ?>
