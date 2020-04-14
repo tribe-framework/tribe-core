@@ -26,7 +26,7 @@ if ($type && $slug) {
 }
 elseif ($type && !$slug) {
 	$typedata=$types[$type];
-	$postids=$dash::get_all_ids($types);
+	$postids=$dash::get_all_ids($type);
 	$headmeta_title=$types[$type]['headmeta_title'];
 	$headmeta_description=$types[$type]['headmeta_description'];
 	include_once (THEME_PATH.'/archive.php');

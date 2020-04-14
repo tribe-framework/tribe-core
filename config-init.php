@@ -29,8 +29,10 @@ include_once(THEME_PATH.'/functions.php');
 
 if (isset($_GET['ext'])) {
 	$ext=explode('/', $_GET['ext']);
-	$type=$ext[0];
-	$slug=$ext[1];
+	if (count($ext))
+		$type=$ext[0];
+	if (count($ext)>1)
+		$slug=$ext[1];
 }
 else if (isset($_GET['type'])) {
 	$type=$_GET['type'];
