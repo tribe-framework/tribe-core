@@ -34,4 +34,16 @@ if ($_GET['ext']) {
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
+
+$append_phrase='';
+if ($postdata[$types->{$type}->headmeta_append) {
+	foreach ($postdata[$types->{$type}->headmeta_append as $appendit)
+		$append_phrase.=' '.$postdata[$types->{$type}->headmeta_glue.' '.$postdata[$types->{$type}->headmeta_append;
+}
+$prepend_phrase='';
+if ($postdata[$types->{$type}->headmeta_prepend) {
+	foreach ($postdata[$types->{$type}->headmeta_prepend as $appendit)
+		$prepend_phrase.=$postdata[$types->{$type}->headmeta_prepend.' '.$postdata[$types->{$type}->headmeta_glue.' ';
+}
+$postdata[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
 ?>
