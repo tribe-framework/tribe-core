@@ -38,7 +38,7 @@ class theme {
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav ml-auto mr-0">';			
-					foreach ($items->menu as $item) {
+					foreach ($items['menu'] as $item) {
 						if (empty($item['submenu']))
 							$op.='<li class="nav-item active"><a class="nav-link" href="'.$item->href.'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						else {
