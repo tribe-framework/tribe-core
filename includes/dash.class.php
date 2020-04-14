@@ -54,20 +54,19 @@ class dash {
 	function push_content ($post) {
 		global $sql, $types;
 		$updated_on=time();
-
-		//$post=array_map('mysqli_real_escape_string', array_fill(0, count($post), $sql->databaseLink), $post);
+		$posttype=$post['type'];
 
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
 
-		if (!trim($post['id']) && $q[0]['id'] && $types->{$post['type']}->modules[0]->input_unique) {
-			dash::$last_error[]='Same title exists in '.$types->{$post['type']}->plural;
+		if (!trim($post['id']) && $q[0]['id'] && $types[$posttype]['modules'][0]['input_unique']) {
+			dash::$last_error[]='Same title exists in '.$types[$posttype]['plural'];
 			return 0;
 		}
 		else {
 			if (!trim($post['id'])) {
 				$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
 				$post['id']=$sql->lastInsertID();
-				$post['slug']=dash::do_slugify($post['title'], $types->{$post['type']}->modules[0]->input_unique);
+				$post['slug']=dash::do_slugify($post['title'], $types[$posttype]['modules'][0]['input_unique']);
 			}
 
 			$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");

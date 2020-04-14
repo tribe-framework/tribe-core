@@ -4,8 +4,8 @@ include_once('config/config-vars.php');
 
 if (!$_SESSION['language']) $_SESSION['language']='en';
 
-$types=json_decode(file_get_contents(THEME_PATH.'/config/types.json', true));
-$menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json', true));
+$types=json_decode(file_get_contents(THEME_PATH.'/config/types.json'), true);
+$menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
 
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
@@ -28,23 +28,29 @@ if ($_GET['ext']) {
 	$ext=explode('/', $_GET['ext']);
 	$type=$ext[0];
 	$slug=$ext[1];
-	$typedata=(array) $types->{$_GET['type']};
+	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 	$postdata_modified=$postdata;
+
+	$headmeta_title=$types[$type]['headmeta_title'];
+	$headmeta_description=$types[$type]['headmeta_description'];
+
+	$append_phrase='';
+	if ($types[$type]['headmeta_title_append']) {
+		foreach ($types[$type]['headmeta_title_append'] as $key=>$value)
+			$append_phrase.=' '.$types[$type]['headmeta_title_glue'].' '.$types[$key][$value];
+	}
+	$prepend_phrase='';
+	if ($types[$type]['headmeta_title_prepend']) {
+		foreach ($types[$type]['headmeta_title_prepend'] as $key=>$value)
+			$prepend_phrase.=$types[$key][$value].' '.$types[$type]['headmeta_title_glue'].' ';
+	}
+	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
+}
+else {
+	$type=$_GET['type'];
 }
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
-
-$append_phrase='';
-if ($types->{$type}->headmeta_title_append) {
-	foreach ($types->{$type}->headmeta_title_append as $appendit)
-		$append_phrase.=' '.$types->{$type}->headmeta_title_glue.' '.$types->{$appendit->type}->{$appendit->slug};
-}
-$prepend_phrase='';
-if ($types->{$type}->headmeta_title_prepend) {
-	foreach ($types->{$type}->headmeta_title_prepend as $prependit)
-		$prepend_phrase.=$types->{$prependit->type}->{$prependit->slug}.' '.$types->{$type}->headmeta_title_glue.' ';
-}
-$postdata_modified[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
 ?>
