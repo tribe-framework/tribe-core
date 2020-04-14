@@ -38,12 +38,12 @@ include_once(THEME_PATH.'/functions.php');
 $append_phrase='';
 if ($postdata[$types->{$type}->headmeta_title_append]) {
 	foreach ($postdata[$types->{$type}->headmeta_title_append] as $appendit)
-		$append_phrase.=' '.$postdata[$types->{$type}->headmeta_title_glue].' '.$appendit;
+		$append_phrase.=' '.$postdata[$types->{$type}->headmeta_title_glue].' '.$types->{$appendit->type}->{$appendit->slug};
 }
 $prepend_phrase='';
 if ($postdata[$types->{$type}->headmeta_title_prepend]) {
 	foreach ($postdata[$types->{$type}->headmeta_title_prepend] as $prependit)
-		$prepend_phrase.=$prependit.' '.$postdata[$types->{$type}->headmeta_title_glue].' ';
+		$prepend_phrase.=$types->{$prependit->type}->{$prependit->slug}.' '.$postdata[$types->{$type}->headmeta_title_glue].' ';
 }
 $postdata[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
 ?>
