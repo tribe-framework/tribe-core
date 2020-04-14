@@ -24,7 +24,7 @@ $google = new google();
 
 include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
-if ($_GET['ext']) {
+if (isset($_GET['ext'])) {
 	$ext=explode('/', $_GET['ext']);
 	$type=$ext[0];
 	$slug=$ext[1];
@@ -51,7 +51,7 @@ if ($_GET['ext']) {
 	}
 	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 }
-else {
+else if (isset($_GET['type'])) {
 	$type=$_GET['type'];
 }
 
