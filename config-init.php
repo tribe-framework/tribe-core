@@ -37,13 +37,17 @@ if ($_GET['ext']) {
 
 	$append_phrase='';
 	if ($types[$type]['headmeta_title_append']) {
-		foreach ($types[$type]['headmeta_title_append'] as $key=>$value)
+		foreach ($types[$type]['headmeta_title_append'] as $appendit) {
+			$key=$appendit['type']; $value=$appendit['slug'];
 			$append_phrase.=' '.$types[$type]['headmeta_title_glue'].' '.$types[$key][$value];
+		}
 	}
 	$prepend_phrase='';
 	if ($types[$type]['headmeta_title_prepend']) {
-		foreach ($types[$type]['headmeta_title_prepend'] as $key=>$value)
+		foreach ($types[$type]['headmeta_title_prepend'] as $prependit) {
+			$key=$prependit['type']; $value=$prependit['slug'];
 			$prepend_phrase.=$types[$key][$value].' '.$types[$type]['headmeta_title_glue'].' ';
+		}
 	}
 	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 }
