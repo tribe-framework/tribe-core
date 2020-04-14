@@ -34,8 +34,4 @@ if ($_GET['ext']) {
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
-
-$page_title='Wildfire Template';
-$page_description='Basic starting point for wildfire websites.';
-$page_url=BASE_URL;
 ?>
