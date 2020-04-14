@@ -23,7 +23,7 @@ class theme {
 		global $menus;
 		
 		if ($slug)
-			$items=$menus->{$slug};
+			$items=$menus[$slug];
 		else
 			$items=0;
 
