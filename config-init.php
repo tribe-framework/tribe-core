@@ -36,14 +36,14 @@ include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
 
 $append_phrase='';
-if ($postdata[$types->{$type}->headmeta_append]) {
-	foreach ($postdata[$types->{$type}->headmeta_append] as $appendit)
-		$append_phrase.=' '.$postdata[$types->{$type}->headmeta_glue].' '.$appendit;
+if ($postdata[$types->{$type}->headmeta_title_append]) {
+	foreach ($postdata[$types->{$type}->headmeta_title_append] as $appendit)
+		$append_phrase.=' '.$postdata[$types->{$type}->headmeta_title_glue].' '.$appendit;
 }
 $prepend_phrase='';
-if ($postdata[$types->{$type}->headmeta_prepend]) {
-	foreach ($postdata[$types->{$type}->headmeta_prepend] as $prependit)
-		$prepend_phrase.=$prependit.' '.$postdata[$types->{$type}->headmeta_glue].' ';
+if ($postdata[$types->{$type}->headmeta_title_prepend]) {
+	foreach ($postdata[$types->{$type}->headmeta_title_prepend] as $prependit)
+		$prepend_phrase.=$prependit.' '.$postdata[$types->{$type}->headmeta_title_glue].' ';
 }
 $postdata[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
 ?>
