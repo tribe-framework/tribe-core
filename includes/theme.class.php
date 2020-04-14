@@ -32,7 +32,7 @@ class theme {
 		if ($items) {
 			$op.='
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
-				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.($items['logo']['src']?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
+				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					<span class="navbar-toggler-icon"></span>
 				</button>

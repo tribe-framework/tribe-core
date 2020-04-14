@@ -5,7 +5,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <div class="container mt-3">
 
-<?php echo get_admin_menu('dash', $_GET['type']); ?>
+<?php echo get_admin_menu('dash'); ?>
 
 </div>
 
