@@ -2,7 +2,7 @@
 session_start();
 include_once('config/config-vars.php');
 
-if (!$_SESSION['language']) $_SESSION['language']='en';
+isset($_SESSION['language'])?:$_SESSION['language']='en';
 
 $types=json_decode(file_get_contents(THEME_PATH.'/config/types.json'), true);
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
