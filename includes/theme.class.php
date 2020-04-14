@@ -40,7 +40,7 @@ class theme {
 					<ul class="navbar-nav ml-auto mr-0">';			
 					foreach ($items['menu'] as $item) {
 						if (empty($item['submenu']))
-							$op.='<li class="nav-item active"><a class="nav-link" href="'.$item->href.'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$op.='<li class="nav-item active"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						else {
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu dropdown-menu-right">';
