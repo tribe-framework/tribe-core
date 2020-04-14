@@ -29,7 +29,8 @@ if ($_GET['ext']) {
 	$type=$ext[0];
 	$slug=$ext[1];
 	$typedata=(array) $types->{$_GET['type']};
-	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug)); 
+	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
+	$postdata_modified=$postdata;
 }
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
@@ -45,5 +46,5 @@ if ($types->{$type}->headmeta_title_prepend) {
 	foreach ($types->{$type}->headmeta_title_prepend as $prependit)
 		$prepend_phrase.=$types->{$prependit->type}->{$prependit->slug}.' '.$types->{$type}->headmeta_title_glue.' ';
 }
-$postdata[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
+$postdata_modified[$types->{$type}->headmeta_title]=$prepend_phrase.$postdata[$types->{$type}->headmeta_title].$append_phrase;
 ?>
