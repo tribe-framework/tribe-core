@@ -16,7 +16,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
       <?php
       $i=0;
       foreach ($types[$type]['modules'] as $module) {
-        echo ($module['list_field']?'<th scope="col" class="pl-2" data-orderable="'.($module['list_sortable']?'true':'false').'" data-searchable="'.($module['list_searchable']?'true':'false').'" '.($module['input_primary']?'style="max-width:50%"':'').'>'.$module['input_slug'].'</th>':'');
+        echo (isset($module['list_field'])?'<th scope="col" class="pl-2" data-orderable="'.(isset($module['list_sortable'])?'true':'false').'" data-searchable="'.(isset($module['list_searchable'])?'true':'false').'" '.(isset($module['input_primary'])?'style="max-width:50%"':'').'>'.$module['input_slug'].'</th>':'');
         $i++;
       } ?>
       <th scope="col" data-orderable="false" data-searchable="false"></th>
