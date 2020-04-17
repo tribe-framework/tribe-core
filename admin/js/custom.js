@@ -22,7 +22,7 @@ $( document ).ready(function() {
 	});
 
 	$(document).on('click', '.multi_add_btn', function(e) {
-		$(this).closest('.url-group .input-group:first').clone().appendTo('.url-group');
+		$(this).closest('.url-group .input-group').first().clone().val('').appendTo('.url-group');
 	});
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
