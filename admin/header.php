@@ -10,7 +10,6 @@
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 </head>
 
 <body>
