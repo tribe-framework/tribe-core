@@ -21,6 +21,10 @@ $( document ).ready(function() {
 		};
 	});
 
+	$(document).on('click', '.multi_add_btn', function(e) {
+		$(this).closest('"'+$(this).data('group-class')+'"').first().clone().appendTo(".url-group");
+	});
+
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
 
     $('#edit_form input[type=file]').fileupload({
