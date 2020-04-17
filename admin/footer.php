@@ -6,6 +6,7 @@
 	<script src="/plugins/typeout/typeout.js"></script>
 	<script src="/plugins/datatables/datatables.min.js"></script>
 	<script src="/plugins/clipboard.min.js"></script>
+	<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 	<script src="<?php echo BASE_URL; ?>/admin/js/custom.js?v=<?php echo time(); ?>"></script>
 
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
