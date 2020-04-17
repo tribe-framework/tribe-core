@@ -23,7 +23,7 @@ $( document ).ready(function() {
 
 	$(document).on('click', '.multi_add_btn', function(e) {
 		$(this).closest('.url-group .input-group').first().clone().appendTo('.url-group');
-		$(this).closest('.url-group .input-group input').last().val("");
+		$('.url-group .input-group:last input').val('');
 	});
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
