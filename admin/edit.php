@@ -90,12 +90,13 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		</div>
 		<?php endif; ?>
 
-		<?php if ($module_input_type=='url'): ?>
+		<?php if ($module_input_type=='url' || $module_input_type=='multi_url'): ?>
 		<div class="input-group my-4">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
 		  </div>
 		  <input type="url" name="<?php echo $module_input_slug; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>" value="<?php echo $post[$module_input_slug]; ?>">
+		  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append"><button class="btn btn-outline-secondary" type="button"><span class="fas fa-plus"></span></button></div>'; ?>
 		</div>
 		<?php endif; ?>
 
