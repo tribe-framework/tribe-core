@@ -65,7 +65,7 @@ class dash {
 
 		if ($types[$posttype]['modules'][0]['input_unique']) {
 			$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
-			if ($q[0]['id']) {
+			if ($q[0]['id'] && $post['id']!=$q[0]['id']) {
 				dash::$last_error[]='Either the title is left empty or the same title already exists in '.$types[$posttype]['plural'];
 				return 0;
 			}
