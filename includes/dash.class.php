@@ -70,23 +70,22 @@ class dash {
 				return 0;
 			}
 		}
-		else {
-			if (!trim($post['id'])) {
-				$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
-				$post['id']=$sql->lastInsertID();
-			}
 
-			if (!trim($post['slug']) || $post['slug_update']) {
-				$post['slug']=dash::do_slugify($post['title'], $types[$posttype]['modules'][0]['input_unique']);
-			}
-
-			$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
-			$id=$post['id'];
-
-			dash::$last_info[]='Content saved.';
-			dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug']);
-			return 1;
+		if (!trim($post['id'])) {
+			$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
+			$post['id']=$sql->lastInsertID();
 		}
+
+		if (!trim($post['slug']) || $post['slug_update']) {
+			$post['slug']=dash::do_slugify($post['title'], $types[$posttype]['modules'][0]['input_unique']);
+		}
+
+		$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
+		$id=$post['id'];
+
+		dash::$last_info[]='Content saved.';
+		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug']);
+		return 1;
 	}
 
 	function get_content ($val) {
