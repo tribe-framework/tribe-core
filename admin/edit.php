@@ -109,9 +109,9 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group"><button class="btn btn-outline-secondary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 		<?php } $i++; } ?>
-		<?php endif; ?>
 		</div>
-		
+		<?php endif; ?>
+
 		<?php if ($module_input_type=='tel'): ?>
 		<div class="input-group my-4">
 		  <div class="input-group-prepend">
