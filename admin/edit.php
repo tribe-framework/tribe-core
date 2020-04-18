@@ -96,6 +96,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<div class="url-group" id="url-group-<?php echo $module_input_slug; ?>">
 		<?php
 		$i=0;
+		$type_name_values=array();
 		if (is_array($post[$module_input_slug]))
 			$type_name_values=$post[$module_input_slug];
 		else
