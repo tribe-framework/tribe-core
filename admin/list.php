@@ -32,7 +32,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
       $module_input_slug=$module['input_slug'];
       echo (isset($module['list_field'])?'<td>'.$post[$module_input_slug].'</td>':'');
     }
-    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a>&nbsp;<a href="#"><span class="fas fa-trash-alt"></span></a></td></tr>';
+    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
   }
   ?>
   </tbody>
