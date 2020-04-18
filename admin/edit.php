@@ -15,7 +15,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 
 	<form method="post" class="edit_form" action="/admin/json">
 
-		<?php echo get_admin_menu('edit', $type); ?>
+		<?php echo get_admin_menu('edit', $type, $_GET['id']); ?>
 
 		<h2>Edit <?php echo $types[$type]['name']; ?></h2>
 

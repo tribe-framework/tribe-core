@@ -23,7 +23,7 @@ function get_admin_menu ($page, $type='', $id=0) {
 		<div class="btn-toolbar bg-light justify-content-between">
 			<div class="btn-group">
 				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-save"></span>&nbsp;Save '.$type.'</button>
-				<button type="button" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-trash-alt" data-toggle="modal" data-target="delete_conf_'.$id.'"></span>&nbsp;Delete</button>
+				<button type="button" data-toggle="modal" data-target="#delete_conf_'.$id.'" class="btn btn-outline-danger bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-trash-alt"></span>&nbsp;Delete</button>
 			</div>'.new_and_list($type).'
 		</div>
 		</div></div>';
