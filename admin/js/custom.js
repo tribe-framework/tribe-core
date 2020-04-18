@@ -1,4 +1,4 @@
-key('⌘+s, ctrl+s', function(e){update_textarea($('#typeout-content').data('input-slug')); $('.save_btn').trigger('click'); e.preventDefault();});
+key('⌘+s, ctrl+s', function(e){$('.save_btn').trigger('click'); e.preventDefault();});
 key('⌘+b, ctrl+b', function(e){$('.typeout-bold').trigger('click'); e.preventDefault();});
 key('⌘+i, ctrl+i', function(e){$('.typeout-italic').trigger('click'); e.preventDefault();});
 
@@ -22,7 +22,7 @@ $( document ).ready(function() {
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
 
-    $('#edit_form input[type=file]').fileupload({
+    $('.edit_form input[type=file]').fileupload({
         dataType: 'json',
 		add: function(e, data) {
 			$('#progress').parent().removeClass('d-none');
@@ -85,7 +85,7 @@ function parseGoogleResponse (components) {
 }
 
 function update_textarea (typeout_slug) {
-	$('#edit_form input[name="'+typeout_slug+'"]').val($('#typeout-content').html());
+	$('.edit_form input[name="'+typeout_slug+'"]').val($('#typeout-content').html());
 	//.find('script, link, html, head, meta, title, body').remove()
 }
 
