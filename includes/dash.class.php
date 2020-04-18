@@ -59,13 +59,16 @@ class dash {
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
 
 		if (!trim($post['id']) && $q[0]['id'] && $types[$posttype]['modules'][0]['input_unique']) {
-			dash::$last_error[]='Same title exists in '.$types[$posttype]['plural'];
+			dash::$last_error[]='Either the title is left empty or the same title exists in '.$types[$posttype]['plural'];
 			return 0;
 		}
 		else {
 			if (!trim($post['id'])) {
 				$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
 				$post['id']=$sql->lastInsertID();
+			}
+
+			if (!trim($post['slug']) || $post['slug_update']) {
 				$post['slug']=dash::do_slugify($post['title'], $types[$posttype]['modules'][0]['input_unique']);
 			}
 
@@ -73,7 +76,7 @@ class dash {
 			$id=$post['id'];
 
 			dash::$last_info[]='Content saved.';
-			dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id);
+			dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug']);
 			return 1;
 		}
 	}
