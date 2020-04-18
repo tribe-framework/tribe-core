@@ -91,6 +91,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='url' || $module_input_type=='multi_url'): ?>
+		<div class="url-group">
 		<?php
 		$i=0;
 		if (is_array($post[$module_input_slug]))
@@ -100,7 +101,6 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		foreach ($type_name_values as $type_name_value) { 
 			if ($i<1 || trim($type_name_value)) {
 		?>
-		<div class="url-group">
 			<div class="input-group my-4">
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
@@ -108,10 +108,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			  <input type="url" name="<?php echo $module_input_slug.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group"><button class="btn btn-outline-secondary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
-		</div>
 		<?php } $i++; } ?>
 		<?php endif; ?>
-
+		</div>
+		
 		<?php if ($module_input_type=='tel'): ?>
 		<div class="input-group my-4">
 		  <div class="input-group-prepend">
