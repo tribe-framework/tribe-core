@@ -93,7 +93,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='url' || $module_input_type=='multi_url'): ?>
-		<div class="url-group">
+		<div class="url-group" id="url-group-<?php echo $module_input_slug; ?>">
 		<?php
 		$i=0;
 		if (is_array($post[$module_input_slug]))
@@ -108,7 +108,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
 			  </div>
 			  <input type="url" name="<?php echo $module_input_slug.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>" value="<?php echo $type_name_value; ?>">
-			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group"><button class="btn btn-outline-secondary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
+			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group" data-input-slug="'.$module_input_slug.'"><button class="btn btn-outline-secondary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 		<?php } $i++; } ?>
 		</div>

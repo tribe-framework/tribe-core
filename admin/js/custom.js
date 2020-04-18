@@ -16,8 +16,8 @@ $( document ).ready(function() {
 	});
 
 	$(document).on('click', '.multi_add_btn', function(e) {
-		$(this).closest('.url-group .input-group').first().clone().appendTo('.url-group');
-		$('.url-group .input-group:last input').val('');
+		$(this).closest('#url-group-'+$(this).data('input-slug')+' .input-group').first().clone().appendTo('#url-group-'+$(this).data('input-slug'));
+		$('#url-group .input-group:last input').val('');
 	});
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
