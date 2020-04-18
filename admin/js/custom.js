@@ -1,3 +1,8 @@
+key('⌘+s, ctrl+s', function(e){$('.save_btn').trigger('click'); e.preventDefault();});
+key('⌘+b, ctrl+b', function(e){$('.typeout-bold').trigger('click'); e.preventDefault();});
+key('⌘+i, ctrl+i', function(e){$('.typeout-italic').trigger('click'); e.preventDefault();});
+confirmBackspaceNavigations('#typeout-content');
+
 $( document ).ready(function() {
 
 	update_textarea($('#typeout-content').data('input-slug'));
@@ -88,4 +93,26 @@ function update_textarea (typeout_slug) {
 function scroll_to_anchor (aid) {
     var aTag = $("a[name='"+ aid +"']");
     $('html,body').animate({scrollTop: aTag.offset().top},'slow');
+}
+                
+function confirmBackspaceNavigations (selector) {
+    // http://stackoverflow.com/a/22949859/2407309
+    var backspaceIsPressed = false
+    $(document).keydown(function(event){
+        if (event.which == 8) {
+            backspaceIsPressed = true
+        }
+    })
+    $(document).keyup(function(event){
+        if (event.which == 8) {
+            backspaceIsPressed = false
+        }
+    })
+    $(window).on('beforeunload', function(e){
+        if (backspaceIsPressed) {
+            backspaceIsPressed = false
+            e.preventDefault();
+            $('"'+selector+'"').focus();
+        }
+    })
 }
