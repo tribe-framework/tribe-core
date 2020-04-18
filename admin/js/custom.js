@@ -4,21 +4,11 @@ $( document ).ready(function() {
 	$('#typeout-content').keyup(function() {update_textarea($('#typeout-content').data('input-slug'));});
 	$(document).on('blur', '#typeout-content', function() {update_textarea($('#typeout-content').data('input-slug'));});
 
-	$(document).on('submit', '#edit_form', function(e) {
+	$(document).on('submit', '.edit_form', function(e) {
 		e.preventDefault();
-		btn_txt=spinner_start('#edit_form .submit_btn');
 		$.post('json.php', $(this).serialize(), function(data) {
 			process_json_out(data);
-		}, 'json').done(spinner_stop('#edit_form .submit_btn', btn_txt));
-	});
-
-	$(document).on('click', '.delete_btn', function(e) {
-		e.preventDefault();
-		if (confirm('Are you sure you wish to delete this content?')) {
-			$.post('/admin/json', {"class":"dash", "function":"do_delete", "lang_code":$(this).data('lang_code'), "section_file":$(this).data('section_file')}, function(data) {
-				process_json_out(data);
-			}, 'json');
-		};
+		}, 'json');
 	});
 
 	$(document).on('click', '.multi_add_btn', function(e) {

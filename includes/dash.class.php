@@ -51,6 +51,13 @@ class dash {
 		return $r;
 	}
 
+	function do_delete ($post=array()) {
+		global $sql;
+		$q=$sql->executeSQL("DELETE FROM `data` WHERE `id`='".$post['id']."'");
+		dash::$last_redirect='/admin/list?type='.$post['type'];
+		return 1;
+	}
+
 	function push_content ($post) {
 		global $sql, $types;
 		$updated_on=time();
