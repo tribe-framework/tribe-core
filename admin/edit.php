@@ -29,7 +29,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<?php if ($module_input_type=='text'): ?>
 		<div class="input-group input-group-lg my-4"><input type="text" name="<?php echo $module_input_slug; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>" id="<?php echo $module_input_slug; ?>" value="<?php echo ($post[$module_input_slug]?$post[$module_input_slug]:''); ?>"></div>
 
-		<?php if ($module_input_slug=='title') echo '<div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div>'; ?>
+		<?php if ($module_input_slug=='title') echo '<div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div>'; ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='textarea'): ?>
