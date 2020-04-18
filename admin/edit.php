@@ -141,7 +141,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 
 		<?php if ($module_input_type=='select'): ?>
 		<div class="my-4">
-			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug; ?>" name="<?php echo $module_input_slug; ?>"><option <?php echo ($post[$module_input_slug]?'':'selected="selected"'); ?>><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug); ?></option>
+			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug; ?>" name="<?php echo $module_input_slug; ?>"><option <?php echo ($post[$module_input_slug]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug); ?></option>
 				<?php 
 				if ($options=$module_input_options) {
 					foreach ($options as $opt)
