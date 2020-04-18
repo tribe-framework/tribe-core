@@ -56,11 +56,12 @@ class dash {
 		$updated_on=time();
 		$posttype=$post['type'];
 
-		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
-
-		if (!trim($post['id']) && $q[0]['id'] && $types[$posttype]['modules'][0]['input_unique']) {
-			dash::$last_error[]='Either the title is left empty or the same title exists in '.$types[$posttype]['plural'];
-			return 0;
+		if ($types[$posttype]['modules'][0]['input_unique']) {
+			$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
+			if ($q[0]['id']) {
+				dash::$last_error[]='Either the title is left empty or the same title already exists in '.$types[$posttype]['plural'];
+				return 0;
+			}
 		}
 		else {
 			if (!trim($post['id'])) {
@@ -103,7 +104,7 @@ class dash {
 	}
 
 	function do_slugify ($string, $input_itself_is_unique=0) {
-		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', $string))).($input_itself_is_unique?'':'-'.uniqid());
+		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string?$string:'')))).($input_itself_is_unique?'':'-'.uniqid());
 		return $slug;
 	}
 }
