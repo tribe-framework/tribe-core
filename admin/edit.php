@@ -373,7 +373,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 	          <input type="hidden" name="type" value="<?php echo $types[$type]['slug']; ?>">
 	          <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 	          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-	          <button type="submit" class="btn btn-primary">Yes, delete it</button>
+	          <button type="submit" class="btn btn-danger">Yes, delete it</button>
 	        </form>
 	      </div>
 	    </div>
