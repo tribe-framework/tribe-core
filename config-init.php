@@ -1,11 +1,11 @@
 <?php
 session_start();
 include_once('config/config-vars.php');
-
-isset($_SESSION['language'])?:$_SESSION['language']='en';
-
+include_once(THEME_PATH.'/config/vars.php');
 $types=json_decode(file_get_contents(THEME_PATH.'/config/types.json'), true);
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
+
+isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
