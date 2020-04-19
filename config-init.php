@@ -1,7 +1,6 @@
 <?php
 session_start();
 include_once('config/config-vars.php');
-include_once(THEME_PATH.'/config/vars.php');
 $types=json_decode(file_get_contents(THEME_PATH.'/config/types.json'), true);
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
 
