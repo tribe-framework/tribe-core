@@ -7,7 +7,7 @@ foreach ($folders_to_backup as $folder)
 
 $backupfile='backup-'.DB_NAME.'.sql.gz';
 linux_command('mysqldump -u'.DB_USER.' -p'.DB_PASS.' '.DB_NAME.' | gzip > /var/tmp/'.$backupfile);
-linux_command('s3cmd --host="'.S3_BKUP_HOST_BASE.'" --access_key="'.S3_BKUP_ACCESS_KEY.'" --secret_key="'.S3_BKUP_SECRET_KEY.'" --host-bucket="'.S3_BKUP_HOST_BUCKET.'" -P put /var/tmp/'.$backupfile.' s3://'.S3_BKUP_FOLDER_NAME.'/');
+linux_command('s3cmd --host="'.S3_BKUP_HOST_BASE.'" --access_key="'.S3_BKUP_ACCESS_KEY.'" --secret_key="'.S3_BKUP_SECRET_KEY.'" --host-bucket="'.S3_BKUP_HOST_BUCKET.'" put /var/tmp/'.$backupfile.' s3://'.S3_BKUP_FOLDER_NAME.'/');
 linux_command('rm /var/tmp/'.$backupfile);
 
 function linux_command ($cmd) {
