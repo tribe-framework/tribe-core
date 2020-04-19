@@ -20,7 +20,7 @@ if you're not using git to update - config, uploads and themes folders need not 
 1. sudo apt-get install s3cmd
 2. create a s3 folder, dis-allow versioning, allow logging in same directory, go to folder settings - complaince settings - set complaince mode ON, keep detele retention 3 months
 3. create a user and change user home path to folder name
-4. save user access and secret key details config/config-vars.php
+4. save s3 user access and secret key details config/config-vars.php
 
 ## contact
 write to tech@wildfire.world if you face any issues or have suggestions 
