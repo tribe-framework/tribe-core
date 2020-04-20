@@ -4,6 +4,24 @@ include_once('config/config-vars.php');
 $types=json_decode(file_get_contents(THEME_PATH.'/config/types.json'), true);
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
 
+foreach ($types as $key=>$type) {
+	if ($type['type']=='content') {
+		$publishing_options_json='{
+	        "input_slug": "publishing_option",
+	        "input_placeholder": "Publishing option",
+	        "input_type": "select",
+	        "input_options": [
+	          "Public story",
+	          "Private link",
+	          "Draft"
+	        ],
+	        "list_field": true,
+	        "input_unique": false
+	      }';
+		$type['type']['modules']=array_merge(json_decode($publishing_options_json, true), $type['type']['modules']);
+  }
+}
+
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
