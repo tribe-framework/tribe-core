@@ -18,7 +18,7 @@ foreach ($types as $key=>$type) {
 	        "list_field": true,
 	        "input_unique": false
 	      }';
-		$type['type']['modules']=array_merge(json_decode($publishing_options_json, true), $type['type']['modules']);
+		$types[$key]['type']['modules']=array_merge(json_decode($publishing_options_json, true), $type['type']['modules']);
   }
 }
 
