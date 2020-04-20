@@ -113,5 +113,27 @@ class dash {
 		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string?$string:'untitled')))).($input_itself_is_unique?'':'-'.uniqid());
 		return $slug;
 	}
+	
+	function get_types ($json_path) {
+		$types=json_decode(file_get_contents($json_path), true);
+		foreach ($types as $key=>$type) {
+			if ($type['type']=='content' && !in_array('publishing_option', array_column($types[$key]['modules'], 'input_slug'))) {
+				$publishing_options_json='{
+			        "input_slug": "publishing_option",
+			        "input_placeholder": "Publishing option",
+			        "input_type": "select",
+			        "input_options": [
+			          "Public story",
+			          "Private link",
+			          "Draft"
+			        ],
+			        "list_field": true,
+			        "input_unique": false
+			      }';
+				$types[$key]['modules'][]=json_decode($publishing_options_json, true);
+		  }
+		}
+		return $types;
+	}
 }
 ?>
