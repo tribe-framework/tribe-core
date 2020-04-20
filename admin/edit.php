@@ -147,8 +147,12 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug; ?>" name="<?php echo $module_input_slug; ?>"><option <?php echo ($post[$module_input_slug]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug); ?></option>
 				<?php 
 				if ($options=$module_input_options) {
-					foreach ($options as $opt)
-						echo '<option value="'.$opt.'" '.(($post[$module_input_slug]==$opt)?'selected="selected"':'').'>'.$opt.'</option>';
+					foreach ($options as $opt) {
+						if (is_array($opt))
+							echo '<option value="'.$opt['slug'].'" '.(($post[$module_input_slug]==$opt['slug'])?'selected="selected"':'').'>'.$opt['title'].'</option>';
+						else
+							echo '<option value="'.$opt.'" '.(($post[$module_input_slug]==$opt)?'selected="selected"':'').'>'.$opt.'</option>';
+					}
 				}
 				else {
 					$options=$dash::get_all_ids($module_input_slug);
@@ -169,11 +173,20 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 				$i=0;
 				foreach ($options as $opt) {
 					$i++;
-					echo '
-					<div class="custom-control custom-switch">
-						<input type="checkbox" class="custom-control-input" name="'.$module_input_slug.'[]" id="customSwitch_'.$i.'" value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug])?'checked="checked"':'').'>
-						<label class="custom-control-label" for="customSwitch_'.$i.'">'.$opt.'</label>
-					</div>';
+					if (is_array($opt)) {
+						echo '
+						<div class="custom-control custom-switch">
+							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug.'[]" id="customSwitch_'.$i.'" value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug])?'checked="checked"':'').'>
+							<label class="custom-control-label" for="customSwitch_'.$i.'">'.$opt['title'].'</label>
+						</div>';
+					}
+					else {
+						echo '
+						<div class="custom-control custom-switch">
+							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug.'[]" id="customSwitch_'.$i.'" value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug])?'checked="checked"':'').'>
+							<label class="custom-control-label" for="customSwitch_'.$i.'">'.$opt.'</label>
+						</div>';
+					}
 				}
 			}
 			else {
