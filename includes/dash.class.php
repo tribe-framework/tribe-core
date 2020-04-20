@@ -117,20 +117,20 @@ class dash {
 	function get_types ($json_path) {
 		$types=json_decode(file_get_contents($json_path), true);
 		foreach ($types as $key=>$type) {
-			if ($type['type']=='content' && !in_array('publishing_option', array_column($types[$key]['modules'], 'input_slug'))) {
-				$publishing_options_json='{
-			        "input_slug": "publishing_option",
-			        "input_placeholder": "Publishing option",
+			if ($type['type']=='content' && !in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
+				$content_privacy_json='{
+			        "input_slug": "content_privacy",
+			        "input_placeholder": "Content privacy",
 			        "input_type": "select",
 			        "input_options": [
-			          "Public story",
-			          "Private link",
-			          "Draft"
+			          {"slug":"public", "title":"Public link"},
+			          {"slug":"private", "title":"Private link"},
+			          {"slug":"draft", "title":"Draft"}
 			        ],
 			        "list_field": true,
 			        "input_unique": false
 			      }';
-				$types[$key]['modules'][]=json_decode($publishing_options_json, true);
+				$types[$key]['modules'][]=json_decode($content_privacy_json, true);
 		  }
 		}
 		return $types;
