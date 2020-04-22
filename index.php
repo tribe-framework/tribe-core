@@ -1,6 +1,9 @@
 <?php
 include_once ('config-init.php');
 
+$headmeta_title=$types[$type]['headmeta_title'];
+$headmeta_description=$types[$type]['headmeta_description'];
+
 if ($type && $slug) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
@@ -27,13 +30,9 @@ if ($type && $slug) {
 elseif ($type && !$slug) {
 	$typedata=$types[$type];
 	$postids=$dash::get_all_ids($type);
-	$headmeta_title=$types[$type]['headmeta_title'];
-	$headmeta_description=$types[$type]['headmeta_description'];
 	include_once (THEME_PATH.'/archive.php');
 }
 else {
-	$headmeta_title=$types[$type]['headmeta_title'];
-	$headmeta_description=$types[$type]['headmeta_description'];
 	include_once (THEME_PATH.'/index.php');
 }
 ?>
