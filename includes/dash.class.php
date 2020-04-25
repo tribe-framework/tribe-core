@@ -135,5 +135,24 @@ class dash {
 		}
 		return $types;
 	}
+
+	function import_from_wp_posts ($table_name='wp_posts') {
+		global $sql;
+		$q=$sql->executeSQL("SELECT * FROM `".$table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post'");
+		foreach ($q as $r) {
+			$post=array();
+		    $post['id']=$r['ID'];
+		    $post['type']='story';
+		    $post['title']=$r['post_title'];
+		    $post['body']=$r['post_content'];
+		    $post['slug']=$r['post_name'];
+		    $post['content_privacy']='public';
+		    $post['publishing_date']=substr($r['post_date'], 0, 10);
+		    $cv=$sql->executeSQL("SELECT `guid` FROM `".$table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
+		    $post['cover_image']=$cv[0]['guid'];
+		    dash::push_content($post);
+		    break;
+		}
+	}
 }
 ?>
