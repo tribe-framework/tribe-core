@@ -155,7 +155,7 @@ class dash {
 		    $post['content_privacy']='public';
 		    $post['publishing_date']=substr($r['post_date'], 0, 10);
 		    $cv=$sql->executeSQL("SELECT `guid` FROM `".$table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
-		    $post['cover_image']=$cv[0]['guid'];
+		    $post['cover_media']=$cv[0]['guid'];
 		    dash::push_content($post);
 
 		    $i++;
