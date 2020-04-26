@@ -118,6 +118,10 @@ class dash {
 		return $slug;
 	}
 	
+	function do_unslugify ($url_part) {
+		return strtolower(trim(urlencode($url_part)));
+	}
+
 	function get_types ($json_path) {
 		$types=json_decode(file_get_contents($json_path), true);
 		foreach ($types as $key=>$type) {

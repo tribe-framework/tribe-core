@@ -30,11 +30,11 @@ isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 if (isset($_GET['ext'])) {
 	$ext=explode('/', $_GET['ext']);
 	if (count($ext))
-		$type=$ext[0];
+		$type=$dash::do_unslugify($ext[0]);
 	if (count($ext)>1)
-		$slug=$ext[1];
+		$slug=$dash::do_unslugify($ext[1]);
 }
 else if (isset($_GET['type'])) {
-	$type=$_GET['type'];
+	$type=$dash::do_unslugify($_GET['type']);
 }
 ?>
