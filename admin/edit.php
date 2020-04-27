@@ -19,11 +19,23 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 
 		<h2>Edit <?php echo $types[$type]['name']; ?></h2>
 
-		<?php foreach ($types[$type]['modules'] as $module) { 
+		<?php foreach ($types[$type]['modules'] as $module) {
+			if ((!$module['restrict_id_max'] || $_GET['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $_GET['id']>=$module['restrict_id_min'])):
+
 			$module_input_slug=$module['input_slug'];
 			$module_input_type=$module['input_type'];
+			$module_input_lang=$module['input_lang'];
 			$module_input_options=$module['input_options'];
 			$module_input_placeholder=$module['input_placeholder'];
+
+			$module_input_slug_arr=array();
+			if (is_array($module_input_lang))
+				$module_input_slug_arr=$module_input_lang;
+			else
+				$module_input_slug_arr[0]['slug']='';
+
+			foreach ($module_input_slug_arr as $input_lang) {
+				$module_input_slug_lang=$module_input_slug.($input_lang['slug']?'_'.$input_lang['slug']:'');
 			?>
 			
 		<?php if ($module_input_type=='text'): ?>
@@ -33,7 +45,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='textarea'): ?>
-		<div class="input-group my-4"><textarea name="<?php echo $module_input_slug; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>" id="<?php echo $module_input_slug; ?>"><?php echo ($post[$module_input_slug]?$post[$module_input_slug]:''); ?></textarea></div>
+		<div class="input-group my-4"><textarea name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:''); ?></textarea></div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='typeout'): ?>
@@ -79,8 +91,8 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug; ?>" data-input-slug="<?php echo $module_input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>"><?php echo $post[$module_input_slug]; ?></div>
-		<input type="hidden" name="<?php echo $module_input_slug; ?>">
+		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo $post[$module_input_slug_lang]; ?></div>
+		<input type="hidden" name="<?php echo $module_input_slug_lang; ?>">
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='date'): ?>
@@ -354,7 +366,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		</script>
 		<?php endif; ?>
 
-		<?php } ?>
+		<?php } endif; } ?>
 	
 		<input type="hidden" name="class" value="dash">
 		<input type="hidden" name="function" value="push_content">
