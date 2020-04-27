@@ -63,12 +63,28 @@ class dash {
 		$updated_on=time();
 		$posttype=$post['type'];
 
-		if ($types[$posttype]['modules'][0]['input_unique']) {
-			$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.title'='".$post['title']."'");
+		$i=0;
+		foreach ($types[$posttype]['modules'] as $module) {
+			if ($module['input_primary'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
+				$title_id=$i;
+				$title_slug=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
+				$title_primary=$module['input_primary'];
+				$title_unique=$module['input_unique'];
+				break;
+			}
+			$i++;
+		}
+
+		if ($title_unique) {
+			$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='".$post['type']."' && `content`->'$.".$title_slug."'='".$post[$title_slug]."'");
 			if ($q[0]['id'] && $post['id']!=$q[0]['id']) {
 				dash::$last_error[]='Either the title is left empty or the same title already exists in '.$types[$posttype]['plural'];
 				return 0;
 			}
+		}
+
+		if (!trim($post['slug']) || $post['slug_update']) {
+			$post['slug']=dash::do_slugify($post[$title_slug], $title_unique);
 		}
 
 		if (!trim($post['id'])) {
@@ -78,10 +94,6 @@ class dash {
 
 		if ($post['wp_import']) {
 			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`, `user_id`) VALUES ('".$post['id']."', '$updated_on', '1')");
-		}
-
-		if (!trim($post['slug']) || $post['slug_update']) {
-			$post['slug']=dash::do_slugify($post['title'], $types[$posttype]['modules'][0]['input_unique']);
 		}
 
 		$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
