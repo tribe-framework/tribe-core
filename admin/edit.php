@@ -37,7 +37,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='typeout'): ?>
-		<div class="typeout-menu my-4" id="typeout-menu">
+		<div class="typeout-menu my-4">
 			<?php if (in_array('undo', $module_input_options)) { ?>
 			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo"><span class="fas fa-undo"></span></button>
 			<?php } ?>
@@ -79,7 +79,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-content" data-input-slug="<?php echo $module_input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>"><?php echo $post[$module_input_slug]; ?></div>
+		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug; ?>" data-input-slug="<?php echo $module_input_slug; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug); ?>"><?php echo $post[$module_input_slug]; ?></div>
 		<input type="hidden" name="<?php echo $module_input_slug; ?>">
 		<?php endif; ?>
 

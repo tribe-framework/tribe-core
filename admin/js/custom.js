@@ -4,9 +4,9 @@ key('⌘+i, ctrl+i', function(e){$('.typeout-italic').trigger('click'); e.preven
 
 $( document ).ready(function() {
 
-	update_textarea($('#typeout-content').data('input-slug'));
-	$('#typeout-content').keyup(function() {update_textarea($('#typeout-content').data('input-slug'));});
-	$(document).on('blur', '#typeout-content', function() {update_textarea($('#typeout-content').data('input-slug'));});
+	$(document).on('load', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
+	$(document).on('keyup', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
+	$(document).on('blur', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 
 	$(document).on('submit', '.edit_form', function(e) {
 		e.preventDefault();
@@ -85,7 +85,7 @@ function parseGoogleResponse (components) {
 }
 
 function update_textarea (typeout_slug) {
-	$('.edit_form input[name="'+typeout_slug+'"]').val($('#typeout-content').html());
+	$('.edit_form input[name="'+typeout_slug+'"]').val($('#typeout-'+typeout_slug).html());
 	//.find('script, link, html, head, meta, title, body').remove()
 }
 
