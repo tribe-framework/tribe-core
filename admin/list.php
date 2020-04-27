@@ -34,16 +34,9 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
     echo '<tr><th scope="row">'.$post['id'].'</th>';
     $displayed_field_slugs=array();
     foreach ($types[$type]['modules'] as $module) {
-      if (!in_array($module['input_slug'], $displayed_field_slugs)) {
-        $module_input_slug=$module['input_slug'];
+      if (!in_array($module['input_slug'], $displayed_field_slugs) && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
 
-        $module_input_slug_arr=array();
-        if (is_array($module_input_lang))
-          $module_input_slug_arr=$module_input_lang;
-        else
-          $module_input_slug_arr[0]['slug']='';
-        $module_input_slug_lang=$module_input_slug.($module_input_slug_arr[0]['slug']?'_'.$module_input_slug_arr[0]['slug']:'');
-          
+        $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
         echo (isset($module['list_field'])?'<td>'.$post[$module_input_slug_lang].'</td>':'');
         $displayed_field_slugs[]=$module['input_slug'];
       }
