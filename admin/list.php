@@ -32,6 +32,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
   foreach ($ids as $arr) {
     $post = $dash::get_content($arr['id']);
     echo '<tr><th scope="row">'.$post['id'].'</th>';
+    $displayed_field_slugs=array();
     foreach ($types[$type]['modules'] as $module) {
       if (!in_array($module['input_slug'], $displayed_field_slugs)) {
         $module_input_slug=$module['input_slug'];
