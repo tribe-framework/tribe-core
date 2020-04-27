@@ -52,6 +52,7 @@ class dash {
 	}
 
 	function get_next_id () {
+		global $sql;
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 1");
 		return ($q[0]['id']+1);
 	}
