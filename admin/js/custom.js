@@ -3,8 +3,9 @@ key('⌘+b, ctrl+b', function(e){$('.typeout-bold').trigger('click'); e.preventD
 key('⌘+i, ctrl+i', function(e){$('.typeout-italic').trigger('click'); e.preventDefault();});
 
 $( document ).ready(function() {
-
-	$(document).load('.typeout-content', function() {update_textarea($(this).data('input-slug'));});
+	$('.typeout-content').each(function() {
+	    update_textarea($(this).data('input-slug'));
+	});
 	$(document).on('keyup', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 	$(document).on('blur', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 
