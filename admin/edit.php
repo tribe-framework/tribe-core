@@ -5,7 +5,12 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
-if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
+if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
+
+	//for testing resticted min and max ids for archive format changes
+	if (!($pid=$_GET['id']))
+		$pid=$dash::get_next_id();
+?>
 
 	<link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
@@ -20,7 +25,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']): ?>
 		<h2>Edit <?php echo $types[$type]['name']; ?></h2>
 
 		<?php foreach ($types[$type]['modules'] as $module) {
-			if ((!$module['restrict_id_max'] || $_GET['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $_GET['id']>=$module['restrict_id_min'])):
+			if ((!$module['restrict_id_max'] || $pid<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $pid>=$module['restrict_id_min'])):
 
 			$module_input_slug=$module['input_slug'];
 			$module_input_type=$module['input_type'];

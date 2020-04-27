@@ -51,6 +51,11 @@ class dash {
 		return $r;
 	}
 
+	function get_next_id () {
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 1");
+		return ($q[0]['id']+1);
+	}
+
 	function do_delete ($post=array()) {
 		global $sql;
 		$q=$sql->executeSQL("DELETE FROM `data` WHERE `id`='".$post['id']."'");
