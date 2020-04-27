@@ -4,7 +4,7 @@ key('⌘+i, ctrl+i', function(e){$('.typeout-italic').trigger('click'); e.preven
 
 $( document ).ready(function() {
 
-	$(document).on('load', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
+	$(document).load('.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 	$(document).on('keyup', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 	$(document).on('blur', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
 
