@@ -35,6 +35,7 @@ $( document ).ready(function() {
 		    $('#progress .bar').css('width', progress + '%');
 		},
 		done: function(e, data) {
+			$(this).data('bunching').each(function(ed) {alert(ed.slug)});
 		    data.context
 		      .append('&nbsp;&nbsp;<span class="text-primary copy_btn" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span></span>&nbsp;&nbsp;<a style="display: inline;" class="text-primary" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span></a>')
 		      .addClass("done");
