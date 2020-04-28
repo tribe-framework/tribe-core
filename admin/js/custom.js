@@ -35,9 +35,13 @@ $( document ).ready(function() {
 		    $('#progress .bar').css('width', progress + '%');
 		},
 		done: function(e, data) {
-			$.each($(this).data('bunching'), function(i, item) {alert(item.slug)});
+			slvl='<select class="form-control" name="'+$(this).attr('id')+'_bunching[]'+'">';
+			$.each($(this).data('bunching'), function(i, item) {
+				slvl+='<option value="'+item.slug+'">'+item.title+'</option>';
+			});
+			slvl+='</select>';
 		    data.context
-		      .append('&nbsp;&nbsp;<span class="text-primary copy_btn" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span></span>&nbsp;&nbsp;<a style="display: inline;" class="text-primary" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span></a>')
+		      .append('&nbsp;&nbsp;<span class="text-primary copy_btn" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span></span>&nbsp;&nbsp;<a style="display: inline;" class="text-primary" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span></a>'+'&nbsp;&nbsp;'+slvl)
 		      .addClass("done");
 		}
     });
