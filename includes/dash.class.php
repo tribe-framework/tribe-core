@@ -162,7 +162,7 @@ class dash {
 		return $types;
 	}
 
-	function push_wp_posts ($table_name='wp_posts', $max_records=0) {
+	function push_wp_posts ($type='story', $wp_table_name='wp_posts', $max_records=0) {
 		global $sql;
 		$i=0;
 		$q=$sql->executeSQL("SELECT * FROM `".$table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post'");
@@ -170,7 +170,7 @@ class dash {
 			$post=array();
 			$post['wp_import']=1;
 		    $post['id']=$r['ID'];
-		    $post['type']='story';
+		    $post['type']=$type;
 		    $post['title']=$r['post_title'];
 		    $post['body']=$r['post_content'];
 		    $post['slug']=$r['post_name'];
