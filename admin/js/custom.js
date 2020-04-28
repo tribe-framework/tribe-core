@@ -39,10 +39,10 @@ $( document ).ready(function() {
 			sli++;
 			slvl='';
 			if ($(this).data('descriptor')) {
-				slvl+='<button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">Add descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="Enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal">Save</button></div></div></div></div>';
+				slvl+='<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">Add descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="Enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal">Save</button></div></div></div></div>';
 			}
 			if ($(this).data('bunching')) {
-				slvl+='<select name="'+$(this).attr('id')+'_bunching[]'+'">';
+				slvl+='<select class="btn btn-sm bg-white" name="'+$(this).attr('id')+'_bunching[]'+'">';
 				slvl+='<option value="">File option</option>';
 				$.each($(this).data('bunching'), function(i, item) {
 					slvl+='<option value="'+item.slug+'">'+item.title+'</option>';
