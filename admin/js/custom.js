@@ -21,6 +21,7 @@ $( document ).ready(function() {
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
 
+	var sli=0;
     $('.edit_form input[type=file]').fileupload({
         dataType: 'json',
 		add: function(e, data) {
@@ -35,10 +36,10 @@ $( document ).ready(function() {
 		    $('#progress .bar').css('width', progress + '%');
 		},
 		done: function(e, data) {
+			sli++;
 			slvl='';
-			console.log(data.result.files[0]);
 			if ($(this).data('descriptor')) {
-				slvl+='<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+data.result.files[0].name+'">Add descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+data.result.files[0].name+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="Enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal">Save</button></div></div></div></div>';
+				slvl+='<button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">Add descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="Enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal">Save</button></div></div></div></div>';
 			}
 			if ($(this).data('bunching')) {
 				slvl+='<select name="'+$(this).attr('id')+'_bunching[]'+'">';
