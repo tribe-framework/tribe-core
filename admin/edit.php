@@ -107,7 +107,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-calendar"></span></span>
 		  </div>
 		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
-		  <?php echo ($module_input_placeholder?'<small class="form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
+		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<?php endif; ?>
 
@@ -231,10 +231,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="inputGroupFileAddon01"><span class="fas fa-upload"></span></span>
 			</div>
 			<div class="custom-file border-top-0 border-left-0 border-right-0 rounded-0">
-			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>[]" data-url="/admin/uploader" multiple>
+			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>[]" data-bunching="<?php echo json_encode($module['input_bunching']); ?>" data-notes="<?php echo ($module['input_descriptor']?'1':''); ?>" data-url="/admin/uploader" multiple>
 			<label class="custom-file-label border-top-0 border-left-0 border-right-0 rounded-0" for="fileupload">Choose file</label>
 			</div>
-		  	<?php echo ($module_input_placeholder?'<small class="form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
+		  	<?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<div class="col-12 p-0 mb-4 d-none" id="<?php echo $module_input_slug_lang; ?>_fileuploads">
 			<div id="progress">
