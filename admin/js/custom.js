@@ -39,18 +39,18 @@ $( document ).ready(function() {
 			sli++;
 			slvl='';
 			if ($(this).data('descriptor')) {
-				slvl+='<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">Add descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="Enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Save</button></div></div></div></div>';
+				slvl+='<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="enter file descriptor"></textarea></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">save</button></div></div></div></div>';
 			}
 			if ($(this).data('bunching')) {
 				slvl+='<select class="btn btn-sm bg-white" name="'+$(this).attr('id')+'_bunching[]'+'">';
-				slvl+='<option value="">File option</option>';
+				slvl+='<option value="">file option</option>';
 				$.each($(this).data('bunching'), function(i, item) {
 					slvl+='<option value="'+item.slug+'">'+item.title+'</option>';
 				});
 				slvl+='</select>';
 			}
 		    data.context
-		      .append('&nbsp;&nbsp;<span class="text-white copy_btn" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span></span>&nbsp;&nbsp;<a style="display: inline;" class="text-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span></a>'+'&nbsp;&nbsp;'+slvl)
+		      .append('&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline;" class="btn btn-sm bg-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+'&nbsp;&nbsp;'+slvl)
 		      .addClass("done");
 		}
     });
