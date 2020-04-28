@@ -165,7 +165,7 @@ class dash {
 	function push_wp_posts ($type='story', $wp_table_name='wp_posts', $max_records=0) {
 		global $sql;
 		$i=0;
-		$q=$sql->executeSQL("SELECT * FROM `".$table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post'");
+		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post'");
 		foreach ($q as $r) {
 			$post=array();
 			$post['wp_import']=1;
@@ -176,7 +176,7 @@ class dash {
 		    $post['slug']=$r['post_name'];
 		    $post['content_privacy']='public';
 		    $post['publishing_date']=substr($r['post_date'], 0, 10);
-		    $cv=$sql->executeSQL("SELECT `guid` FROM `".$table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
+		    $cv=$sql->executeSQL("SELECT `guid` FROM `".$wp_table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
 		    $post['cover_media']=$cv[0]['guid'];
 		    dash::push_content($post);
 
