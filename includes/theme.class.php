@@ -19,7 +19,7 @@ class theme {
 		
 	}
 
-	function get_menu ($slug='') {
+	function get_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light')) {
 		global $menus;
 		
 		if ($slug)
@@ -31,7 +31,7 @@ class theme {
 
 		if ($items) {
 			$op.='
-			<nav class="navbar navbar-expand-md navbar-light bg-light">
+			<nav class="navbar '.$css_classes['navbar'].'">
 				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					<span class="navbar-toggler-icon"></span>
