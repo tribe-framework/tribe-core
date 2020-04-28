@@ -43,7 +43,7 @@ class theme {
 							$op.='<li class="nav-item active"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						else {
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu dropdown-menu-right">';
+								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
 							$op.='</div></li>';
