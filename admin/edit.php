@@ -231,7 +231,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="inputGroupFileAddon01"><span class="fas fa-upload"></span></span>
 			</div>
 			<div class="custom-file border-top-0 border-left-0 border-right-0 rounded-0">
-			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>[]" data-bunching="<?php echo json_encode($module['input_bunching']); ?>" data-notes="<?php echo ($module['input_descriptor']?'1':''); ?>" data-url="/admin/uploader" multiple>
+			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>[]" data-bunching='<?php echo json_encode($module['input_bunching']); ?>' data-notes="<?php echo ($module['input_descriptor']?'1':''); ?>" data-url="/admin/uploader" multiple>
 			<label class="custom-file-label border-top-0 border-left-0 border-right-0 rounded-0" for="fileupload">Choose file</label>
 			</div>
 		  	<?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
