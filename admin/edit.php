@@ -64,6 +64,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-insertParagraph" data-typeout-command="insertParagraph"><span class="fas fa-paragraph"></span></button>
 			<?php } ?>
 
+			<?php if (in_array('heading', $module_input_options)) { ?>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input-exec typeout-heading" data-typeout-command="heading" data-typeout-info="h4"><span class="fas fa-heading"></span></button>
+			<?php } ?>
+
 			<?php if (in_array('bold', $module_input_options)) { ?>
 			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-bold" data-typeout-command="bold"><span class="fas fa-bold"></span></button>
 			<?php } ?>

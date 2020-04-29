@@ -8,6 +8,10 @@ $( document ).ready(function() {
 		document.execCommand($(this).data('typeout-command'));
 	});
 
+    $('.typeout-input-exec').on("click", function() {
+        document.execCommand($(this).data('typeout-command'), '', $(this).data('typeout-info'));
+    });
+
 	$('.typeout-input').on("click", function() {
 		var savedSel = saveSelection();
 		var inputData = prompt($(this).data('typeout-info'), '');
