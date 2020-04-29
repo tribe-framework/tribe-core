@@ -99,6 +99,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php if (in_array('attach', $module_input_options)) { ?>
 			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info=""><span class="fas fa-paperclip"></span></button>
 			<?php } ?>
+
+			<?php if (in_array('removeFormat', $module_input_options)) { ?>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec" data-typeout-command="removeFormat"><span class="fas fa-remove-format"></span></button>
+			<?php } ?>
 		</div>
 
 		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo $post[$module_input_slug_lang]; ?></div>
