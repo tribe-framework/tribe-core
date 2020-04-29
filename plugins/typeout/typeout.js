@@ -8,6 +8,8 @@ $( document ).ready(function() {
 	});
 
     $('.typeout-input-exec').on("click", function() {
+        var savedSel = saveSelection();
+        restoreSelection(savedSel);
         document.execCommand($(this).data('typeout-command'), '', $(this).data('typeout-info'));
     });
 
