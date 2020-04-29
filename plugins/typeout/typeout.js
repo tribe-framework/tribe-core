@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-	$('#typeout').focus();
 	
 	document.execCommand('enableObjectResizing');
 	document.execCommand('enableInlineTableEditing');
