@@ -3,7 +3,7 @@
 	<script src="/plugins/popper/popper.min.js"></script>
 	<script src="/plugins/moment.js"></script>
 	<script src="/plugins/bootstrap/js/bootstrap.min.js"></script>
-	<script src="/plugins/typeout/typeout.js"></script>
+	<script src="/plugins/typeout/typeout.js?v=<?php echo time(); ?>"></script>
 	<script src="/plugins/datatables/datatables.min.js"></script>
 	<script src="/plugins/clipboard.min.js"></script>
 	<script src="/plugins/keymaster.js"></script>
