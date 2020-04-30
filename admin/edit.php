@@ -119,7 +119,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		</div>
 		<?php endif; ?>
 
-		<?php if ($module_input_type=='url' || $module_input_slug_lang=='multi_url'): ?>
+		<?php if ($module_input_type=='url' || $module_input_type=='multi_url'): ?>
 		<div class="url-group" id="url-group-<?php echo $module_input_slug_lang; ?>">
 		<?php
 		$i=0;
