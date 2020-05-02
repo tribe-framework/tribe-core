@@ -50,8 +50,8 @@ class theme {
 							$subitems=$dash::get_all_ids($item['submenu']);
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
-							foreach ($subitems as $subitem) {
-								$option=$dash::get_content($opt['id']);
+							foreach ($subitems as $opt) {
+								$subitem=$dash::get_content($opt['id']);
 								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
 							}
 							$op.='</div></li>';
