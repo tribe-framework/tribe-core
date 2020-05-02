@@ -53,6 +53,15 @@ $( document ).ready(function() {
 		      .append('&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+'&nbsp;&nbsp;'+slvl)
 		      .addClass("done");
 		}
+
+		[].forEach.call(document.querySelectorAll('div[contenteditable="true"]'), function (el) {
+		    el.addEventListener('paste', function(e) {
+		        e.preventDefault();
+		        var text = e.clipboardData.getData("text/html").$('p').contents().unwrap();
+		        alert(text)
+		        document.execCommand("insertHTML", false, text);
+		    }, false);
+		});
     });
 
     new ClipboardJS('.copy_btn');
