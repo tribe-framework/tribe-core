@@ -61,7 +61,7 @@ $( document ).ready(function() {
 
 document.querySelector('div[contenteditable="true"]').addEventListener("paste", function(e) {
     e.preventDefault();
-    var text = e.clipboardData.getData("text/html").$('p').contents().unwrap();
+    var text = e.clipboardData.getData("text/html");
     alert(text);
     document.execCommand("insertHTML", false, text);
 });
