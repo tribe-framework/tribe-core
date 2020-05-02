@@ -55,14 +55,14 @@ $( document ).ready(function() {
 		}
 
     });
+	
+	$('div[contenteditable="true"]').on('paste', function (e) {
+		e.preventDefault();
+		alert($(this).find('*').removeAttr('class'));
+		document.execCommand("insertHTML", false, 'aaa');
+	});
 
     new ClipboardJS('.copy_btn');
-});
-
-document.querySelector('div[contenteditable="true"]').addEventListener("paste", function(e) {
-    e.preventDefault();
-    var text = e.clipboardData.getData("text/html");
-    document.execCommand("insertHTML", false, $(text).find('*').removeAttr('class'));
 });
 
 function process_json_out (data) {
