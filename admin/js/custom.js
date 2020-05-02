@@ -58,7 +58,7 @@ $( document ).ready(function() {
 		    el.addEventListener('paste', function(e) {
 		        e.preventDefault();
 		        var text = e.clipboardData.getData("text/html").$('p').contents().unwrap();
-		        alert(text)
+		        alert(text);
 		        document.execCommand("insertHTML", false, text);
 		    }, false);
 		});
