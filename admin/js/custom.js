@@ -54,17 +54,15 @@ $( document ).ready(function() {
 		      .addClass("done");
 		}
 
-		[].forEach.call(document.querySelectorAll('div[contenteditable="true"]'), function (el) {
-		    el.addEventListener('paste', function(e) {
-		        e.preventDefault();
-		        var text = e.clipboardData.getData("text/html").$('p').contents().unwrap();
-		        alert(text);
-		        document.execCommand("insertHTML", false, text);
-		    }, false);
-		});
     });
 
     new ClipboardJS('.copy_btn');
+});
+
+document.querySelector('div[contenteditable="true"]').addEventListener("paste", function(e) {
+    e.preventDefault();
+    var text = e.clipboardData.getData("text/plain").$('p').contents().unwrap();;
+    document.execCommand("insertHTML", false, text);
 });
 
 function process_json_out (data) {
