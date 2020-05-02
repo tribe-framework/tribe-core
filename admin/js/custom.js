@@ -55,12 +55,6 @@ $( document ).ready(function() {
 		}
 
     });
-	
-	$('div[contenteditable="true"]').on('paste', function (e) {
-		e.preventDefault();
-		alert($(this).find('*').removeAttr('class'));
-		document.execCommand("insertHTML", false, 'aaa');
-	});
 
     new ClipboardJS('.copy_btn');
 });
