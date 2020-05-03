@@ -260,8 +260,8 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			</div>
 
 			<?php
+			var_dump($post[$module_input_slug_lang]);
 			foreach ($post[$module_input_slug_lang] as $file) {
-				var_dump($file);
 				echo '<p class="file done"><span>'.$file.'</span></p>';
 			}
 			?>
