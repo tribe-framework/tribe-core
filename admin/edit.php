@@ -156,7 +156,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
 		  </div>
-		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
 		</div>
 		<?php endif; ?>
 
