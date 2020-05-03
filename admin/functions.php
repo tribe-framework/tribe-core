@@ -1,6 +1,5 @@
 <?php
 function get_admin_menu ($page, $type='', $id=0) {
-	global $dash;
 	$op='';
 	if ($page=='dash') {
 		$op.='
@@ -22,15 +21,20 @@ function get_admin_menu ($page, $type='', $id=0) {
 		$op.='
 		<div class="card mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar bg-light justify-content-between">
-			<div class="btn-group">
-				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg save_btn"><span class="fa fa-save"></span>&nbsp;Save</button>
-				<a href="'.BASE_URL.'/'.$type.'/'.$dash::get_content_meta($id, 'slug').'" target="new" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-external-link-alt"></span>&nbsp;View</a>
-				<button type="button" data-toggle="modal" data-target="#delete_conf_'.$id.'" class="btn btn-outline-danger bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-trash-alt"></span>&nbsp;Delete</button>
-			</div>'.new_and_list($type).'
+		'.list_types().edit_options($type, $id).new_and_list($type).'
 		</div>
 		</div></div>';
 	}
 	return $op;
+}
+
+function edit_options ($type, $id) {
+	global $dash;
+	return '<div class="btn-group">
+				<button type="submit" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg save_btn"><span class="fa fa-save"></span>&nbsp;Save</button>
+				<a href="'.BASE_URL.'/'.$type.'/'.$dash::get_content_meta($id, 'slug').'" target="new" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg view_btn"><span class="fa fa-external-link-alt"></span>&nbsp;View</a>
+				<button type="button" data-toggle="modal" data-target="#delete_conf_'.$id.'" class="btn btn-outline-danger bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-trash-alt"></span>&nbsp;Delete</button>
+			</div>';
 }
 
 function new_and_list ($type) {
