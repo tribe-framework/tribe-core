@@ -262,12 +262,14 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 		<div class="col-12 p-0 mb-4 d-block">
 			<?php
+			$i=0;
 			foreach ($post[$module_input_slug_lang] as $file) {
-				var_dump($file);
-				echo '<p class="file done"><span>'.$file.'</span></p>';
+				$i++;
+				echo '<p class="file done"><span>'.urldecode(basename($file)).'</span>&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'.$file.'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'.$file.'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'.($module['input_descriptor']?'&nbsp;&nbsp;<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'.$module_input_slug_lang.'_descriptor_m_'.$i.'">descriptor</button><div class="modal fade" id="'.$module_input_slug_lang.'_descriptor_m_'.$i.'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">×</span></button></div><div class="modal-body"><textarea name="'.$module_input_slug_lang.'_descriptor[]" class="form-control" placeholder="enter file descriptor">'.$post[$module_input_slug_lang.'_descriptor'][$i].'</textarea></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">save</button></div></div></div></div>':'').'</p>';
 			}
 			?>
 		</div>
+
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='google_map_marker'): ?>
