@@ -258,6 +258,13 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<div id="progress">
 			    <div style="width: 0%;" class="bar"></div>
 			</div>
+
+			<?php
+			foreach ($post[$module_input_slug_lang] as $file) {
+				var_dump($file);
+				echo '<p class="file done"><span>'.$file.'</span></p>';
+			}
+			?>
 		</div>
 		<?php endif; ?>
 
