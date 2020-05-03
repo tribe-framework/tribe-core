@@ -127,7 +127,6 @@ class dash {
 			$priority_field="`".$priority_field."`";
 		else
 			$priority_field="`content`->'$.".$priority_field."'";
-		echo "SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority_field." ".$priority_order;
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority_field." ".$priority_order);
 	}
 
