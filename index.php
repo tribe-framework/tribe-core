@@ -25,12 +25,19 @@ if ($type && $slug) {
 	}
 	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 
-	include_once (THEME_PATH.'/single.php');
+	if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
+		include_once (THEME_PATH.'/single-'.$type.'.php');
+	else
+		include_once (THEME_PATH.'/single.php');
 }
 elseif ($type && !$slug) {
 	$typedata=$types[$type];
 	$postids=$dash::get_all_ids($type);
-	include_once (THEME_PATH.'/archive.php');
+
+	if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
+		include_once (THEME_PATH.'/archive-'.$type.'.php');
+	else
+		include_once (THEME_PATH.'/archive.php');
 }
 else {
 	include_once (THEME_PATH.'/index.php');
