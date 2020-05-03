@@ -1,6 +1,6 @@
 <?php
 function get_admin_menu ($page, $type='', $id=0) {
-	global $dash, BASE_URL;
+	global $dash;
 	$op='';
 	if ($page=='dash') {
 		$op.='
