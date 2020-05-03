@@ -268,7 +268,8 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 				if (is_array($module['input_bunching'])) {
 					echo '<select class="btn btn-sm bg-white" name="'.$module_input_slug_lang.'_bunching[]"><option value="">file option</option>';
 					foreach ($module['input_bunching'] as $opt)
-						echo '<option value="'.$opt['slug'].'" '.(($post[$module_input_slug_lang.'_bunching'][$i]==$opt['slug'])?'selected="selected"':'').'>'.$opt['title'].'</option></select>';
+						echo '<option value="'.$opt['slug'].'" '.(($post[$module_input_slug_lang.'_bunching'][$i]==$opt['slug'])?'selected="selected"':'').'>'.$opt['title'].'</option>';
+					echo '</select>';
 				}
 				echo '</p>';
 				$i++;
