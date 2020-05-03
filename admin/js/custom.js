@@ -20,7 +20,7 @@ $( document ).ready(function() {
 	});
 
 	$(document).on('click', '.delete_btn', function(e) {
-		$(this).closest('file').remove();
+		$(this).closest('p.file').remove();
 	});
 
 	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
