@@ -106,7 +106,7 @@ class dash {
 		$id=$post['id'];
 
 		dash::$last_info[]='Content saved.';
-		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug']);
+		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug'], 'url'=>BASE_URL.'/'.$post['type'].'/'.$post['slug']);
 		return 1;
 	}
 
