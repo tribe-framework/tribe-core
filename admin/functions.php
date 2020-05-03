@@ -13,7 +13,7 @@ function get_admin_menu ($page, $type='', $id=0) {
 		$op.='
 		<div class="card mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar bg-light justify-content-between">
-		  '.list_types().''.new_and_list($type).'
+		  '.list_types($type).new_and_list($type).'
 		</div>
 		</div></div>';
 	}
@@ -46,9 +46,9 @@ function new_and_list ($type) {
 	</div>';
 }
 
-function list_types() {
+function list_types($type='') {
 	global $types;
-	$list_types='<div class="btn-group" role="group"><a href="/admin/" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-tachometer-alt"></span></a><button id="types-admin-dropdown" type="button" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg dropdown-toggle pl-0 pr-1" data-toggle="dropdown"><span class="sr-only">Content types</span></button><div class="dropdown-menu" aria-labelledby="types-admin-dropdown">';
+	$list_types='<div class="btn-group" role="group"><a href="/admin/" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg"><span class="fa fa-tachometer-alt"></span></a><button id="types-admin-dropdown" type="button" class="btn btn-outline-secondary bg-light border-top-0 border-left-0 border-right-0 rounded-0 btn-lg dropdown-toggle pl-0 pr-1" data-toggle="dropdown">'.(isset($type)?$types[$type]['plural']:'').'&nbsp;<span class="sr-only">Content types</span></button><div class="dropdown-menu" aria-labelledby="types-admin-dropdown">';
 	foreach ($types as $key => $value) {
     	$list_types.='<a class="dropdown-item" href="/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
 	}

@@ -67,6 +67,7 @@ function process_json_out (data) {
 		if (!($('input[name="id"]').val()))
 			$('input[name="id"]').val(data.last_data[0].id);
 		$('input[name="slug"]').val(data.last_data[0].slug);
+		$('.view_btn').attr('href', '/'+data.last_data[0].type+'/'+data.last_data[0].slug);
 		$('#slug_update_div').addClass('d-block').removeClass('d-none');
 		$('#infos').removeClass('d-none').addClass('d-block').html(data.last_info);
 		scroll_to_anchor('infos');
