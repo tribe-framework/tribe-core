@@ -50,7 +50,7 @@ $( document ).ready(function() {
 				slvl+='</select>';
 			}
 		    data.context
-		      .append('&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+'&nbsp;&nbsp;'+slvl)
+		      .append('<input type="hidden" name="'+$(this).attr('id')+'[]'+'" value="'+data.result.files[0].url+'">&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+'&nbsp;&nbsp;'+slvl)
 		      .addClass("done");
 		}
 
