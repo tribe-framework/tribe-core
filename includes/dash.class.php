@@ -127,7 +127,7 @@ class dash {
 			$priority_field="`".$priority_field."`";
 		else
 			$priority_field="`content`->'$.".$priority_field."'";
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority_field." ".$priority_field);
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority_field." ".$priority_order);
 	}
 
 	function get_date_ids ($publishing_date) {
