@@ -151,6 +151,15 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		</div>
 		<?php endif; ?>
 
+		<?php if ($module_input_type=='number'): ?>
+		<div class="input-group my-4">
+		  <div class="input-group-prepend">
+		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
+		  </div>
+		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		</div>
+		<?php endif; ?>
+
 		<?php if ($module_input_type=='email'): ?>
 		<div class="input-group my-4">
 		  <div class="input-group-prepend">
