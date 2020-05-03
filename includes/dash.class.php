@@ -110,6 +110,13 @@ class dash {
 		return 1;
 	}
 
+	function get_content_meta ($id, $meta_key) {
+		global $sql;
+		$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$id'");
+		$or=json_decode($q[0]['content'], true);
+		return $or[$meta_key];
+	}
+
 	function get_content ($val) {
 		global $sql;
 		$or=array();
