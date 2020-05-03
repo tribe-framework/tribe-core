@@ -47,7 +47,7 @@ class theme {
 							$op.='</div></li>';
 						}
 						else if ($item['submenu']) {
-							$subitems=$dash::get_all_ids($item['submenu']);
+							$subitems=$dash::get_all_ids($item['submenu'], (isset($item['priority_field'])?$item['priority_field']:''), (isset($item['priority_order'])?$item['priority_order']:''));
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
