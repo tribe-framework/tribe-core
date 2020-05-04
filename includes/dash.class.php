@@ -134,7 +134,7 @@ class dash {
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 	}
 
 	function get_date_ids ($publishing_date) {
