@@ -1,34 +1,4 @@
 {
-  "admin": {
-    "type": "user",
-    "slug": "admin",
-    "name": "admin",
-    "plural": "admins",
-    "modules": [
-      {
-        "input_slug": "username",
-        "input_type": "text",
-        "input_unique": true
-      },
-      {
-        "input_slug": "email",
-        "input_type": "email",
-        "input_unique": true
-      },
-      {
-        "input_slug": "password",
-        "input_placeholder": "Enter password",
-        "input_type": "password",
-        "input_unique": false
-      },
-      {
-        "input_slug": "cpassword",
-        "input_placeholder": "Confirm password",
-        "input_type": "password",
-        "input_unique": false
-      }
-    ]
-  },
   "section": {
     "type": "content",
     "slug": "section",

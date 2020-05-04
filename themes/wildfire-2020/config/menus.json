@@ -1,122 +1,26 @@
 {
   "main": {
     "logo": {
-      "title": "Wildfire website home",
       "name": "Wildfire",
       "href": "/"
     },
     "menu": [
       {
-        "title": "Litigation",
-        "name": "Litigation",
-        "href": "#"
-      },
-      {
-        "title": "Publication",
-        "name": "Publication",
-        "href": "#"
-      },
-      {
-        "title": "Education",
-        "name": "Education",
-        "href": "#"
-      },
-      {
-        "title": "states",
-        "name": "States",
+        "name": "Stories",
         "href": "#",
         "submenu": [
           {
-            "title": "state 1",
-            "name": "State 1",
-            "href": "#"
-          },
-          {
-            "title": "state 2",
-            "name": "State 2",
-            "href": "#"
-          },
-          {
-            "title": "state 3",
-            "name": "State 3",
-            "href": "#"
-          },
-          {
-            "title": "state 4",
-            "name": "State 4",
-            "href": "#"
-          },
-          {
-            "title": "state 5",
-            "name": "State 5",
-            "href": "#"
-          }
-        ]
-      },
-      {
-        "title": "issues",
-        "name": "Issues",
-        "href": "#",
-        "submenu": [
-          {
-            "name": "Child Rights Initiative",
-            "href": "#"
-          },
-          {
-            "name": "Criminal Justice Initiative",
-            "href": "#"
-          },
-          {
-            "name": "Dalit Rights Initiative",
-            "href": "#"
-          },
-          {
-            "name": "Defending the defenders initiative",
-            "href": "#"
-          },
-          {
-            "name": "Women's Justice Initiative",
-            "href": "#"
-          }
-        ]
-      },
-      {
-        "title": "about",
-        "name": "About",
-        "href": "#",
-        "submenu": [
-          {
-            "title": "story",
             "name": "Story",
             "href": "#"
           },
           {
-            "title": "another story",
             "name": "Another story",
             "href": "#"
           }
         ]
       },
       {
-        "title": "join",
-        "name": "Join",
-        "href": "#",
-        "submenu": [
-          {
-            "title": "action",
-            "name": "Action",
-            "href": "#"
-          },
-          {
-            "title": "another action",
-            "name": "Another action",
-            "href": "#"
-          }
-        ]
-      },
-      {
-        "title": "Donate",
-        "name": "Donate",
+        "name": "About",
         "href": "#"
       }
     ]
