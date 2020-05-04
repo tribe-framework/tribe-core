@@ -18,4 +18,4 @@
 </head>
 
 <body>
-<?php echo $theme->get_menu('main'); ?>
+<?php echo $theme->get_navbar_menu('main'); ?>
