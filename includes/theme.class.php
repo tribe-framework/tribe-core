@@ -58,7 +58,7 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="nav-item active"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$op.='<li class="nav-item"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
@@ -110,7 +110,7 @@ class theme {
 		return $op;
 	}
 
-	function get_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light')) {
+	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center')) {
 		global $menus, $types, $dash;
 		
 		if ($slug)
@@ -122,10 +122,10 @@ class theme {
 
 		if ($items) {
 			$op.='
-			<ul class="nav justify-content-center">';	
+			<ul class="nav '.$css_classes['ul'].'">';	
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
-							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
@@ -134,7 +134,7 @@ class theme {
 						else if ($item['submenu']) {
 							$submenu=$item['submenu'];
 							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
-							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
@@ -143,7 +143,7 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="nav-item"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$op.='<li class="nav-item '.$css_classes['li'].'"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
