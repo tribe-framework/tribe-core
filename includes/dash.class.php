@@ -128,13 +128,13 @@ class dash {
 		return $or;
 	}
 
-	function get_all_ids ($type, $priority_field='id', $priority_order='DESC') {
+	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql;
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority);
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 	}
 
 	function get_date_ids ($publishing_date) {
