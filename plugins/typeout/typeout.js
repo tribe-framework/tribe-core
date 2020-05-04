@@ -34,14 +34,6 @@ $( document ).ready(function() {
             element.empty();
         }
     });
-
-    [].forEach.call(document.querySelectorAll('div[contenteditable="true"]'), function (el) {
-        el.addEventListener('paste', function(e) {
-            e.preventDefault();
-            var text = e.clipboardData.getData("text/html");
-            document.execCommand("insertHTML", false, text);
-        }, false);
-    });
 });
 
 function restoreSelection (savedSel) {
