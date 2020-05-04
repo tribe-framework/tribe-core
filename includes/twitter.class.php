@@ -7,6 +7,55 @@ class twitter {
 		$or=$this->curl_api('https://api.twitter.com/oauth2/token');
 		$this->access_token=$or['access_token'];
 	}
+
+	function add_filter ($keywords) {
+		$params=array();
+		if (is_array($keywords)) {
+			foreach ($keywords as $keyword)
+				$params['add'][]=array('value'=>$keyword);
+		}
+		else
+			$params['add'][]=array('value'=>$keywords);
+
+		return $this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', $params, 'POST');
+	}
+
+	function delete_filter ($keywords) {
+		$params=array();
+		if (is_array($keywords)) {
+			$params['delete']['values']=$keywords;
+		}
+		else
+			$params['delete']['values']=array($keywords);
+
+		return $this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', $params, 'POST');
+	}
+
+	function save_stream ($keywords) {
+		$this->add_filter($keywords);
+		$or=$this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter', array('format'=>'detailed', 'tweet.format'=>'detailed', 'user.format'=>'detailed', 'place.format'=>'detailed'), 'STREAM');
+		$this->delete_filter($keywords);
+		return $or['filename'];
+	}
+
+	function curl_api ($url, $params=array(), $method='GET') {
+		if ($method=='GET') {
+			return json_decode(shell_exec("curl -u '".TWITTER_API_KEY.":".TWITTER_API_SECRET."' --data 'grant_type=client_credentials' '".$url."'"), true);
+		}
+		else if ($method=='STREAM') {
+			//pgrep curl, and; kill <process number>
+			$filename=uniqid().'.json';
+			$filepath=ABSOLUTE_PATH.'/uploads/twitter/'.$filename;
+			$fileurl=BASE_URL.'/uploads/twitter/'.$filename;
+			shell_exec("curl -X GET -H 'Authorization: Bearer ".$this->access_token."' '".$url.'?'.http_build_query($params)."' >> ".$filepath." &");
+			return array('filename'=>$filename, 'filepath'=>$filepath, 'fileurl'=>$fileurl);
+		}
+		else {
+			return json_decode(shell_exec("curl -X ".$method." '".$url."' -H 'Content-type: application/json' -H 'Authorization: Bearer ".$this->access_token."' -d '".json_encode($params)."'"), true);
+		}
+	}
+}
+
 /*
 	function get_twitter_user ($user) {
 		if (is_int($user)) {
@@ -53,49 +102,4 @@ class twitter {
 			return 0;
 	}
 */
-	function add_filter ($keywords) {
-		$params=array();
-		if (is_array($keywords)) {
-			foreach ($keywords as $keyword)
-				$params['add'][]=array('value'=>$keyword);
-		}
-		else
-			$params['add'][]=array('value'=>$keywords);
-
-		return $this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', $params, 'POST');
-	}
-
-	function delete_filter ($keywords) {
-		$params=array();
-		if (is_array($keywords)) {
-			$params['delete']['values']=$keywords;
-		}
-		else
-			$params['delete']['values']=array($keywords);
-
-		return $this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', $params, 'POST');
-	}
-
-	function save_stream ($keywords) {
-		$this->add_filter($keywords);
-		$or=$this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter', array('format'=>'detailed', 'tweet.format'=>'detailed', 'user.format'=>'detailed', 'place.format'=>'detailed'), 'STREAM');
-		$this->delete_filter($keywords);
-		return $or['filename'];
-	}
-
-	function curl_api ($url, $params=array(), $method='GET') {
-		if ($method=='GET') {
-			return json_decode(shell_exec("curl -u '".TWITTER_API_KEY.":".TWITTER_API_SECRET."' --data 'grant_type=client_credentials' '".$url."'"), true);
-		}
-		else if ($method=='STREAM') {
-			//pgrep curl, and; kill <process number>
-			$filename='/var/www/html/dump/'.uniqid().'.json';
-			shell_exec("curl -X GET -H 'Authorization: Bearer ".$this->access_token."' '".$url.'?'.http_build_query($params)."' >> ".$filename." &");
-			return array('filename'=>$filename);
-		}
-		else {
-			return json_decode(shell_exec("curl -X ".$method." '".$url."' -H 'Content-type: application/json' -H 'Authorization: Bearer ".$this->access_token."' -d '".json_encode($params)."'"), true);
-		}
-	}
-}
 ?>
