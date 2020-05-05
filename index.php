@@ -25,7 +25,9 @@ if ($type && $slug) {
 	}
 	$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 
-	if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
+	if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
+		include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
+	else if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
 		include_once (THEME_PATH.'/single-'.$type.'.php');
 	else
 		include_once (THEME_PATH.'/single.php');
