@@ -127,6 +127,12 @@ class dash {
 		$or=array_merge(json_decode($q[0]['content'], true), $q[0]);
 		return $or;
 	}
+	
+	function fetch_content_array ($slug, $column_key) {
+		global $types, $sql;
+		$q=$sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `content`->'$.type'='$column_key' && `content`->'$.slug'='$slug'");
+		return '<a href="'.BASE_URL.'/'.$column_key.'/'.$slug.'">'.json_decode($q[0]['title']).'</a>';
+	}
 
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql;
