@@ -128,10 +128,13 @@ class dash {
 		return $or;
 	}
 	
-	function fetch_content_array ($slug, $column_key) {
+	function fetch_content_title_array ($slug, $column_key, $with_link=1) {
 		global $types, $sql;
 		$q=$sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `content`->'$.type'='$column_key' && `content`->'$.slug'='$slug'");
-		return '<a href="'.BASE_URL.'/'.$column_key.'/'.$slug.'">'.json_decode($q[0]['title']).'</a>';
+		if ($with_link)
+			return '<a href="'.BASE_URL.'/'.$column_key.'/'.$slug.'">'.json_decode($q[0]['title']).'</a>';
+		else
+			return json_decode($q[0]['title']);
 	}
 
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
