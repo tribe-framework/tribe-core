@@ -17,9 +17,6 @@ $theme = new theme();
 include_once(ABSOLUTE_PATH.'/includes/google.class.php');
 $google = new google();
 
-include_once(ABSOLUTE_PATH.'/includes/twitter.class.php');
-$twitter = new twitter();
-
 include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
