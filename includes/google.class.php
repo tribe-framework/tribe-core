@@ -21,10 +21,7 @@ class google {
 	}
 
 	function curl_api ($url, $params=array(), $method='GET', $file_path='') {
-		if ($method=='GET') {
-			return json_decode(shell_exec("curl -X GET -H 'Authorization: Bearer ".$this->access_token."' '".$url.(count($params)?'?':'').http_build_query($params)."'"), true);
-		}
-		else if ($method=='UPLOAD') {
+		if ($method=='UPLOAD') {
 			//pgrep curl, and; kill <process number>
 			//if (substr(mime_content_type($file_path), 0, 5)=='video') {
 				//echo "curl POST -H 'Authorization: Bearer ".$this->access_token."";
@@ -35,7 +32,7 @@ class google {
 				//return json_decode(shell_exec("curl -v -X POST -H 'Content-type: ".mime_content_type($file_path)."' -d @".$file_path." -H 'Authorization: Bearer ".$this->access_token."' -H 'Content-type: application/json' -d '".json_encode($params)."' '".$url."'"), true);
 		}
 		else {
-			return json_decode(shell_exec("curl -X ".$method." '".$url."' -H 'Content-type: application/json' -d '".json_encode($params)."'"), true);
+			return json_decode(shell_exec("curl -X ".$method." '".$url."' -H 'Content-type: application/json' -H 'Authorization: Bearer ".$this->access_token."' -d '".(empty($params)?'':json_encode($params))."'"), true);
 		}
 	}
 }
