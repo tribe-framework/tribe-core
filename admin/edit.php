@@ -264,7 +264,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php
 			$i=0;
 			foreach ($post[$module_input_slug_lang] as $file) {
-				echo '<p class="file done"><span>'.urldecode(basename($file)).'</span>&nbsp;&nbsp;<span class="delete_btn btn btn-sm bg-danger"><span class="fas fa-trash-alt"></span></span><input type="hidden" name="'.$module_input_slug_lang.'[]" value="'.$file.'">&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'.$file.'"><span class="fas fa-link"></span>&nbsp;copy</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'.$file.'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>';
+				echo '<p class="file done"><span>'.urldecode(basename($file)).'</span>&nbsp;&nbsp;<span class="delete_btn btn btn-sm bg-danger"><span class="fas fa-trash-alt"></span></span><input type="hidden" name="'.$module_input_slug_lang.'[]" value="'.$file.'">&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'.$file.'"><span class="fas fa-link"></span>&nbsp;copy URL</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'.$file.'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>';
 				if (is_array($module['input_bunching'])) {
 					echo '&nbsp;&nbsp;<select class="btn btn-sm bg-white" name="'.$module_input_slug_lang.'_bunching[]"><option value="">file option</option>';
 					foreach ($module['input_bunching'] as $opt)
