@@ -21,7 +21,7 @@ class google {
 	}
 
 	function curl_api ($url, $params=array(), $method='GET', $body='', $content_type='application/json') {
-		return json_decode(shell_exec("curl -X ".$method." '".$url.(empty($params)?'':'?'.http_build_query($params))."' -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' '".($body?'-d '.$body:'')."'"), true);
+		return json_decode(shell_exec("curl -X ".$method." '".$url.(empty($params)?'':'?'.http_build_query($params))."' -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' ".(is_array($body)?"-d '".$body."'":(trim($body)?"-i '".$body."'":""))), true);
 	}
 }
 ?>
