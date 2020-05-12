@@ -20,8 +20,16 @@ class google {
 			return 0;
 	}
 
-	function curl_api ($url, $params=array(), $method='GET', $body_params='', $file_path='', $content_type='application/json') {
-		return json_decode(shell_exec("curl -v -X ".$method." '".$url.(empty($params)?'':'?'.http_build_query($params))."' -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' ".(empty($body_params)?"":"-d '".json_encode($body_params)."'")." ".(trim($file_path)?"-F 'file=@".$file_path.";type=application/octet-stream'":"")), true);
+	function curl_api ($url, $params=array(), $method='GET', $body_params='', $content_type='application/json') {
+		return json_decode(shell_exec("curl -v -X ".$method." '".$url.(empty($params)?'':'?'.http_build_query($params))."' -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' ".(empty($body_params)?"":"-d '".json_encode($body_params)."'")), true);
+	}
+
+	function get_curl_file ($file){
+		$mime = mime_content_type($file);
+		$info = pathinfo($file);
+		$name = $info['basename'];
+		$output = new CURLFile($file, $mime, $name);
+		return $output;
 	}
 }
 ?>
