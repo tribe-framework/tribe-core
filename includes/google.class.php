@@ -20,8 +20,8 @@ class google {
 			return 0;
 	}
 
-	function curl_api ($url, $params=array(), $method='GET', $file_path='') {
-		return json_decode(shell_exec("curl -X ".$method." '".$url."' -H 'Content-type: application/json' -H 'Authorization: Bearer ".$this->access_token."' -d '".(empty($params)?'':json_encode($params))."'"), true);
+	function curl_api ($url, $params=array(), $method='GET', $body='', $content_type='application/json') {
+		return json_decode(shell_exec("curl -X ".$method." '".$url.(empty($params)?'':'?'.http_build_query($params))."' -H 'Authorization: Bearer -H 'Content-type: ".$content_type."' ".$this->access_token."' '".($body?'--data-binary '.$body:'')."'"), true);
 	}
 }
 ?>
