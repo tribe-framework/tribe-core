@@ -21,8 +21,8 @@ class google {
 	}
 
 	function curl_api ($url, $params=array(), $method='GET', $body_params='', $content_type='application/json') {
-		echo "curl ".$method." -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' --data @".ABSOLUTE_PATH.'/uploads/2020/05-May/09-Sat/oceans.mp4')." ".(empty($body_params)?"":"--data '".json_encode($body_params)."'")." '".$url.(empty($params)?'':'?'.http_build_query($params)."'";
-		return json_decode(shell_exec("curl ".$method." -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' --data @".ABSOLUTE_PATH.'/uploads/2020/05-May/09-Sat/oceans.mp4')." ".(empty($body_params)?"":"--data '".json_encode($body_params)."'")." '".$url.(empty($params)?'':'?'.http_build_query($params))."'"), true);
+		echo "curl ".$method." -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' --data @".ABSOLUTE_PATH."/uploads/2020/05-May/09-Sat/oceans.mp4"." ".(empty($body_params)?"":"--data '".json_encode($body_params)."'")." '".$url.(empty($params)?'':'?'.http_build_query($params))."'";
+		//return json_decode(shell_exec("curl ".$method." -H 'Content-type: ".$content_type."' -H 'Authorization: Bearer ".$this->access_token."' --data @".ABSOLUTE_PATH.'/uploads/2020/05-May/09-Sat/oceans.mp4')." ".(empty($body_params)?"":"--data '".json_encode($body_params)."'")." '".$url.(empty($params)?'':'?'.http_build_query($params))."'"), true);
 	}
 
 	function get_curl_file ($file){
