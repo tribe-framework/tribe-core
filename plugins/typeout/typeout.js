@@ -14,7 +14,7 @@ $( document ).ready(function() {
     });
 
     $('.typeout-fullscreen').on("click", function() {
-        if ($(this).data('expanded')=='0') {.
+        if ($(this).data('expanded')=='0') {
             $('.input-group').animate({'display': 'none'}, 'slow');
             $('.form_title').animate({'display': 'none'}, 'slow');
             $('.btn-toolbar').animate({'opacity': '0.3'}, 'slow');
