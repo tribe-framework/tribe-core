@@ -15,7 +15,7 @@ $( document ).ready(function() {
 
     $('.typeout-fullscreen').on("click", function() {
         $('.typeout-content').css('height', '100vw');
-    }
+    });
 
 	$('.typeout-input').on("click", function() {
 		var savedSel = saveSelection();
