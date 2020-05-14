@@ -41,7 +41,7 @@ class theme {
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
+								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
 							$op.='</div></li>';
@@ -50,7 +50,7 @@ class theme {
 							$submenu=$item['submenu'];
 							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
 							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
+								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
 								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
@@ -87,7 +87,7 @@ class theme {
 							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							Dropdown
 							</a>
-							<div class="dropdown-menu '.$item['dropdown_class'].'" aria-labelledby="navbarDropdown">
+							<div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'" aria-labelledby="navbarDropdown">
 							<a class="dropdown-item" href="#">Action</a>
 							<a class="dropdown-item" href="#">Another action</a>
 							<div class="dropdown-divider"></div>
@@ -126,7 +126,7 @@ class theme {
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
 							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
+								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
 							$op.='</div></li>';
@@ -135,7 +135,7 @@ class theme {
 							$submenu=$item['submenu'];
 							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
 							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$item['dropdown_class'].'">';
+								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
 								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
