@@ -14,7 +14,8 @@ $( document ).ready(function() {
     });
 
     $('.typeout-fullscreen').on("click", function() {
-        $('.typeout-content').css('height', '100vw');
+        $('body').css('width', '100%');
+        $('.typeout-content').css('width', '100%').css('height', '100vw');
     });
 
 	$('.typeout-input').on("click", function() {
