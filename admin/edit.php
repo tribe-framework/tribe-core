@@ -57,7 +57,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php if ($module_input_type=='typeout'): ?>
 		<div class="typeout-menu my-4">
 			<?php if (in_array('fullScreen', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen"><span class="fas fa-compress"></span></button>
+			<button type="button" data-expanded="0" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen"><span class="fas fa-compress"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('undo', $module_input_options)) { ?>
@@ -184,7 +184,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='select'): ?>
-		<div class="my-4">
+		<div class="input-group my-4">
 			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>"><option <?php echo ($post[$module_input_slug_lang]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?></option>
 				<?php 
 				if ($options=$module_input_options) {
@@ -208,7 +208,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_select'): ?>
-		<div class="my-4"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
+		<div class="input-group my-4"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;

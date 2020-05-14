@@ -14,8 +14,16 @@ $( document ).ready(function() {
     });
 
     $('.typeout-fullscreen').on("click", function() {
-        $('body').css('width', '100%');
-        $('.typeout-content').css('width', '100%').css('height', '100vw');
+        if ($(this).data('expanded')=='0') {
+            $('.input-group').addClass('d-none');
+            $(this).data('expanded', '1');
+            $('.typeout-content').css('width', '100%').css('height', '100vw');
+        }
+        else {
+            $('.input-group').removeClass('d-none');
+            $(this).data('expanded', '0');
+            $('.typeout-content').css('width', '').css('height', '');
+        }
     });
 
 	$('.typeout-input').on("click", function() {
