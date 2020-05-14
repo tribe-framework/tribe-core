@@ -14,19 +14,19 @@ $( document ).ready(function() {
     });
 
     $('.typeout-fullscreen').on("click", function() {
-        if ($(this).data('expanded')=='0') {
-            $('.input-group').addClass('d-none');
-            $('.form_title').addClass('d-none');
-            $('.btn-toolbar').css('opacity', '0.3');
-            $('.navbar').addClass('d-none');
+        if ($(this).data('expanded')=='0') {.
+            $('.input-group').animate({'display': 'none'}, 'slow');
+            $('.form_title').animate({'display': 'none'}, 'slow');
+            $('.btn-toolbar').animate({'opacity': '0.3'}, 'slow');
+            $('.navbar').animate({'display': 'none'}, 'slow');
             $(this).data('expanded', '1');
-            $('.typeout-content').css('width', '100%').css('height', '100vw');
+            $('.typeout-content').animate('width', '100%').css('height', '100vw');
         }
         else {
-            $('.input-group').removeClass('d-none');
-            $('.form_title').removeClass('d-none');
-            $('.btn-toolbar').css('opacity', '');
-            $('.navbar').removeClass('d-none');
+            $('.input-group').animate({'display': ''}, 'fast');
+            $('.form_title').animate({'display': ''}, 'fast');
+            $('.btn-toolbar').animate({'opacity': ''}, 'fast');
+            $('.navbar').animate({'display': ''}, 'fast');
             $(this).data('expanded', '0');
             $('.typeout-content').css('width', '').css('height', '');
         }
