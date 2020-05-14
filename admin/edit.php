@@ -93,15 +93,15 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php } ?>
 
 			<?php if (in_array('insertPDF', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL" data-toggle="tooltip" data-placement="top" title="insert pdf"><span class="fas fa-file-pdf"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL" data-toggle="tooltip" data-placement="top" title="insert PDF"><span class="fas fa-file-pdf"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertHTML', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertHTML" data-typeout-info="Enter HTML"><span class="fas fa-code"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertHTML" data-typeout-info="Enter HTML" data-toggle="tooltip" data-placement="top" title="insert HTML"><span class="fas fa-code"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('attach', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info="" data-toggle="tooltip" data-placement="top" title="insert html"><span class="fas fa-paperclip"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info="" data-toggle="tooltip" data-placement="top" title="add attachment"><span class="fas fa-paperclip"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('removeFormat', $module_input_options)) { ?>
