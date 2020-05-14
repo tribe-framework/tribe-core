@@ -16,11 +16,17 @@ $( document ).ready(function() {
     $('.typeout-fullscreen').on("click", function() {
         if ($(this).data('expanded')=='0') {
             $('.input-group').addClass('d-none');
+            $('.form_title').addClass('d-none');
+            $('.btn-toolbar').css('opacity', '0.3');
+            $('.navbar').css('opacity', '0.3');
             $(this).data('expanded', '1');
             $('.typeout-content').css('width', '100%').css('height', '100vw');
         }
         else {
             $('.input-group').removeClass('d-none');
+            $('.form_title').removeClass('d-none');
+            $('.btn-toolbar').css('opacity', '');
+            $('.navbar').css('opacity', '');
             $(this).data('expanded', '0');
             $('.typeout-content').css('width', '').css('height', '');
         }
