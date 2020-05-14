@@ -56,6 +56,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 		<?php if ($module_input_type=='typeout'): ?>
 		<div class="typeout-menu my-4">
+			<?php if (in_array('fullScreen', $module_input_options)) { ?>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen"><span class="fas fa-compress"></span></button>
+			<?php } ?>
+
 			<?php if (in_array('undo', $module_input_options)) { ?>
 			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo"><span class="fas fa-undo"></span></button>
 			<?php } ?>

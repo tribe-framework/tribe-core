@@ -13,6 +13,10 @@ $( document ).ready(function() {
         document.execCommand($(this).data('typeout-command'), '', $(this).data('typeout-info'));
     });
 
+    $('.typeout-fullscreen').on("click", function() {
+        $('.typeout-content').css('height', '100vw');
+    }
+
 	$('.typeout-input').on("click", function() {
 		var savedSel = saveSelection();
 		var inputData = prompt($(this).data('typeout-info'), '');
