@@ -15,18 +15,18 @@ $( document ).ready(function() {
 
     $('.typeout-fullscreen').on("click", function() {
         if ($(this).data('expanded')=='0') {
-            $('.input-group').animate({'display': 'none'}, 'slow');
-            $('.form_title').animate({'display': 'none'}, 'slow');
+            $('.input-group').addClass('d-none', 500);
+            $('.form_title').addClass('d-none', 500);
             $('.btn-toolbar').animate({'opacity': '0.3'}, 'slow');
-            $('.navbar').animate({'display': 'none'}, 'slow');
+            $('.navbar').addClass('d-none', 500);
             $(this).data('expanded', '1');
-            $('.typeout-content').animate('width', '100%').css('height', '100vw');
+            $('.typeout-content').css('width', '100%').css('height', '100vw');
         }
         else {
-            $('.input-group').animate({'display': ''}, 'fast');
-            $('.form_title').animate({'display': ''}, 'fast');
-            $('.btn-toolbar').animate({'opacity': ''}, 'fast');
-            $('.navbar').animate({'display': ''}, 'fast');
+            $('.input-group').removeClass('d-none', 200);
+            $('.form_title').removeClass('d-none', 200);
+            $('.btn-toolbar').css('opacity', '');
+            $('.navbar').removeClass('d-none', 200);
             $(this).data('expanded', '0');
             $('.typeout-content').css('width', '').css('height', '');
         }
