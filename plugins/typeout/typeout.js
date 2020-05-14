@@ -17,7 +17,7 @@ $( document ).ready(function() {
         if ($(this).data('expanded')=='0') {
             $('.input-group').hide(500);
             $('.form_title').hide(500);
-            $('.btn-toolbar').animate({'opacity': '0.3'}, 'slow');
+            $('.btn-toolbar').animate({'opacity': '0.7'}, 'slow');
             $('.navbar').hide(500);
             $(this).data('expanded', '1');
             $('.typeout-content').css('width', '100%').css('height', '100vw');
