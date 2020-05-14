@@ -55,6 +55,10 @@ $( document ).ready(function() {
     });
 });
 
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+})
+
 function restoreSelection (savedSel) {
     if (savedSel) {
         if (window.getSelection) {

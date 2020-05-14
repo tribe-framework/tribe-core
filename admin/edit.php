@@ -57,43 +57,43 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php if ($module_input_type=='typeout'): ?>
 		<div class="typeout-menu my-4">
 			<?php if (in_array('fullScreen', $module_input_options)) { ?>
-			<button type="button" data-expanded="0" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen"><span class="fas fa-compress"></span></button>
+			<button type="button" data-expanded="0" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen" data-toggle="tooltip" data-placement="top" title="full screen"><span class="fas fa-compress"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('undo', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo"><span class="fas fa-undo"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo" data-toggle="tooltip" data-placement="top" title="undo"><span class="fas fa-undo"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertParagraph', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-insertParagraph" data-typeout-command="insertParagraph"><span class="fas fa-paragraph"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-insertParagraph" data-typeout-command="insertParagraph" data-toggle="tooltip" data-placement="top" title="insert paragraph break"><span class="fas fa-paragraph"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('heading', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input-exec typeout-heading" data-typeout-command="heading" data-typeout-info="h4"><span class="fas fa-heading"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input-exec typeout-heading" data-typeout-command="heading" data-typeout-info="h4" data-toggle="tooltip" data-placement="top" title="heading"><span class="fas fa-heading"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('bold', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-bold" data-typeout-command="bold"><span class="fas fa-bold"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-bold" data-typeout-command="bold" data-toggle="tooltip" data-placement="top" title="bold"><span class="fas fa-bold"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('italic', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-italic" data-typeout-command="italic"><span class="fas fa-italic"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-italic" data-typeout-command="italic" data-toggle="tooltip" data-placement="top" title="italic"><span class="fas fa-italic"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('createLink', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="createLink" data-typeout-info="Enter link URL"><span class="fas fa-link"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="createLink" data-typeout-info="Enter link URL" data-toggle="tooltip" data-placement="top" title="create link"><span class="fas fa-link"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('unlink', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-unlink" data-typeout-command="unlink"><span class="fas fa-unlink"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-unlink" data-typeout-command="unlink" data-toggle="tooltip" data-placement="top" title="un-link"><span class="fas fa-unlink"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertImage', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertImage" data-typeout-info="Enter image URL"><span class="fas fa-image"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertImage" data-typeout-info="Enter image URL" data-toggle="tooltip" data-placement="top" title="insert image"><span class="fas fa-image"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertPDF', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL"><span class="fas fa-file-pdf"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL" data-toggle="tooltip" data-placement="top" title="insert pdf"><span class="fas fa-file-pdf"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertHTML', $module_input_options)) { ?>
@@ -101,11 +101,11 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php } ?>
 
 			<?php if (in_array('attach', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info=""><span class="fas fa-paperclip"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info="" data-toggle="tooltip" data-placement="top" title="insert html"><span class="fas fa-paperclip"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('removeFormat', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec" data-typeout-command="removeFormat"><span class="fas fa-remove-format"></span></button>
+			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec" data-typeout-command="removeFormat" data-toggle="tooltip" data-placement="top" title="remove formatting"><span class="fas fa-remove-format"></span></button>
 			<?php } ?>
 		</div>
 
