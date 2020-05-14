@@ -18,7 +18,7 @@ $( document ).ready(function() {
             $('.input-group').addClass('d-none');
             $('.form_title').addClass('d-none');
             $('.btn-toolbar').css('opacity', '0.3');
-            $('.navbar').css('opacity', '0.3');
+            $('.navbar').addClass('d-none');
             $(this).data('expanded', '1');
             $('.typeout-content').css('width', '100%').css('height', '100vw');
         }
@@ -26,7 +26,7 @@ $( document ).ready(function() {
             $('.input-group').removeClass('d-none');
             $('.form_title').removeClass('d-none');
             $('.btn-toolbar').css('opacity', '');
-            $('.navbar').css('opacity', '');
+            $('.navbar').removeClass('d-none');
             $(this).data('expanded', '0');
             $('.typeout-content').css('width', '').css('height', '');
         }
