@@ -19,7 +19,7 @@ class theme {
 		
 	}
 
-	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light')) {
+	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
 		global $menus, $types, $dash;
 		
 		if ($slug)
@@ -34,7 +34,7 @@ class theme {
 			<nav class="navbar '.$css_classes['navbar'].'">
 				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
-					<span class="navbar-toggler-icon"></span>
+					'.$hamburger_bars.'
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav ml-auto mr-0">';			
