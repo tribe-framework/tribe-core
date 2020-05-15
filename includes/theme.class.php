@@ -110,7 +110,7 @@ class theme {
 		return $op;
 	}
 
-	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center')) {
+	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center', 'li'=>'nav-item', 'a'=>'nav-link')) {
 		global $menus, $types, $dash;
 		
 		if ($slug)
@@ -125,7 +125,7 @@ class theme {
 			<ul class="nav '.$css_classes['ul'].'">';	
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
-							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="dropdown '.$css_classes['li'].'"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
@@ -134,7 +134,7 @@ class theme {
 						else if ($item['submenu']) {
 							$submenu=$item['submenu'];
 							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
-							$op.='<li class="nav-item dropdown '.$css_classes['li'].'"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="dropdown '.$css_classes['li'].'"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
@@ -143,7 +143,7 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="nav-item '.$css_classes['li'].'"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
@@ -153,17 +153,17 @@ class theme {
 		else {
 			$op.='
 					<ul class="nav justify-content-center">
-					  <li class="nav-item">
-					    <a class="nav-link active" href="#">Active</a>
+					  <li class="'.$css_classes['li'].'">
+					    <a class="'.$css_classes['a'].' active" href="#">Active</a>
 					  </li>
-					  <li class="nav-item">
-					    <a class="nav-link" href="#">Link</a>
+					  <li class="'.$css_classes['li'].'">
+					    <a class="'.$css_classes['a'].'" href="#">Link</a>
 					  </li>
-					  <li class="nav-item">
-					    <a class="nav-link" href="#">Link</a>
+					  <li class="'.$css_classes['li'].'">
+					    <a class="'.$css_classes['a'].'" href="#">Link</a>
 					  </li>
-					  <li class="nav-item">
-					    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+					  <li class="'.$css_classes['li'].'">
+					    <a class="'.$css_classes['a'].' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
 					  </li>
 					</ul>';
 		}
