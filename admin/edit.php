@@ -196,7 +196,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					}
 				}
 				else {
-					$options=$dash::get_all_ids($module_input_slug_lang);
+					$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
 					foreach ($options as $opt) {
 						$option=$dash::get_content($opt['id']);
 						echo '<option value="'.$option['slug'].'" '.(($post[$module_input_slug_lang]==$option['slug'])?'selected="selected"':'').'>'.$option['title'].'</option>';
@@ -216,17 +216,17 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					if (is_array($opt)) {
 						echo '
-						<div class="custom-control custom-switch">
+						<div class="form-check"><div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
 							<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$opt['title'].'</label>
-						</div>';
+						</div></div>';
 					}
 					else {
 						echo '
-						<div class="custom-control custom-switch">
+						<div class="form-check"><div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'checked="checked"':'').'>
 							<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$opt.'</label>
-						</div>';
+						</div></div>';
 					}
 				}
 			}
@@ -237,10 +237,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					$option=$dash::get_content($opt['id']);
 					echo '
-					<div class="custom-control custom-switch">
+					<div class="form-check"><div class="custom-control custom-switch">
 						<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
 						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option['title'].'</label>
-					</div>';
+					</div></div>';
 				}
 			}
 			?>
