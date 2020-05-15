@@ -184,7 +184,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='select'): ?>
-		<div class="input-group my-4">
+		<div class="form-group my-4">
 			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>"><option <?php echo ($post[$module_input_slug_lang]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?></option>
 				<?php 
 				if ($options=$module_input_options) {
@@ -208,7 +208,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_select'): ?>
-		<div class="input-group my-4"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
+		<div class="form-group my-4"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;
@@ -216,17 +216,17 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					if (is_array($opt)) {
 						echo '
-						<div class="form-check"><div class="custom-control custom-switch">
+						<div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
 							<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$opt['title'].'</label>
-						</div></div>';
+						</div>';
 					}
 					else {
 						echo '
-						<div class="form-check"><div class="custom-control custom-switch">
+						<div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'checked="checked"':'').'>
 							<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$opt.'</label>
-						</div></div>';
+						</div>';
 					}
 				}
 			}
@@ -237,10 +237,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					$option=$dash::get_content($opt['id']);
 					echo '
-					<div class="form-check"><div class="custom-control custom-switch">
+					<div class="custom-control custom-switch">
 						<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
 						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option['title'].'</label>
-					</div></div>';
+					</div>';
 				}
 			}
 			?>
