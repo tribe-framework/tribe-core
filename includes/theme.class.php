@@ -122,7 +122,7 @@ class theme {
 
 		if ($items) {
 			$op.='
-			<ul class="nav '.$css_classes['ul'].'">';	
+			<ul class="'.$css_classes['ul'].'">';	
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
 							$op.='<li class="dropdown '.$css_classes['li'].'"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
