@@ -152,7 +152,7 @@ class theme {
 		}
 		else {
 			$op.='
-					<ul class="nav justify-content-center">
+					<ul class="'.$css_classes['ul'].'">
 					  <li class="'.$css_classes['li'].'">
 					    <a class="'.$css_classes['a'].' active" href="#">Active</a>
 					  </li>
