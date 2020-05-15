@@ -16,6 +16,7 @@ $( document ).ready(function() {
     $('.typeout-fullscreen').on("click", function() {
         if ($(this).data('expanded')=='0') {
             $('.input-group').hide(500);
+            $('.form-group').hide(500);
             $('.form_title').hide(500);
             $('.btn-toolbar').animate({'opacity': '0.7'}, 'slow');
             $('.navbar').hide(500);
@@ -24,6 +25,7 @@ $( document ).ready(function() {
         }
         else {
             $('.input-group').show(500);
+            $('.form-group').show(500);
             $('.form_title').show(500);
             $('.btn-toolbar').css('opacity', '');
             $('.navbar').show(500);
