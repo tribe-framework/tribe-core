@@ -1,18 +1,18 @@
-	<footer class="pt-4 my-5 pt-md-5 bg-white">
+	<footer class="pt-4 pt-md-5 bg-white">
 		<hr class="hr">
-		<div class="container pb-5">
+		<div class="container pb-5 my-5">
 		    <div class="row">
 		      <div class="col-md">
-		        <img class="my-2 w-20" src="/admin/img/logo-flame.png"><br>
-		        <p class="text-muted">&copy; Wildfire <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
+		        <img class="w-20" src="/admin/img/logo-flame.png"><br>
+		        <p class="text-muted text-small">&copy; wildfire <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
 		        <h5>Resources</h5>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li text-small'=>'', 'a'=>'')); ?>
 		      </div>
 		      <div class="col-md">
 		        <h5>About</h5>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li text-small'=>'', 'a'=>'')); ?>
 		      </div>
 		    </div>
 		</div>
