@@ -1,23 +1,19 @@
-@import "functions";
-@import "variables";
-@import "mixins";
-@import "root";
+@import "bootstrap";
 
 $gray-300: #d4cfd2;
 $gray-900: #0a1119;
-
-$purple:  #993399;
-$pink:    #ff0066;
-$red:     #ff0033;
-$orange:  #ff6600;
-$primary:       $purple;
-$secondary:     $gray-900;
-$success:       $purple;
-$info:          $pink;
-$warning:       $orange;
-$danger:        $red;
-$light:         $gray-300;
-$dark:          $gray-900;
+$purple: #993399;
+$pink: #ff0066;
+$red: #ff0033;
+$orange: #ff6600;
+$primary: $purple;
+$secondary: $gray-900;
+$success: $purple;
+$info: $pink;
+$warning: $orange;
+$danger: $red;
+$light: $gray-300;
+$dark: $gray-900;
 
 $sizes: ();
 $sizes: map-merge(
@@ -43,13 +39,10 @@ $border-color: $primary;
 $border-radius: 0;
 $border-radius-lg: 0;
 $border-radius-sm: 0;
-
 $font-family-sans-serif: effra, sans-serif;
 $font-family-monospace: courier-prime, monospace;
 $font-family-base: $font-family-sans-serif;
-
 $font-size-base: 1.33rem;
-
 $hr-border-color: $primary;
 $hr-border-width: $border-width;
 $mark-padding: .2em;
