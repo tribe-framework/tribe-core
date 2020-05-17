@@ -24,7 +24,7 @@ include_once(THEME_PATH.'/functions.php');
 
 $types=$dash::get_types(THEME_PATH.'/config/types.json');
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
-$menus=json_decode(file_get_contents(ABSOLUTE_PATH.'/admin/config/admin.json'), true);
+$menus=json_decode(file_get_contents(ABSOLUTE_PATH.'/admin/config/menus.json'), true);
 
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
