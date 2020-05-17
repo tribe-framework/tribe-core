@@ -9,7 +9,7 @@
 	<link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
-	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
+	<link href="<?php echo BASE_URL'/admin/css/'.($_GET['slug']=='auth'?'auth.css':'custom.css').'?v='.time(); ?>" rel="stylesheet">
 </head>
 
 <body>
