@@ -1,3 +1,20 @@
+	<footer class="pt-4 my-5 pt-md-5 border-top bg-white">
+		<div class="container pb-5">
+		    <div class="row">
+		      <div class="col-md">
+		        <img class="my-2 w-50" src="/admin/img/logo-flame.png">
+		      </div>
+		      <div class="col-md">
+		        <h5>Resources</h5>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li'=>'', 'a'=>'')); ?>
+		      </div>
+		      <div class="col-md">
+		        <h5>About</h5>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li'=>'', 'a'=>'')); ?>
+		      </div>
+		    </div>
+		</div>
+	</footer>
 
 	<script src="/plugins/jquery.min.js"></script>
 	<script src="/plugins/popper/popper.min.js"></script>
