@@ -6,10 +6,7 @@
    background-position: right bottom;
    transition:all 1s ease;
 }
- .file.done {
-   background: lightgreen;
-}
- .file a {
+.file a {
    display: block;
    position: relative;
    padding: 10px;

@@ -1,7 +1,18 @@
 body, .tootip, .popover {font-family: effra, sans-serif;}
+.file.done {
+   background-color: #fff;
+   border-bottom: 1px solid #993399;
+}
 .flame-vertical {
   background: rgb(153,51,153);
   background: linear-gradient(0deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%); 
+}
+.progress-bar, .hr, .btn:hover, .btn:active, .btn:focus, .btn.focus, .btn:active:focus, .btn.active:focus {
+  background-image: linear-gradient(90deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%);
+}
+.btn-toolbar .btn:hover, .btn-toolbar .btn:active, .btn-toolbar .btn:focus,.btn-toolbar .btn.focus, .btn-toolbar .btn:active:focus, .btn-toolbar .btn.active:focus {
+  background-color: #993399;
+  background-image: none;
 }
 .img-thumbnail {
   padding: 0;
