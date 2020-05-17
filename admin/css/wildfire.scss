@@ -1,3 +1,5 @@
+@import "../../plugins/bootstrap/scss/bootstrap";
+
 $white:    #fff !default;
 $gray-100: #f8f9fa !default;
 $gray-200: #e9ecef !default;
@@ -94,5 +96,3 @@ $hr-border-width:             $border-width !default;
 
 $mark-padding:                .2em !default;
 $mark-bg:                     rgba(255,102,0,0.5) !default;
-
-@import "../../plugins/bootstrap/scss/bootstrap";
