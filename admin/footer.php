@@ -7,11 +7,11 @@
 		        <p class="text-muted small mb-3 mt-4 pr-5">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?' for '.$types['webapp']['headmeta_title'].'.':''); ?></p><p class="text-muted small my-3 pr-5">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
-		        <h6 class="my-5">Resources</h6>
+		        <h6 class="mt-4 mb-3">Resources</h6>
 		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li'=>'', 'a'=>'small')); ?>
 		      </div>
 		      <div class="col-md">
-		        <h6 class="my-5">About</h6>
+		        <h6 class="mt-4 mb-3">About</h6>
 		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li'=>'', 'a'=>'small')); ?>
 		      </div>
 		    </div>
