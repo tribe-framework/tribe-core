@@ -4,15 +4,15 @@
 		    <div class="row">
 		      <div class="col-md">
 		        <a href="https://wildfirego.com"><img class="w-20" src="/admin/img/logo-flame.png"></a>
-		        <p class="text-muted small my-3">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
+		        <p class="text-muted small my-3">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?$types['webapp']['headmeta_title'].'.':''); ?></p><p class="text-muted small my-3">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
 		        <h6>Resources</h6>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li small'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li'=>'', 'a'=>'small')); ?>
 		      </div>
 		      <div class="col-md">
 		        <h6>About</h6>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li small'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li'=>'', 'a'=>'small')); ?>
 		      </div>
 		    </div>
 		</div>
