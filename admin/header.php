@@ -14,4 +14,4 @@
 </head>
 
 <body>
-<?php echo $theme->get_navbar_menu('main'); ?>
+<?php echo $theme->get_navbar_menu('main', array('navbar'=>'navbar-expand-md navbar-primary'), '<span class="fas fa-bars"></span>'); ?>
