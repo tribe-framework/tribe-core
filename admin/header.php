@@ -14,11 +14,11 @@
 </head>
 
 <body>
-<hr class="hr" style="margin:0 !important; position: fixed;">
+<hr class="hr fixed-top" style="margin:0 !important;">
 <?php
 if ($menus['main']['logo']['name']) {
 	$admin_menus['admin_menu']['logo']=$menus['main']['logo'];
 	$admin_menus['admin_menu']['logo']['src']='';
-	$menus['admin_menu']['logo']['name']=$menus['main']['logo']['name'].' Dashboard';
+	$admin_menus['admin_menu']['logo']['name']=$menus['main']['logo']['name'].' Dashboard';
 }
 echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-primary mb-4 py-0', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>', ''); ?>
