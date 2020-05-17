@@ -1,3 +1,4 @@
+@import "bootstrap/variables";
 $gray-300: #d4cfd2;
 $gray-900: #0a1119;
 $purple: #993399;
@@ -45,3 +46,5 @@ $hr-border-color: $primary;
 $hr-border-width: $border-width;
 $mark-padding: .2em;
 $mark-bg: rgba(255,102,0,0.5);
+
+@import "bootstrap";
