@@ -19,7 +19,7 @@ class theme {
 		
 	}
 
-	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
+	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
 		global $menus, $types, $dash;
 		
 		if ($slug)
@@ -37,10 +37,10 @@ class theme {
 					'.$hamburger_bars.'
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav ml-auto mr-0">';			
+					<ul class="'.$css_classes['ul'].'">';			
 					foreach ($items['menu'] as $item) {
 						if (is_array($item['submenu'])) {
-							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($item['submenu'] as $subitem)
 								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
@@ -49,7 +49,7 @@ class theme {
 						else if ($item['submenu']) {
 							$submenu=$item['submenu'];
 							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
-							$op.='<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
@@ -58,7 +58,7 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="nav-item"><a class="nav-link" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
@@ -77,14 +77,14 @@ class theme {
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav mr-auto">
-						<li class="nav-item active">
-							<a class="nav-link" href="#">Home</a>
+						<li class="'.$css_classes['li'].' active">
+							<a class="'.$css_classes['a'].'" href="#">Home</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Link</a>
+						<li class="'.$css_classes['li'].'">
+							<a class="'.$css_classes['a'].'" href="#">Link</a>
 						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<li class="'.$css_classes['li'].' dropdown">
+							<a class="'.$css_classes['a'].' dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							Dropdown
 							</a>
 							<div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'" aria-labelledby="navbarDropdown">
@@ -94,8 +94,8 @@ class theme {
 							<a class="dropdown-item" href="#">Something else here</a>
 							</div>
 							</li>
-							<li class="nav-item">
-							<a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+							<li class="'.$css_classes['li'].'">
+							<a class="'.$css_classes['a'].' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
 						</li>
 					</ul>
 
