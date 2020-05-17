@@ -43,7 +43,7 @@ $( document ).ready(function() {
 			sli++;
 			slvl='';
 			if ($(this).data('bunching')) {
-				slvl+='&nbsp;&nbsp;<select class="btn btn-sm bg-white" name="'+$(this).attr('id')+'_bunching[]'+'">';
+				slvl+='&nbsp;&nbsp;<select class="btn btn-sm btn-outline-primary" name="'+$(this).attr('id')+'_bunching[]'+'">';
 				slvl+='<option value="">file option</option>';
 				$.each($(this).data('bunching'), function(i, item) {
 					slvl+='<option value="'+item.slug+'">'+item.title+'</option>';
@@ -51,10 +51,10 @@ $( document ).ready(function() {
 				slvl+='</select>';
 			}
 			if ($(this).data('descriptor')) {
-				slvl+='&nbsp;&nbsp;<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="enter file descriptor"></textarea><input name="'+$(this).attr('id')+'_descriptor_date[]'+'" type="date" class="form-control" placeholder="enter file date"></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">save</button></div></div></div></div>';
+				slvl+='&nbsp;&nbsp;<button type="button" class="btn btn-sm btn-outline-primary m-1" data-toggle="modal" data-target="#'+$(this).attr('id')+'_descriptor_'+sli+'">descriptor</button><div class="modal fade" id="'+$(this).attr('id')+'_descriptor_'+sli+'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"><textarea name="'+$(this).attr('id')+'_descriptor[]'+'" class="form-control" placeholder="enter file descriptor"></textarea><input name="'+$(this).attr('id')+'_descriptor_date[]'+'" type="date" class="form-control" placeholder="enter file date"></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">save</button></div></div></div></div>';
 			}
 		    data.context
-		      .append('&nbsp;&nbsp;<span class="delete_btn btn btn-sm bg-danger"><span class="fas fa-trash-alt"></span></span><input type="hidden" name="'+$(this).attr('id')+'[]'+'" value="'+data.result.files[0].url+'">&nbsp;&nbsp;<span class="copy_btn btn btn-sm bg-white" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy URL</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm bg-white" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+slvl)
+		      .append('&nbsp;&nbsp;<span class="delete_btn btn btn-sm btn-outline-danger"><span class="fas fa-trash-alt"></span></span><input type="hidden" name="'+$(this).attr('id')+'[]'+'" value="'+data.result.files[0].url+'">&nbsp;&nbsp;<span class="copy_btn btn btn-sm btn-outline-primary" data-clipboard-text="'+data.result.files[0].url+'"><span class="fas fa-link"></span>&nbsp;copy URL</span>&nbsp;&nbsp;<a style="display: inline; padding:8px;" class="btn btn-sm btn-outline-primary" href="'+data.result.files[0].url+'" target="new"><span class="fas fa-external-link-alt"></span>&nbsp;view</a>'+slvl)
 		      .addClass("done");
 		}
 
