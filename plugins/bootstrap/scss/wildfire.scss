@@ -1,4 +1,7 @@
-@import "scss/bootstrap";
+@import "functions";
+@import "variables";
+@import "mixins";
+@import "root";
 
 $gray-300: #d4cfd2;
 $gray-900: #0a1119;
