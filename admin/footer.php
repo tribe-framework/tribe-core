@@ -3,16 +3,16 @@
 		<div class="container pb-5 my-5">
 		    <div class="row">
 		      <div class="col-md">
-		        <img class="w-20" src="/admin/img/logo-flame.png"><br>
-		        <p class="text-muted text-small">&copy; wildfire <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
+		        <a href="https://wildfirego.com"><img class="w-20" src="/admin/img/logo-flame.png"></a>
+		        <p class="text-muted small my-3">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
 		        <h5>Resources</h5>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li text-small'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li small'=>'', 'a'=>'')); ?>
 		      </div>
 		      <div class="col-md">
 		        <h5>About</h5>
-		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled text-small', 'li text-small'=>'', 'a'=>'')); ?>
+		        <?php echo $theme->get_menu('footer', array('ul'=>'list-unstyled', 'li small'=>'', 'a'=>'')); ?>
 		      </div>
 		    </div>
 		</div>
