@@ -4,71 +4,63 @@
       "title": "Wildfire",
       "name": "Wildfire",
       "src": "/admin/img/logo-dark.png",
-      "height": "80",
+      "height": "60",
       "href": "/"
     },
     "menu": [
       {
-        "name": "Our work",
+        "name": "Users",
         "href": "#",
         "dropdown_class": "dropdown-menu-right",
         "submenu": [
           {
-            "title": "action",
             "name": "Action",
             "href": "#"
           },
           {
-            "title": "another action",
             "name": "Another action",
             "href": "#"
           }
         ]
       },
       {
-        "name": "Screenings",
-        "href": "https://new.chalchitraabhiyaan.com/page/screenings"
+        "name": "Settings",
+        "href": "#",
+        "dropdown_class": "dropdown-menu-right",
+        "submenu": [
+          {
+            "name": "Action",
+            "href": "#"
+          },
+          {
+            "name": "Another action",
+            "href": "#"
+          }
+        ]
       },
       {
-        "title": "Donate",
-        "name": "Donate&nbsp;<small><span class=\"hrln-red\"><i class=\"fas fa-heart\"></i></span></small>",
-        "href": "https://new.chalchitraabhiyaan.com/page/donate"
-      }
-    ]
-  },
-  "content": {
-    "menu": [
-      {
-        "name": "Team",
-        "href": "/"
-      },
-      {
-        "name": "What we do",
-        "href": "https://new.chalchitraabhiyaan.com/page/disclaimer-policy"
-      },
-      {
-        "name": "Contact us",
-        "href": "https://new.chalchitraabhiyaan.com/page/contact-us"
-      },
-      {
-        "name": "Screenings",
-        "href": "https://new.chalchitraabhiyaan.com/page/screenings"
+        "name": "Logout",
+        "href": "#"
       }
     ]
   },
   "footer": {
     "menu": [
       {
+        "name": "Wildfire",
+        "href": "https://wildfirego.com"
+      },
+      {
         "name": "Privacy policy",
-        "href": "https://new.chalchitraabhiyaan.com/page/privacy-policy"
+        "href": "https://wildfirego.com"
       },
       {
         "name": "Disclaimer policy",
-        "href": "https://new.chalchitraabhiyaan.com/page/disclaimer-policy"
+        "href": "https://wildfirego.com"
       },
       {
         "name": "Terms and conditions",
-        "href": "https://new.chalchitraabhiyaan.com/page/terms-and-conditions"
+        "href": "https://wildfirego.com"
       }
     ]
   }
