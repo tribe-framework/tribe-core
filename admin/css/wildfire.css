@@ -3,7 +3,7 @@ body, .tootip, .popover {font-family: effra, sans-serif;}
   background: rgb(153,51,153);
   background: linear-gradient(0deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%); 
 }
-.progress-bar, .hr {
+.progress-bar, hr, .hr {
   background-image: linear-gradient(90deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%);
 }
 .img-thumbnail {
@@ -17,7 +17,7 @@ body, .tootip, .popover {font-family: effra, sans-serif;}
 .figure-caption {
   color: #ff0066;
 }
-.hr {
+hr, .hr {
   height: 3px;
   border-top: none;
 }

@@ -1,8 +1,10 @@
-	<footer class="pt-4 my-5 pt-md-5 border-top bg-white">
+	<footer class="pt-4 my-5 pt-md-5 bg-white">
+		<hr class="hr">
 		<div class="container pb-5">
 		    <div class="row">
 		      <div class="col-md">
-		        <img class="my-2 w-50" src="/admin/img/logo-flame.png">
+		        <img class="my-2 w-20" src="/admin/img/logo-flame.png"><br>
+		        <p class="text-muted">&copy; Wildfire <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
 		        <h5>Resources</h5>
