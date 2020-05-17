@@ -17,4 +17,4 @@
 <?php
 if ($menus['main']['logo']['name'])
 	$admin_menus['admin_menu']['logo']=$menus['main']['logo'];
-echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-white mb-4', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link'), '<span class="fas fa-bars"></span>', ''); ?><hr class="hr">
+echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-white mb-4', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link'), '<span class="fas fa-bars"></span>', ''); ?>
