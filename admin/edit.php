@@ -57,55 +57,55 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php if ($module_input_type=='typeout'): ?>
 		<div class="typeout-menu my-4">
 			<?php if (in_array('fullScreen', $module_input_options)) { ?>
-			<button type="button" data-expanded="0" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-fullscreen" data-toggle="tooltip" data-placement="top" title="full screen"><span class="fas fa-compress"></span></button>
+			<button type="button" data-expanded="0" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-fullscreen" data-toggle="tooltip" data-placement="top" title="full screen"><span class="fas fa-compress"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('undo', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo" data-toggle="tooltip" data-placement="top" title="undo"><span class="fas fa-undo"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec typeout-undo" data-typeout-command="undo" data-toggle="tooltip" data-placement="top" title="undo"><span class="fas fa-undo"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertParagraph', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-insertParagraph" data-typeout-command="insertParagraph" data-toggle="tooltip" data-placement="top" title="insert paragraph break"><span class="fas fa-paragraph"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec typeout-insertParagraph" data-typeout-command="insertParagraph" data-toggle="tooltip" data-placement="top" title="insert paragraph break"><span class="fas fa-paragraph"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('heading', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input-exec typeout-heading" data-typeout-command="heading" data-typeout-info="h4" data-toggle="tooltip" data-placement="top" title="heading"><span class="fas fa-heading"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input-exec typeout-heading" data-typeout-command="heading" data-typeout-info="h4" data-toggle="tooltip" data-placement="top" title="heading"><span class="fas fa-heading"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('bold', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-bold" data-typeout-command="bold" data-toggle="tooltip" data-placement="top" title="bold"><span class="fas fa-bold"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec typeout-bold" data-typeout-command="bold" data-toggle="tooltip" data-placement="top" title="bold"><span class="fas fa-bold"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('italic', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-italic" data-typeout-command="italic" data-toggle="tooltip" data-placement="top" title="italic"><span class="fas fa-italic"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec typeout-italic" data-typeout-command="italic" data-toggle="tooltip" data-placement="top" title="italic"><span class="fas fa-italic"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('createLink', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="createLink" data-typeout-info="Enter link URL" data-toggle="tooltip" data-placement="top" title="create link"><span class="fas fa-link"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="createLink" data-typeout-info="Enter link URL" data-toggle="tooltip" data-placement="top" title="create link"><span class="fas fa-link"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('unlink', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec typeout-unlink" data-typeout-command="unlink" data-toggle="tooltip" data-placement="top" title="un-link"><span class="fas fa-unlink"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec typeout-unlink" data-typeout-command="unlink" data-toggle="tooltip" data-placement="top" title="un-link"><span class="fas fa-unlink"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertImage', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertImage" data-typeout-info="Enter image URL" data-toggle="tooltip" data-placement="top" title="insert image"><span class="fas fa-image"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertImage" data-typeout-info="Enter image URL" data-toggle="tooltip" data-placement="top" title="insert image"><span class="fas fa-image"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertPDF', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL" data-toggle="tooltip" data-placement="top" title="insert PDF"><span class="fas fa-file-pdf"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertPDF" data-typeout-info="Enter PDF URL" data-toggle="tooltip" data-placement="top" title="insert PDF"><span class="fas fa-file-pdf"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('insertHTML', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertHTML" data-typeout-info="Enter HTML" data-toggle="tooltip" data-placement="top" title="insert HTML"><span class="fas fa-code"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="insertHTML" data-typeout-info="Enter HTML" data-toggle="tooltip" data-placement="top" title="insert HTML"><span class="fas fa-code"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('attach', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info="" data-toggle="tooltip" data-placement="top" title="add attachment"><span class="fas fa-paperclip"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-input" data-typeout-command="attach" data-typeout-info="" data-toggle="tooltip" data-placement="top" title="add attachment"><span class="fas fa-paperclip"></span></button>
 			<?php } ?>
 
 			<?php if (in_array('removeFormat', $module_input_options)) { ?>
-			<button type="button" class="btn bg-light border-0 rounded-0 mt-1 typeout typeout-exec" data-typeout-command="removeFormat" data-toggle="tooltip" data-placement="top" title="remove formatting"><span class="fas fa-remove-format"></span></button>
+			<button type="button" class="btn btn-primary border-0 rounded-0 mt-1 typeout typeout-exec" data-typeout-command="removeFormat" data-toggle="tooltip" data-placement="top" title="remove formatting"><span class="fas fa-remove-format"></span></button>
 			<?php } ?>
 		</div>
 
@@ -275,7 +275,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 						echo '<option value="'.$opt['slug'].'" '.(($post[$module_input_slug_lang.'_bunching'][$i]==$opt['slug'])?'selected="selected"':'').'>'.$opt['title'].'</option>';
 					echo '</select>';
 				}
-				echo ($module['input_descriptor']?'&nbsp;&nbsp;<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'.$module_input_slug_lang.'_descriptor_m_'.$i.'">descriptor</button><div class="modal fade" id="'.$module_input_slug_lang.'_descriptor_m_'.$i.'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">×</span></button></div><div class="modal-body"><textarea name="'.$module_input_slug_lang.'_descriptor[]" class="form-control" placeholder="enter file descriptor">'.$post[$module_input_slug_lang.'_descriptor'][$i].'</textarea><input name="'.$module_input_slug_lang.'_descriptor_date[]" value="'.$post[$module_input_slug_lang.'_descriptor_date'][$i].'" type="date" class="form-control" placeholder="enter file date"></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">save</button></div></div></div></div>':'').'</p>';
+				echo ($module['input_descriptor']?'&nbsp;&nbsp;<button type="button" class="btn btn-sm bg-white m-1" data-toggle="modal" data-target="#'.$module_input_slug_lang.'_descriptor_m_'.$i.'">descriptor</button><div class="modal fade" id="'.$module_input_slug_lang.'_descriptor_m_'.$i.'" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">add file descriptor</h5><button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">×</span></button></div><div class="modal-body"><textarea name="'.$module_input_slug_lang.'_descriptor[]" class="form-control" placeholder="enter file descriptor">'.$post[$module_input_slug_lang.'_descriptor'][$i].'</textarea><input name="'.$module_input_slug_lang.'_descriptor_date[]" value="'.$post[$module_input_slug_lang.'_descriptor_date'][$i].'" type="date" class="form-control" placeholder="enter file date"></div><div class="modal-footer"><button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">save</button></div></div></div></div>':'').'</p>';
 				$i++;
 			}
 			?>

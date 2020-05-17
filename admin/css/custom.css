@@ -1,17 +1,5 @@
 .copy_btn {cursor: pointer;}
-.file {
-   position: relative;
-   background: linear-gradient(90deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%);
-   background-size: 200% 100%;
-   background-position: right bottom;
-   transition:all 1s ease;
-}
-.file a {
-   display: block;
-   position: relative;
-   padding: 10px;
-   color: black;
-}
+
 .bar {
     height: 18px;
     background: #993399;
