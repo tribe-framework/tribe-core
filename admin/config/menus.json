@@ -1,0 +1,75 @@
+{
+  "admin": {
+    "logo": {
+      "title": "Wildfire",
+      "name": "Wildfire",
+      "src": "/admin/img/logo-dark.png",
+      "height": "80",
+      "href": "/"
+    },
+    "menu": [
+      {
+        "name": "Our work",
+        "href": "#",
+        "dropdown_class": "dropdown-menu-right",
+        "submenu": [
+          {
+            "title": "action",
+            "name": "Action",
+            "href": "#"
+          },
+          {
+            "title": "another action",
+            "name": "Another action",
+            "href": "#"
+          }
+        ]
+      },
+      {
+        "name": "Screenings",
+        "href": "https://new.chalchitraabhiyaan.com/page/screenings"
+      },
+      {
+        "title": "Donate",
+        "name": "Donate&nbsp;<small><span class=\"hrln-red\"><i class=\"fas fa-heart\"></i></span></small>",
+        "href": "https://new.chalchitraabhiyaan.com/page/donate"
+      }
+    ]
+  },
+  "content": {
+    "menu": [
+      {
+        "name": "Team",
+        "href": "/"
+      },
+      {
+        "name": "What we do",
+        "href": "https://new.chalchitraabhiyaan.com/page/disclaimer-policy"
+      },
+      {
+        "name": "Contact us",
+        "href": "https://new.chalchitraabhiyaan.com/page/contact-us"
+      },
+      {
+        "name": "Screenings",
+        "href": "https://new.chalchitraabhiyaan.com/page/screenings"
+      }
+    ]
+  },
+  "footer": {
+    "menu": [
+      {
+        "name": "Privacy policy",
+        "href": "https://new.chalchitraabhiyaan.com/page/privacy-policy"
+      },
+      {
+        "name": "Disclaimer policy",
+        "href": "https://new.chalchitraabhiyaan.com/page/disclaimer-policy"
+      },
+      {
+        "name": "Terms and conditions",
+        "href": "https://new.chalchitraabhiyaan.com/page/terms-and-conditions"
+      }
+    ]
+  }
+}
