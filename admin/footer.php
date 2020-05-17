@@ -3,7 +3,7 @@
 		<div class="container pb-5 my-5">
 		    <div class="row">
 		      <div class="col-md">
-		        <a href="https://wildfirego.com"><img class="w-20" src="/admin/img/logo-flame.png"></a>
+		        <a href="https://wildfirego.com"><img class="w-40" src="/admin/img/logo.png"></a>
 		        <p class="text-muted small mb-3 mt-4 pr-5">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?' for '.$types['webapp']['headmeta_title'].'.':''); ?></p><p class="text-muted small my-3 pr-5">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">

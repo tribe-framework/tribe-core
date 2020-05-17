@@ -14,4 +14,7 @@
 </head>
 
 <body>
-<?php echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-dark bg-dark p-4 pt-3 mb-4', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>'); ?>
+<?php
+if ($menus['main']['logo']['name'])
+	$admin_menus['admin_menu']['logo']=$menus['main']['logo'];
+echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-light p-4 pt-3 mb-4', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>', ''); ?>
