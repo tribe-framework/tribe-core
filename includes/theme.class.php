@@ -22,7 +22,9 @@ class theme {
 	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
 		global $menus, $types, $dash;
 		
-		if ($slug)
+		if (is_array($slug))
+			$items=$slug;
+		else if ($slug)
 			$items=$menus[$slug];
 		else
 			$items=0;
@@ -113,7 +115,9 @@ class theme {
 	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center', 'li'=>'nav-item', 'a'=>'nav-link')) {
 		global $menus, $types, $dash;
 		
-		if ($slug)
+		if (is_array($slug))
+			$items=$slug;
+		else if ($slug)
 			$items=$menus[$slug];
 		else
 			$items=0;

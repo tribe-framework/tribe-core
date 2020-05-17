@@ -14,4 +14,4 @@
 </head>
 
 <body>
-<?php echo $theme->get_navbar_menu('admin', array('navbar'=>'navbar-expand-md navbar-dark bg-dark p-3', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>'); ?>
+<?php echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-dark bg-dark p-3', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>'); ?>

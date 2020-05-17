@@ -1,5 +1,5 @@
 {
-  "admin": {
+  "admin_menu": {
     "logo": {
       "title": "Wildfire",
       "name": "Wildfire",
@@ -44,7 +44,7 @@
       }
     ]
   },
-  "footer": {
+  "admin_footer": {
     "menu": [
       {
         "name": "Wildfire",
