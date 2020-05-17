@@ -14,7 +14,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	<link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
-	<div class="container mt-3">
+	<div class="mt-3">
 	<a name="infos"></a><div id="infos" class="d-none alert alert-info"></div>
 	<a name="errors"></a><div id="errors" class="d-none alert alert-danger"></div>
 
