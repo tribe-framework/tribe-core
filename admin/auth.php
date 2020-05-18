@@ -91,8 +91,9 @@ body {
       <input type="checkbox" value="remember-me"> Remember me
     </label>
   </div>
-  <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-  <p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
+  <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+  <button class="btn btn-primary btn-block" type="submit">Register</button>
+  <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
 </form>
 </body>
 </html>
