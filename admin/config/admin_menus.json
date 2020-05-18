@@ -39,27 +39,35 @@
         ]
       },
       {
-        "name": "Logout",
+        "name": "<span class='fas fa-sign-out-alt'></span>&nbsp;Exit",
         "href": "#"
       }
     ]
   },
-  "admin_footer": {
+  "admin_footer_1": {
     "menu": [
       {
-        "name": "Wildfire",
+        "name": "Report a bug",
+        "href": "mailto:tech@wildfire.world"
+      },
+      {
+        "name": "Feature suggestion",
+        "href": "mailto:hq@wildfire.world"
+      },
+      {
+        "name": "Get in touch",
+        "href": "mailto:info@wildfire.world"
+      }
+    ]
+  },
+  "admin_footer_2": {
+    "menu": [
+      {
+        "name": "Data privacy",
         "href": "https://wildfirego.com"
       },
       {
-        "name": "Privacy policy",
-        "href": "https://wildfirego.com"
-      },
-      {
-        "name": "Disclaimer policy",
-        "href": "https://wildfirego.com"
-      },
-      {
-        "name": "Terms and conditions",
+        "name": "Energy policy",
         "href": "https://wildfirego.com"
       }
     ]
