@@ -206,7 +206,7 @@ class dash {
 	function push_wp_posts ($type='story', $wp_table_name='wp_posts', $max_records=0) {
 		global $sql;
 		$i=0;
-		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post'");
+		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post' ORDER BY `ID` ASC");
 		foreach ($q as $r) {
 			if (!$this->get_content_meta($r['ID'], 'slug')) {
 				$post=array();
