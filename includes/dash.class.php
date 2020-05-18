@@ -207,6 +207,7 @@ class dash {
 		global $sql;
 		$i=0;
 		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND `post_type` LIKE 'post' ORDER BY `ID` ASC");
+		var_dump($q);
 		foreach ($q as $r) {
 			if (!$this->get_content_meta($r['ID'], 'slug')) {
 				$post=array();
@@ -219,7 +220,6 @@ class dash {
 			    $post['content_privacy']='public';
 			    $post['publishing_date']=substr($r['post_date'], 0, 10);
 			    $cv=$sql->executeSQL("SELECT `guid` FROM `".$wp_table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
-			    echo "SELECT `guid` FROM `".$wp_table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC";
 			    $post['cover_media']=$cv[0]['guid'];
 			    $this->push_content($post);
 
