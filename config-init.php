@@ -40,8 +40,7 @@ else if (isset($_GET['type'])) {
 }
 else {
 	$type='webapp';
+	$headmeta_title=$types[$type]['headmeta_title'];
+	$headmeta_description=$types[$type]['headmeta_description'];
 }
-
-$headmeta_title=$types[$type]['headmeta_title'];
-$headmeta_description=$types[$type]['headmeta_description'];
 ?>
