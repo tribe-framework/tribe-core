@@ -4,7 +4,7 @@
 		    <div class="row">
 		      <div class="col-md">
 		        <a href="https://wildfirego.com"><img class="w-40" src="/admin/img/logo.png"></a>
-		        <p class="text-muted small mb-3 mt-4 pr-5">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?' for '.$types['webapp']['headmeta_title'].'.':''); ?></p><p class="text-muted small my-3 pr-5">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
+		        <p class="text-muted small mb-3 mt-4 pr-5">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?'<br><em>for '.$types['webapp']['headmeta_title'].'.</em>':''); ?></p><p class="text-muted small my-3 pr-5">Wildfire is a technology consultancy based in New Delhi, India.</p><p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
 		        <?php echo $theme->get_menu($admin_menus['admin_footer_1'], array('ul'=>'list-unstyled mt-5 pt-2 pl-md-5', 'li'=>'', 'a'=>'small')); ?>
