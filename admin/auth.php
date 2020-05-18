@@ -91,8 +91,8 @@ body {
       <input type="checkbox" value="remember-me"> Remember me
     </label>
   </div>
-  <button class="btn btn-primary btn-block" type="submit">Sign in</button>
-  <button class="btn btn-primary btn-block" type="submit">Register</button>
+  <a class="btn btn-primary btn-block" href="/admin">Sign in</a>
+  <a class="btn btn-primary btn-block" href="/admin">Register</a>
   <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
   <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
 </form>
