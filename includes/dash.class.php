@@ -203,10 +203,15 @@ class dash {
 		return $types;
 	}
 
-	function push_wp_posts ($type='story', $wp_table_name='wp_posts', $max_records=0) {
+	function push_wp_posts ($type='story', $meta_value='', $max_records=0) {
 		global $sql;
 		$i=0;
-		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
+
+		if ($meta_value)
+			$q=$sql->executeSQL("SELECT * FROM `wp_posts` INNER JOIN `wp_postmeta` ON .`wp_posts`.`ID`=`wp_postmeta`.`post_id` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') AND `meta_key`='_wp_page_template' AND `meta_value`='default' ORDER BY `ID` ASC");
+		else
+			$q=$sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
+		
 		foreach ($q as $r) {
 			if (!$this->get_content_meta($r['ID'], 'slug')) {
 				$post=array();
@@ -218,7 +223,16 @@ class dash {
 			    $post['slug']=$r['post_name'];
 			    $post['content_privacy']='public';
 			    $post['publishing_date']=substr($r['post_date'], 0, 10);
-			    $cv=$sql->executeSQL("SELECT `guid` FROM `".$wp_table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
+
+			    if ($meta_value)
+				    $post['wp_page_template']=$meta_value;
+
+				if ($r['post_parent']) {
+				    $mv=$sql->executeSQL("SELECT `post_title` FROM `wp_posts` WHERE `ID`='".$r['post_parent']."'");
+				    $post['wp_post_parent']=$mv[0]['post_parent'];
+				}
+			    
+			    $cv=$sql->executeSQL("SELECT `guid` FROM `wp_posts` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
 			    $post['files']=array();
 			    foreach ($cv as $file) {
 			    	if (pathinfo($file['guid'], PATHINFO_EXTENSION)=='pdf') {
@@ -229,6 +243,7 @@ class dash {
 			    		$post['cover_media']=$file['guid'];
 			    	}
 			    }
+			    
 			    $this->push_content($post);
 
 			    $i++;
