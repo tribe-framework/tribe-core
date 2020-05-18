@@ -208,9 +208,7 @@ class dash {
 		$i=0;
 		$q=$sql->executeSQL("SELECT * FROM `".$wp_table_name."` WHERE `post_status` LIKE 'publish' AND `post_parent` = 0 AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
 		foreach ($q as $r) {
-			echo 'a';
 			if (!$this->get_content_meta($r['ID'], 'slug')) {
-				echo 'b';
 				$post=array();
 				$post['wp_import']=1;
 			    $post['id']=$r['ID'];
