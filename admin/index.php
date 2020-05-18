@@ -7,23 +7,29 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <?php echo get_admin_menu('dash'); ?>
 
-<div class="card my-2">
-  <img src="https://placehold.it/1600x900" class="card-img-top" alt="...">
+<div class="row">
+<div class="card col-md my-2">
   <div class="card-body">
-    <h5 class="card-title">Dashboard widget</h5>
+    <h5 class="card-title">Dashboard widget 1</h5>
     <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
     <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
   </div>
 </div>
-<div class="card my-2">
-  <img src="https://placehold.it/1600x900" class="card-img-top" alt="...">
+<div class="card col-md my-2">
   <div class="card-body">
-    <h5 class="card-title">Dashboard widget</h5>
+    <h5 class="card-title">Dashboard widget 2</h5>
     <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
     <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
   </div>
 </div>
-
+<div class="card col-md my-2">
+  <div class="card-body">
+    <h5 class="card-title">Dashboard widget 2</h5>
+    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+  </div>
+</div>
+</div>
 </div>
 
 <?php include_once (ABSOLUTE_PATH.'/admin/footer.php'); ?>
