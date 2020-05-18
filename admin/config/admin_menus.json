@@ -40,7 +40,7 @@
       },
       {
         "name": "<span class='fas fa-sign-out-alt'></span>&nbsp;Exit",
-        "href": "/auth?exit=1"
+        "href": "/admin/auth?exit=1"
       }
     ]
   },
