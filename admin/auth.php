@@ -4,7 +4,7 @@ include_once ('../config-init.php'); ?>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title><?php echo 'Wildfire Entity'.(isset($headmeta_title)?' / '.$headmeta_title:''); ?></title>
-	<meta name="description" content="Wildfire entity authorisation for <?php echo (isset($headmeta_title)?' / '.$headmeta_title:''); ?>">
+	<meta name="description" content="Access authorisation<?php echo (isset($headmeta_title)?' for '.$headmeta_title:''); ?>">
 	<link rel="stylesheet" href="https://use.typekit.net/xkh7dxd.css">
 	<link href="<?php echo BASE_URL; ?>/admin/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/wildfire.css" rel="stylesheet">

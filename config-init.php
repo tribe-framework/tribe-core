@@ -42,7 +42,6 @@ else {
 	$type='webapp';
 }
 
-
 $headmeta_title=$types[$type]['headmeta_title'];
 $headmeta_description=$types[$type]['headmeta_description'];
 ?>
