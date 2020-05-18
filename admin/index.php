@@ -7,7 +7,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <?php echo get_admin_menu('dash'); ?>
 
-<div class="row">
+<div class="row m-0">
 <div class="card col-md my-2">
   <div class="card-body">
     <h5 class="card-title">Dashboard widget 1</h5>
