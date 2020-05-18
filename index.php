@@ -1,9 +1,6 @@
 <?php
 include_once ('config-init.php');
 
-$headmeta_title=$types[$type]['headmeta_title'];
-$headmeta_description=$types[$type]['headmeta_description'];
-
 if ($type && $slug) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
