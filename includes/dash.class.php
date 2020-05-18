@@ -219,10 +219,9 @@ class dash {
 			    $post['content_privacy']='public';
 			    $post['publishing_date']=substr($r['post_date'], 0, 10);
 			    $cv=$sql->executeSQL("SELECT `guid` FROM `".$wp_table_name."` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
+			    $post['files']=array();
 			    foreach ($cv as $file) {
-			    	$post['files']=array();
-			    	$ext=substr($file['guid'], -4);
-			    	if ($ext=='.pdf') {
+			    	if (pathinfo($file['guid'], PATHINFO_EXTENSION)=='pdf') {
 			    		$post['files'][]=$file['guid'];
 			    	}
 			    	else {
