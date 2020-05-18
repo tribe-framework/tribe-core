@@ -80,8 +80,8 @@ body {
 
   <body class="text-center">
     <form class="form-signin">
-  <img class="mb-4 w-100" src="img/logo-flame.png">
-  <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+  <img class="mb-4 w-30" src="img/logo-flame.png">
+  <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
   <label for="inputEmail" class="sr-only">Email address</label>
   <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
