@@ -235,15 +235,16 @@ class dash {
 			    $cv=$sql->executeSQL("SELECT `guid` FROM `wp_posts` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
 			    $post['files']=array();
 			    foreach ($cv as $file) {
-			    	if (pathinfo($file['guid'], PATHINFO_EXTENSION)=='pdf') {
-			    		$post['files'][]=$file['guid'];
-			    	}
-			    	else {
+			    	$ext=strtolower(pathinfo($file['guid'], PATHINFO_EXTENSION));
+			    	if ($ext=='png' || $ext=='jpg' || $ext=='jpeg' || $ext=='gif') {
 			    		$post['files'][]=$file['guid'];
 			    		$post['cover_media']=$file['guid'];
 			    	}
+			    	else {
+			    		$post['files'][]=$file['guid'];
+			    	}
 			    }
-			    
+
 			    $this->push_content($post);
 
 			    $i++;
