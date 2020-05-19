@@ -79,7 +79,8 @@ body {
     </style>
 
   <body class="text-center">
-    <form class="form-signin">
+  <hr class="hr fixed-top" style="margin:0 !important;">
+  <form class="form-signin">
   <h1><?php echo $menus['main']['logo']['name']; ?></h1>
   <h3 class="h3 mb-3 font-weight-normal"><span class="fas fa-sign-in-alt"></span>&nbsp;Sign in</h3>
   <label for="inputEmail" class="sr-only">Email address</label>
@@ -95,6 +96,6 @@ body {
   <a class="btn btn-primary btn-block" href="/admin">Register</a>
   <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
   <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
-</form>
+  </form>
 </body>
 </html>
