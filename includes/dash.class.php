@@ -203,18 +203,15 @@ class dash {
 		return $types;
 	}
 
-	function push_wp_posts ($type='story', $meta_value='', $max_records=0) {
+	function push_wp_posts ($type='story', $meta_vars=array(), $max_records=0) {
 		global $sql;
 		$i=0;
 
-		if ($meta_value)
-			$q=$sql->executeSQL("SELECT * FROM `wp_posts` INNER JOIN `wp_postmeta` ON .`wp_posts`.`ID`=`wp_postmeta`.`post_id` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') AND `meta_key`='_wp_page_template' AND `meta_value`='default' ORDER BY `ID` ASC");
-		else
-			$q=$sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
+		$q=$sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
 		
 		foreach ($q as $r) {
 			if (!$this->get_content_meta($r['ID'], 'slug')) {
-				$post=array();
+				$post=$post_wp=array();
 				$post['wp_import']=1;
 			    $post['id']=$r['ID'];
 			    $post['type']=$type;
@@ -224,12 +221,35 @@ class dash {
 			    $post['content_privacy']='public';
 			    $post['publishing_date']=substr($r['post_date'], 0, 10);
 
-			    if ($meta_value)
-				    $post['wp_page_template']=$meta_value;
-
 				if ($r['post_parent']) {
-				    $mv=$sql->executeSQL("SELECT `post_title` FROM `wp_posts` WHERE `ID`='".$r['post_parent']."'");
-				    $post['wp_post_parent']=$mv[0]['post_parent'];
+				    $mv=$sql->executeSQL("SELECT `post_name` FROM `wp_posts` WHERE `ID`='".$r['post_parent']."'");
+				    $post_wp['post_parent']=$mv[0]['post_name'];
+				}
+
+				foreach ($meta_vars as $var) {
+					$iv=$sql->executeSQL("SELECT `meta_value` FROM `wp_postmeta` WHERE `post_id`='".$r['ID']."' && `meta_key`='$var'");
+					if ($iv[0]['meta_value']) {
+						$ivts=unserialize($iv[0]['meta_value']);
+						if (!$ivts) {
+								$iid=$iv[0]['meta_value'];
+								if (is_numeric($iid)) {
+									$mv=$sql->executeSQL("SELECT `post_name` FROM `wp_posts` WHERE `ID`='$iid'");
+							    	$post_wp[$var]=$mv[0]['post_name'];
+							    }
+							    else
+									$post_wp[$var]=$iid;
+						}
+						else {
+							foreach ($ivts as $iid) {
+								if (is_numeric($iid)) {
+									$mv=$sql->executeSQL("SELECT `post_name` FROM `wp_posts` WHERE `ID`='$iid'");
+							    	$post_wp[$var][]=$mv[0]['post_name'];
+							    }
+							    else
+									$post_wp[$var][]=$iid;
+							}
+						}
+					}
 				}
 			    
 			    $cv=$sql->executeSQL("SELECT `guid` FROM `wp_posts` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
@@ -245,6 +265,9 @@ class dash {
 			    	}
 			    }
 
+			    $post['wp_post_data']=serialize($post_wp);
+			    $post=update_wp_post_data($post);
+			    
 			    $this->push_content($post);
 
 			    $i++;
