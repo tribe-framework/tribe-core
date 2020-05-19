@@ -14,11 +14,11 @@
 </head>
 
 <body>
-<hr class="hr fixed-top" style="margin:0 !important;">
+<!--<hr class="hr fixed-top" style="margin:0 !important;">-->
 <?php
 if ($menus['main']['logo']['name']) {
 	$admin_menus['admin_menu']['logo']=$menus['main']['logo'];
 	$admin_menus['admin_menu']['logo']['src']='';
 	$admin_menus['admin_menu']['logo']['name']='<span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'];
 }
-echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-primary mb-4 pt-1 pb-0', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>', ''); ?>
+echo $theme->get_navbar_menu($admin_menus['admin_menu'], array('navbar'=>'navbar-expand-md navbar-light bg-dark mb-4 pt-1 pb-0', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link text-white'), '<span class="fas fa-bars"></span>', ''); ?>
