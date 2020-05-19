@@ -1,5 +1,5 @@
 	<footer class="pt-4 pt-md-5 bg-white">
-		<hr class="hr">
+		<hr class="bg-primary" style="background-image: none;">
 		<div class="container pb-5 my-5">
 		    <div class="row">
 		      <div class="col-md">

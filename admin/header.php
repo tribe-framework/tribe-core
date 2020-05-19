@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<!--<hr class="hr fixed-top" style="margin:0 !important;">-->
+<hr class="hr fixed-top" style="margin:0 !important;">
 <?php
 if ($menus['main']['logo']['name']) {
 	$admin_menus['admin_menu']['logo']=$menus['main']['logo'];
