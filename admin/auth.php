@@ -81,8 +81,8 @@ body {
   <body class="text-center">
   <hr class="hr fixed-top" style="margin:0 !important;">
   <form class="form-signin">
-  <h1><?php echo $menus['main']['logo']['name']; ?></h1>
-  <h3 class="h3 mb-3 font-weight-normal"><span class="fas fa-sign-in-alt"></span>&nbsp;Sign in</h3>
+  <h2><?php echo $menus['main']['logo']['name']; ?></h2>
+  <h4 class="my-3 font-weight-normal"><span class="fas fa-sign-in-alt"></span>&nbsp;Sign in</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
   <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
