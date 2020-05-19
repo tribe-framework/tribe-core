@@ -228,6 +228,10 @@ class dash {
 
 				foreach ($meta_vars as $var) {
 					$iv=$sql->executeSQL("SELECT `meta_value` FROM `wp_postmeta` WHERE `post_id`='".$r['ID']."' && `meta_key`='$var'");
+					
+					if (substr($var, 0, 1)=='_')
+						$var=substr($var, 1);
+
 					if ($iv[0]['meta_value']) {
 						$ivts=unserialize($iv[0]['meta_value']);
 						if (!$ivts) {
@@ -267,7 +271,7 @@ class dash {
 
 			    $post['wp_post_data']=serialize($post_wp);
 			    $post=update_wp_post_data($post);
-			    
+
 			    $this->push_content($post);
 
 			    $i++;
