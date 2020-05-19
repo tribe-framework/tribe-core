@@ -9,7 +9,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <h2 class="mb-4">List of <?php echo $types[$type]['plural']; ?></h2>
 
-<table class="my-4 table datatable">
+<table class="my-4 table table-borderless table-responsive table-hover datatable">
   <thead>
     <tr>
       <th scope="col">#</th>
