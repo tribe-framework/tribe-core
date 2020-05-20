@@ -24,7 +24,7 @@ hr, .hr {
   border-top: none;
 }
 *:focus {
-  outline: 0 none;
+  outline: 0 !important;
 }
 ::-moz-selection { /* Code for Firefox */
   color: #fff;
