@@ -23,7 +23,7 @@ $( document ).ready(function() {
 		$(this).closest('p.file').remove();
 	});
 
-	$('.datatable').DataTable({"order": [[ 0, "desc" ]]});
+	$('.datatable').DataTable({"pageLength":50,"order": [[ 0, "desc" ]]});
 
 	var sli=0;
     $('.edit_form input[type=file]').fileupload({
