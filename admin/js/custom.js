@@ -75,6 +75,7 @@ function process_json_out (data, btn_html='') {
 		$('input[name="slug"]').val(data.last_data[0].slug);
 		$('.view_btn').removeClass('disabled').attr('href', data.last_data[0].url);
 		$('#slug_update_div').addClass('d-block').removeClass('d-none');
+		alert(btn_html);
 		$(this).closest('.save_btn').html(btn_html);
 		//$('#infos').removeClass('d-none').addClass('d-block').html(data.last_info);
 		//scroll_to_anchor('infos');
