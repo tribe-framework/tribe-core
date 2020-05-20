@@ -10,7 +10,7 @@
 	<link href="<?php echo BASE_URL; ?>/admin/css/wildfire.css" rel="stylesheet">
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
-	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
+	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css" rel="stylesheet">
 </head>
 
 <body>

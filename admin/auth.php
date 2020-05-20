@@ -10,75 +10,12 @@ include_once ('../config-init.php'); ?>
 	<link href="<?php echo BASE_URL; ?>/admin/css/wildfire.css" rel="stylesheet">
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
-	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
+	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css" rel="stylesheet">
+  <link href="<?php echo BASE_URL; ?>/admin/css/auth.css" rel="stylesheet">
+  <meta name="theme-color" content="#563d7c">
 </head>
 
-<body>
-<meta name="theme-color" content="#563d7c">
-
-<style>
-  .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-    }
-  }
-html,
-body {
-  height: 100%;
-}
-
-body {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-align: center;
-  align-items: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f5f5f5;
-}
-
-.form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-}
-.form-signin .checkbox {
-  font-weight: 400;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 2;
-}
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-    </style>
-
-  <body class="text-center">
+<body class="text-center">
   <hr class="hr fixed-top" style="margin:0 !important;">
   <form class="form-signin">
   <h2><?php echo $menus['main']['logo']['name']; ?></h2>
@@ -92,8 +29,8 @@ body {
       <input type="checkbox" value="remember-me"> Remember me
     </label>
   </div>
-  <a class="btn btn-primary btn-block" href="/admin">Sign in</a>
-  <a class="btn btn-primary btn-block" href="/admin">Register</a>
+  <a class="btn btn-sm btn-primary btn-block" href="/admin">Sign in</a>
+  <a class="btn btn-sm btn-primary btn-block" href="/admin">Register</a>
   <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
   <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
   </form>
