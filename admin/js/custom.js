@@ -10,7 +10,8 @@ $( document ).ready(function() {
 	$(document).on('submit', '.edit_form', function(e) {
 		e.preventDefault();
 		var btn_html=$('.save_btn').html();
-		$('.save_btn').html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;Save');
+		$('.save_btn').html('<div class="mt-0 spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;Save');
+		$('.save_btn').prop('disabled', true);
 		$.post('json.php', $(this).serialize(), function(data) {
 			process_json_out(data, btn_html);
 		}, 'json');
@@ -75,6 +76,7 @@ function process_json_out (data, btn_html='') {
 		$('input[name="slug"]').val(data.last_data[0].slug);
 		$('.view_btn').removeClass('disabled').attr('href', data.last_data[0].url);
 		$('#slug_update_div').addClass('d-block').removeClass('d-none');
+		$('.save_btn').prop('disabled', false);
 		$('.save_btn').html(btn_html);
 		//$('#infos').removeClass('d-none').addClass('d-block').html(data.last_info);
 		//scroll_to_anchor('infos');
