@@ -23,9 +23,9 @@ hr, .hr {
   height: 3px;
   border-top: none;
 }
-*:focus {
+*:focus, .form-control:focus {
   outline: 0 none;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 ::-moz-selection { /* Code for Firefox */
   color: #fff;
