@@ -19,7 +19,7 @@ class theme {
 		
 	}
 
-	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
+	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link', 'toggler'=>'navbar-toggler'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
 		global $menus, $types, $dash;
 		
 		if (is_array($slug))
@@ -35,7 +35,8 @@ class theme {
 			$op.='
 			<nav class="navbar '.$css_classes['navbar'].'">
 				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+				<a href="/admin" class="text-white ml-auto ml-md-2 mr-2"><span class="fa fa-tachometer-alt"></span></a>
+				<button class="'.$css_classes['toggler'].'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					'.$hamburger_bars.'
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">

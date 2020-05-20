@@ -1,6 +1,6 @@
 	<footer class="pt-4 pt-md-5 bg-white">
 		<hr class="bg-primary" style="background-image: none;">
-		<div class="container pb-5 my-5">
+		<div class="container my-5">
 		    <div class="row">
 		      <div class="col-md">
 		        <a href="https://wildfirego.com"><img class="w-40" src="/admin/img/logo.png"></a>
