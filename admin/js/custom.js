@@ -10,7 +10,7 @@ $( document ).ready(function() {
 	$(document).on('submit', '.edit_form', function(e) {
 		e.preventDefault();
 		var btn_html=$('.save_btn').html();
-		$('.save_btn').html('<div class="mt-0 spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;Save');
+		$('.save_btn').html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>&nbsp;Save');
 		$('.save_btn').prop('disabled', true);
 		$.post('json.php', $(this).serialize(), function(data) {
 			process_json_out(data, btn_html);
