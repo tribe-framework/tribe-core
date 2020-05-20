@@ -12,7 +12,7 @@ $( document ).ready(function() {
 		btn_html=$(this).closest('.save_btn').html();
 		$(this).closest('.save_btn').html('<div class="spinner-grow" role="status"><span class="sr-only">Loading...</span></div>');
 		$.post('json.php', $(this).serialize(), function(data) {
-			process_json_out(data, btn_html);
+			process_json_out(data, 'Save');
 		}, 'json');
 	});
 
