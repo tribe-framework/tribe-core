@@ -9,10 +9,11 @@ $( document ).ready(function() {
 
 	$(document).on('submit', '.edit_form', function(e) {
 		e.preventDefault();
-		btn_html=$(this).closest('.save_btn').html();
-		$(this).closest('.save_btn').html('<div class="spinner-grow" role="status"><span class="sr-only">Loading...</span></div>');
+		var btn_html=$('.save_btn').html();
+		alert($('.save_btn').html()+' -- '+$('.save_btn').val());
+		$('.save_btn').html('<div class="spinner-grow" role="status"><span class="sr-only">Loading...</span></div>');
 		$.post('json.php', $(this).serialize(), function(data) {
-			process_json_out(data, 'Save');
+			process_json_out(data, btn_html);
 		}, 'json');
 	});
 
@@ -76,7 +77,7 @@ function process_json_out (data, btn_html='') {
 		$('.view_btn').removeClass('disabled').attr('href', data.last_data[0].url);
 		$('#slug_update_div').addClass('d-block').removeClass('d-none');
 		alert(btn_html);
-		$(this).closest('.save_btn').html(btn_html);
+		$('.save_btn').html(btn_html);
 		//$('#infos').removeClass('d-none').addClass('d-block').html(data.last_info);
 		//scroll_to_anchor('infos');
 	}
