@@ -18,7 +18,7 @@ class trac {
 		global $sql;
 		$updated_on=time();
 
-		$sql->executeSQL("INSERT INTO `trac` (`created_on`, `trac`) VALUES ('$updated_on', '".json_encode($post)."')");
+		$sql->executeSQL("INSERT INTO `trac` (`created_on`, `visit`) VALUES ('$updated_on', '".json_encode($post)."')");
 		return $sql->lastInsertID();
 	}
 }
