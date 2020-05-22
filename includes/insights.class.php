@@ -8,13 +8,19 @@
 	is_ is for a yes/no answer
 */
 
-class insights {
+class trac {
 
 	function __construct () {
 		
 	}
-
 	
+	function push_visit ($post) {
+		global $sql;
+		$updated_on=time();
+
+		$sql->executeSQL("INSERT INTO `trac` (`created_on`, `trac`) VALUES ('$updated_on', '".json_encode($post)."')");
+		return $sql->lastInsertID();
+	}
 }
 
 ?>
