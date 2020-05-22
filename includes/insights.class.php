@@ -9,10 +9,6 @@
 */
 
 class trac {
-
-	function __construct () {
-		
-	}
 	
 	function push_visit ($post) {
 		global $sql;
