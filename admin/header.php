@@ -11,6 +11,25 @@
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css" rel="stylesheet">
+
+	<script src="<?php echo BASE_URL; ?>/plugins/timeme.min.js"></script>
+	<script type="text/javascript">
+		TimeMe.initialize({
+			currentPageName: "<?php echo $_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; ?>", // current page
+			idleTimeoutInSeconds: 30, // stop recording time due to inactivity
+			/* websocketOptions: { // optional
+				websocketHost: "ws://your_host:your_port",
+				appId: "insert-your-made-up-app-id"
+			} */
+		});
+
+		window.onload = function() {
+			setInterval(function(){
+				var timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds();
+				document.getElementById('time-spent').textContent = timeSpentOnPage.toFixed(2);
+			}, 25);
+		}
+	</script>
 </head>
 
 <body>
