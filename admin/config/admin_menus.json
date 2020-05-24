@@ -12,16 +12,7 @@
         "name": "Users",
         "href": "#",
         "dropdown_class": "dropdown-menu-right",
-        "submenu": [
-          {
-            "name": "Action",
-            "href": "#"
-          },
-          {
-            "name": "Another action",
-            "href": "#"
-          }
-        ]
+        "submenu": "user"
       },
       {
         "name": "Settings",

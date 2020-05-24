@@ -50,7 +50,12 @@ class theme {
 						}
 						else if ($item['submenu']) {
 							$submenu=$item['submenu'];
-							$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
+							if (is_array($types[$submenu]['roles']))
+								$subitems=$types[$submenu]['roles'];
+							else if (is_array($types[$submenu]['options']))
+								$subitems=$types[$submenu]['options'];
+							else
+								$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
 							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
