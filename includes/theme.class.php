@@ -59,11 +59,16 @@ class theme {
 							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
 							foreach ($subitems as $opt) {
-								if ($opt['slug'])
+								if ($opt['slug']) {
 									$subitem=$opt;
-								else
+									if (!$subitem['href'])
+										$subitem['href']='/admin/list?type='.$subitem['slug'];
+								}
+								else {
 									$subitem=$dash::get_content($opt['id']);
-								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
+									$subitem['href']='/'.$item['submenu'].'/'.$subitem['slug'];
+								}
+								$op.='<a class="dropdown-item" href="'.$subitem_href.'">'.($subitem['title']?$subitem['title']:'').'</a>';
 							}
 							$op.='</div></li>';
 						}
