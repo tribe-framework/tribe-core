@@ -68,7 +68,7 @@ class theme {
 									$subitem=$dash::get_content($opt['id']);
 									$subitem['href']='/'.$item['submenu'].'/'.$subitem['slug'];
 								}
-								$op.='<a class="dropdown-item" href="'.$subitem_href.'">'.($subitem['title']?$subitem['title']:'').'</a>';
+								$op.='<a class="dropdown-item" href="'.$subitem['href'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
 							}
 							$op.='</div></li>';
 						}
