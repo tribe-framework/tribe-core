@@ -20,18 +20,18 @@
         "dropdown_class": "dropdown-menu-right",
         "submenu": [
           {
-            "name": "Action",
-            "href": "#"
+            "name": "Edit profile",
+            "href": "/admin/auth?section=profile"
           },
           {
-            "name": "Another action",
-            "href": "#"
+            "name": "Change password",
+            "href": "/admin/auth?section=password"
           }
         ]
       },
       {
         "name": "<span class='fas fa-sign-out-alt'></span>&nbsp;Exit",
-        "href": "/admin/auth?exit=1"
+        "href": "/admin/auth?section=exit"
       }
     ]
   },
