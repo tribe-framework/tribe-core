@@ -53,18 +53,20 @@ function list_types($type='') {
 	if ($type) {
 		$list_types.='<button id="types-admin-dropdown" type="button" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 dropdown-toggle" data-toggle="dropdown">'.(isset($type)?ucfirst($types[$type]['plural']):'').'&nbsp;<span class="sr-only">Content types</span></button><div class="dropdown-menu" aria-labelledby="types-admin-dropdown">';
 		foreach ($types as $key => $value) {
-	    	$list_types.='<a class="dropdown-item" href="'.BASE_URL.'/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
+			if ($types[$key]['type']=='content')
+		    	$list_types.='<a class="dropdown-item" href="'.BASE_URL.'/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
 		}
 		$list_types.='</div></div>';
 	}
 	else {
 		$list_types.='<button id="types-admin-dropdown" type="button" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 dropdown-toggle d-md-none" data-toggle="dropdown">'.(isset($type)?ucfirst($types[$type]['plural']):'').'&nbsp;Content types</button><div class="dropdown-menu" aria-labelledby="types-admin-dropdown">';
 		foreach ($types as $key => $value) {
-	    	$list_types.='<a class="dropdown-item" href="'.BASE_URL.'/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
+	    	if ($types[$key]['type']=='content')
+		    	$list_types.='<a class="dropdown-item" href="'.BASE_URL.'/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
 		}
 		$list_types.='</div><div class="btn-group d-none d-md-block" role="group">';
 		foreach ($types as $key => $value) {
-			if ($types[$key]['slug'])
+			if ($types[$key]['type']=='content' && $types[$key]['slug'])
 		    	$list_types.='<a class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0" href="'.BASE_URL.'/admin/list?type='.$types[$key]['slug'].'">'.ucfirst($types[$key]['plural']).'</a>';
 		}
 		$list_types.='</div></div>';
