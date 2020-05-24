@@ -25,7 +25,7 @@
           },
           {
             "name": "Change password",
-            "href": "/admin/auth?section=password"
+            "href": "/admin/auth?section=change-password"
           }
         ]
       },
