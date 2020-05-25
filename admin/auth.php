@@ -33,7 +33,7 @@ include_once ('../config-init.php'); ?>
   <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
   <label for="inputPassword" class="sr-only">Confirm password</label>
   <input type="password" id="inputConfirmPassword" class="form-control my-1" placeholder="Confirm password" required>
-  <div class="my-1">&nbsp;</div>
+  <div class="mt-0 mb-1">&nbsp;</div>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=register">Register</a>
   <a class="btn btn-sm btn-outline-primary btn-block" href="/admin/auth?section=signin">Sign in</a>
   <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
@@ -76,10 +76,11 @@ include_once ('../config-init.php'); ?>
   <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
-  <div class="checkbox my-1 small"><label><input type="checkbox" value="remember-me"> Remember me</label></div>
+  <div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> Remember me</label></div>
+  <div class="mt-0 mb-1">&nbsp;</div>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=signin">Sign in</a>
   <a class="btn btn-sm btn-outline-primary btn-block" href="/admin/auth?section=register">Register</a>
-  <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
+  <p class="text-muted small my-2"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
 
 <?php endif; ?>
 
