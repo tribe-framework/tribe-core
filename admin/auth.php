@@ -28,7 +28,7 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required>
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
   <label for="inputPassword" class="sr-only">Confirm password</label>
@@ -41,9 +41,9 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-key"></span>&nbsp;Change password</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus disabled="disabled">
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required disabled="disabled">
   <label for="inputOldPassword" class="sr-only">Old password</label>
-  <input type="password" id="inputOldPassword" class="form-control my-1" placeholder="Old password">
+  <input type="password" id="inputOldPassword" class="form-control my-1" placeholder="Old password" autofocus>
   <label for="inputNewPassword" class="sr-only">New password</label>
   <input type="password" id="inputNewPassword" class="form-control my-1" placeholder="New password">
   <label for="inputConfirmNewPassword" class="sr-only">Confirm new password</label>
@@ -54,8 +54,8 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Edit profile</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus disabled="disabled">
-  <label for="inputFullName" class="sr-only">Full name</label>
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required disabled="disabled">
+  <label for="inputFullName" class="sr-only" autofocus>Full name</label>
   <input type="text" id="inputFullName" class="form-control my-1" placeholder="Full name">
   <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=edit-profile">Submit</a>
 
