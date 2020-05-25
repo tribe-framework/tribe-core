@@ -122,8 +122,8 @@ class auth {
 	}
 
 	function get_unique_id () {
-		$bytes = random_bytes(5);
-		return bin2hex($bytes);
+		$bytes = random_bytes(3);
+		return strtoupper(bin2hex($bytes));
 	}
 
 }
