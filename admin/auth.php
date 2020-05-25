@@ -28,12 +28,12 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
-  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+  <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
   <label for="inputPassword" class="sr-only">Confirm password</label>
-  <input type="password" id="inputConfirmPassword" class="form-control" placeholder="Confirm password" required>
-  <div class="mb-3">&nbsp;</div>
+  <input type="password" id="inputConfirmPassword" class="form-control my-1" placeholder="Confirm password" required>
+  <div class="my-1">&nbsp;</div>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=register">Register</a>
   <a class="btn btn-sm btn-outline-primary btn-block" href="/admin/auth?section=signin">Sign in</a>
   <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
@@ -42,29 +42,29 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-key"></span>&nbsp;Change password</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus disabled="disabled">
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus disabled="disabled">
   <label for="inputOldPassword" class="sr-only">Old password</label>
-  <input type="password" id="inputOldPassword" class="form-control" placeholder="Old password">
+  <input type="password" id="inputOldPassword" class="form-control my-1" placeholder="Old password">
   <label for="inputNewPassword" class="sr-only">New password</label>
-  <input type="password" id="inputNewPassword" class="form-control" placeholder="New password">
+  <input type="password" id="inputNewPassword" class="form-control my-1" placeholder="New password">
   <label for="inputConfirmNewPassword" class="sr-only">Confirm new password</label>
-  <input type="password" id="inputConfirmNewPassword" class="form-control" placeholder="Confirm new password">
+  <input type="password" id="inputConfirmNewPassword" class="form-control my-1" placeholder="Confirm new password">
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=change-password">Submit</a>
 
 <?php elseif ($_GET['section']=='edit-profile'): ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Edit profile</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus disabled="disabled">
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus disabled="disabled">
   <label for="inputFullName" class="sr-only">Full name</label>
-  <input type="text" id="inputFullName" class="form-control" placeholder="Full name">
+  <input type="text" id="inputFullName" class="form-control my-1" placeholder="Full name">
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=edit-profile">Submit</a>
 
 <?php elseif ($_GET['section']=='forgot-password'): ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-key"></span>&nbsp;Forgot password</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=generate-password">Generate password</a>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?section=register">Register</a>
   <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-lock"></span>&nbsp;Sign in</a></p>
@@ -73,10 +73,10 @@ include_once ('../config-init.php'); ?>
 
   <h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
-  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-  <div class="checkbox mb-3 small"><label><input type="checkbox" value="remember-me"> Remember me</label></div>
+  <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
+  <div class="checkbox my-1 small"><label><input type="checkbox" value="remember-me"> Remember me</label></div>
   <a class="btn btn-sm btn-primary btn-block" href="/admin/auth?action=signin">Sign in</a>
   <a class="btn btn-sm btn-outline-primary btn-block" href="/admin/auth?section=register">Register</a>
   <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
