@@ -32,7 +32,7 @@ function edit_options ($type, $id=0) {
 	global $dash;
 	return '<div class="btn-group">
 				<button type="submit" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 save_btn"><span class="fa fa-save"></span>&nbsp;Save</button>
-				<a href="'.($id?BASE_URL.'/'.$type.'/'.$dash::get_content_meta($id, 'slug'):'#').'" target="new" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 view_btn '.($id?'':'disabled').'"><span class="fa fa-external-link-alt"></span>&nbsp;View</a>
+				<a href="'.($id?BASE_URL.'/'.$type.'/'.$dash::get_content_meta($id, 'slug'):'#').'" target="new" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 view_btn '.($type=='user'?'d-none':'').' '.($id?'':'disabled').'"><span class="fa fa-external-link-alt"></span>&nbsp;View</a>
 				<button type="button" data-toggle="modal" data-target="#delete_conf_'.$id.'" class="btn btn-outline-danger border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-trash-alt"></span>&nbsp;Delete</button>
 			</div>';
 }
