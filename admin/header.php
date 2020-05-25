@@ -1,4 +1,4 @@
-<?php if (!$_SESSION['unique_id']) {header ('Location: /admin/auth?section=exit'); die();} ?>
+<?php if (!$_SESSION['user_id']) {header ('Location: /admin/auth?section=signin'); die();} ?>
 <!doctype html>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
 <head>

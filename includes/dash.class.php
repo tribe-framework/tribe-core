@@ -288,5 +288,10 @@ class dash {
 			}
 		}
 	}
+
+	function get_unique_user_id () {
+		$bytes = random_bytes(3);
+		return strtoupper(bin2hex($bytes));
+	}
 }
 ?>
