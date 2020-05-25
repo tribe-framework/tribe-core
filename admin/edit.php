@@ -42,16 +42,22 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 			foreach ($module_input_slug_arr as $input_lang) {
 				$module_input_slug_lang=$module_input_slug.($input_lang['slug']?'_'.$input_lang['slug']:'');
+
+				$module_input_default_value='';
+
+				$module_autofill=$module['autofill'];
+				if ($module_autofill=='unique_id')
+					$module_input_default_value=$dash->get_unique_id();
 			?>
 			
 		<?php if ($module_input_type=='text'): ?>
-		<div class="input-group input-group-lg my-4"><input type="text" name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:''); ?>"></div>
+		<div class="input-group input-group-lg my-4"><input type="text" name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>"></div>
 
-		<?php if ($module_input_slug=='title' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div></div>';} ?>
+		<?php if ($module_input_slug=='title' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" $dash->get_unique_id();="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div></div>';} ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='textarea'): ?>
-		<div class="input-group my-4"><textarea name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:''); ?></textarea></div>
+		<div class="input-group my-4"><textarea name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></textarea></div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='typeout'): ?>
@@ -109,7 +115,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo $post[$module_input_slug_lang]; ?></div>
+		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></div>
 		<input type="hidden" name="<?php echo $module_input_slug_lang; ?>">
 		<?php endif; ?>
 
@@ -118,7 +124,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-calendar"></span></span>
 		  </div>
-		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<?php endif; ?>
@@ -130,8 +136,10 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		$type_name_values=array();
 		if (is_array($post[$module_input_slug_lang]))
 			$type_name_values=$post[$module_input_slug_lang];
-		else
+		else if ($post[$module_input_slug_lang])
 			$type_name_values[0]=$post[$module_input_slug_lang];
+		else
+			$type_name_values[0]=$module_input_default_value;
 		foreach ($type_name_values as $type_name_value) { 
 			if ($i<1 || trim($type_name_value)) {
 		?>
@@ -151,12 +159,12 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-phone"></span></span>
 		  </div>
-		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='hidden'): ?>
-		  <input type="hidden" name="<?php echo $module_input_slug_lang; ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="hidden" name="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='priority'): ?>
@@ -164,7 +172,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
 		  </div>
-		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<?php endif; ?>
@@ -174,7 +182,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-envelope"></span></span>
 		  </div>
-		  <input type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
 
@@ -183,7 +191,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-key"></span></span>
 		  </div>
-		  <input type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $post[$module_input_slug_lang]; ?>">
+		  <input type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
 
