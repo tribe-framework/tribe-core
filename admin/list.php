@@ -12,7 +12,7 @@ if ($_GET['role'])
 
 <?php echo get_admin_menu('list', $type, $_GET['role']); ?>
 
-<h2 class="mb-4">List of <?php echo ($type=='user'?$role['title'].'&nbsp;<span class="fas fa-angle-double-right"></span>&nbsp;':'').$types[$type]['plural']; ?></h2>
+<h2 class="mb-4"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'List of '.$types[$type]['plural']; ?></h2>
 
 <table class="my-4 table table-borderless table-hover datatable">
   <thead>
