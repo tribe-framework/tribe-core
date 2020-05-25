@@ -106,12 +106,12 @@ class dash {
 		}
 
 		if (!trim($post['id'])) {
-			$sql->executeSQL("INSERT INTO `data` (`created_on`, `user_id`) VALUES ('$updated_on', '1')");
+			$sql->executeSQL("INSERT INTO `data` (`created_on`) VALUES ('$updated_on')");
 			$post['id']=$sql->lastInsertID();
 		}
 
 		if ($post['wp_import']) {
-			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`, `user_id`) VALUES ('".$post['id']."', '$updated_on', '1')");
+			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`) VALUES ('".$post['id']."', '$updated_on')");
 		}
 
 		$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
