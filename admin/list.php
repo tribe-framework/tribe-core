@@ -5,7 +5,12 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <div class="p-3">
 
-<?php echo get_admin_menu('list', $type); ?>
+<?php
+if ($_GET['role'])
+  $role = json_decode(urldecode($_GET['role']), true);
+?>
+
+<?php echo get_admin_menu('list', $type, $_GET['role']); ?>
 
 <h2 class="mb-4">List of <?php echo $types[$type]['plural']; ?></h2>
 

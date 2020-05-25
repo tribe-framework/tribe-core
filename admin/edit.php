@@ -23,7 +23,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	<form method="post" class="edit_form" action="/admin/json">
 
-		<?php echo get_admin_menu('edit', $type, $_GET['id'], $_GET['role']); ?>
+		<?php echo get_admin_menu('edit', $type, $_GET['role'], $_GET['id']); ?>
 
 		<h2 class="form_title">Edit <?php echo $types[$type]['name']; ?></h2>
 
@@ -440,7 +440,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $_GET['id'], $_GET['role']); } ?>
+		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $_GET['role'], $_GET['id']); } ?>
 		<p>&nbsp;</p>
 	</form>
 

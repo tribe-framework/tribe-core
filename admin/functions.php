@@ -1,5 +1,5 @@
 <?php
-function get_admin_menu ($page, $type='', $id=0, $role_json='') {
+function get_admin_menu ($page, $type='', $role_json='', $id=0) {
 	$op='';
 	if ($page=='dash') {
 		$op.='
