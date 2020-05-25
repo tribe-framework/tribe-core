@@ -17,31 +17,20 @@ include_once ('../config-init.php'); ?>
 
 <body class="text-center">
   <hr class="hr fixed-top" style="margin:0 !important;">
-  <form>
+  <form class="form-signin">
   <h2><?php echo $menus['main']['logo']['name']; ?></h2>
 
 <?php if ($_GET['section']=='exit'): ?>
 
-<?php elseif ($_GET['section']=='register'): ?>
+<?php endif; ?>
+
+<?php if ($_GET['section']=='register'): ?>
 
 <?php elseif ($_GET['section']=='change-password'): ?>
 
 <?php elseif ($_GET['section']=='profile'): ?>
 
 <?php elseif ($_GET['section']=='forgot-password'): ?>
-
-  <h4 class="my-3 font-weight-normal"><span class="fas fa-sign-in-alt"></span>&nbsp;Sign in</h4>
-  <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-  <label for="inputPassword" class="sr-only">Password</label>
-  <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-  <div class="checkbox mb-3">
-    <label>
-      <input type="checkbox" value="remember-me"> Remember me
-    </label>
-  </div>
-  <a class="btn btn-sm btn-primary btn-block" href="/admin">Sign in</a>
-  <a class="btn btn-sm btn-primary btn-block" href="/admin">Register</a>
 
 <?php else: ?>
 
