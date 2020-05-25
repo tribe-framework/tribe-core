@@ -78,6 +78,12 @@ class dash {
 				$title_unique=$module['input_unique'];
 				break;
 			}
+
+			if ($module['input_type']=='password') {
+				$password_slug=$module['input_slug'];
+				$post[$password_slug]=md5($post[$password_slug]);
+			}
+
 			$i++;
 		}
 
