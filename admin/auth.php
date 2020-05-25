@@ -21,7 +21,7 @@ include_once ('../config-init.php'); ?>
     session_destroy();
   } ?>
 
-  <?php if ($_GET['action']=='login' && $_POST['email'] && $_POST['password']) {
+  <?php if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
     $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
     if ($q[0]['id']) {
       $user=$dash->get_content($q[0]['id']);
@@ -32,7 +32,7 @@ include_once ('../config-init.php'); ?>
     }
   } ?>
 
-  <form class="form-signin">
+  <form class="form-signin" method="post" action="/admin/auth?action=<?php echo $_GET['section']; ?>">
   <h2><?php echo $menus['main']['logo']['name']; ?></h2>
 
 <?php if ($_GET['section']=='register'): ?>
@@ -87,7 +87,7 @@ include_once ('../config-init.php'); ?>
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
   <div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> Remember me</label></div>
-  <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=signin">Sign in</a>
+  <button type="submit" class="btn btn-sm btn-primary btn-block my-1">Sign in</button>
   <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=register">Register</a>
   <p class="text-muted small my-2"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
 
