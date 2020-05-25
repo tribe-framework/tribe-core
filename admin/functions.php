@@ -41,8 +41,8 @@ function new_and_list ($type, $role_json='') {
 	global $types;
 	return '
 	<div class="btn-group">
-		<a href="'.BASE_URL.'/admin/edit?type='.$type.(trim($role_json)?'&role='.$role_json:'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
-		<a href="'.BASE_URL.'/admin/list?type='.$type.(trim($role_json)?'&role='.$role_json:'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
+		<a href="'.BASE_URL.'/admin/edit?type='.$type.(trim($role_json)?'&role='.urlencode($role_json):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
+		<a href="'.BASE_URL.'/admin/list?type='.$type.(trim($role_json)?'&role='.urlencode($role_json):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
 	</div>';
 }
 
