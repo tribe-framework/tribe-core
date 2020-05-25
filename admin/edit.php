@@ -5,6 +5,9 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
+if ($_GET['role'])
+	$role = json_decode(urldecode($_GET['role']), true);
+
 if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	//for testing resticted min and max ids for archive format changes
@@ -20,12 +23,15 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	<form method="post" class="edit_form" action="/admin/json">
 
-		<?php echo get_admin_menu('edit', $type, $_GET['id']); ?>
+		<?php echo get_admin_menu('edit', $type, $_GET['id'], $_GET['role']); ?>
 
 		<h2 class="form_title">Edit <?php echo $types[$type]['name']; ?></h2>
 
 		<?php foreach ($types[$type]['modules'] as $module) {
 			if ((!$module['restrict_id_max'] || $pid<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $pid>=$module['restrict_id_min'])):
+
+			if (!in_array($role['slug'], $module['restrict_to_roles']))
+				continue;
 
 			$module_input_slug=$module['input_slug'];
 			$module_input_type=$module['input_type'];
@@ -434,7 +440,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $_GET['id']); } ?>
+		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $_GET['id'], $_GET['role']); } ?>
 		<p>&nbsp;</p>
 	</form>
 

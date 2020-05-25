@@ -1,5 +1,5 @@
 <?php
-function get_admin_menu ($page, $type='', $id=0) {
+function get_admin_menu ($page, $type='', $id=0, $role_json='') {
 	$op='';
 	if ($page=='dash') {
 		$op.='
@@ -13,7 +13,7 @@ function get_admin_menu ($page, $type='', $id=0) {
 		$op.='
 		<div class="mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar justify-content-between">
-		  '.list_types($type).new_and_list($type).'
+		  '.list_types($type).new_and_list($type, $role_json).'
 		</div>
 		</div></div>';
 	}
@@ -21,7 +21,7 @@ function get_admin_menu ($page, $type='', $id=0) {
 		$op.='
 		<div class="mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar justify-content-between">
-		'.list_types($type).edit_options($type, $id).new_and_list($type).'
+		'.list_types($type).edit_options($type, $id).new_and_list($type, $role_json).'
 		</div>
 		</div></div>';
 	}
@@ -37,12 +37,12 @@ function edit_options ($type, $id=0) {
 			</div>';
 }
 
-function new_and_list ($type) {
+function new_and_list ($type, $role_json='') {
 	global $types;
 	return '
 	<div class="btn-group">
-		<a href="'.BASE_URL.'/admin/edit?type='.$type.'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
-		<a href="'.BASE_URL.'/admin/list?type='.$type.'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
+		<a href="'.BASE_URL.'/admin/edit?type='.$type.(trim($role_json)?'&role='.$role_json:'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
+		<a href="'.BASE_URL.'/admin/list?type='.$type.(trim($role_json)?'&role='.$role_json:'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
 	</div>';
 }
 
