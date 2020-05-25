@@ -12,7 +12,6 @@ include_once ('../config-init.php'); ?>
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css" rel="stylesheet">
   <link href="<?php echo BASE_URL; ?>/admin/css/auth.css" rel="stylesheet">
-  <meta name="theme-color" content="#563d7c">
 </head>
 
 <body class="text-center">
