@@ -47,7 +47,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 				$module_autofill=$module['autofill'];
 				if ($module_autofill=='unique_id')
-					$module_input_default_value=$dash->get_unique_id();
+					$module_input_default_value=$auth->get_unique_id();
 			?>
 			
 		<?php if ($module_input_type=='text'): ?>
