@@ -82,9 +82,9 @@
   <form class="form-signin" method="post" action="/admin/auth?action=signin"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
   <h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
+  <input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
-  <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
+  <input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
   <div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> Remember me</label></div>
   <button type="submit" class="btn btn-sm btn-primary btn-block my-1">Sign in</button>
   <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=register">Register</a>
