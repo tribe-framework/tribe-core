@@ -57,7 +57,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			?>
 			
 		<?php if ($module_input_type=='text'): ?>
-		<div class="input-group input-group-lg my-4"><input type="text" name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>"></div>
+		<div class="input-group input-group-lg my-4"><input type="text" autocomplete="off" name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>"></div>
 
 		<?php if ($module_input_slug=='title' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" $dash->get_unique_id();="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div></div>';} ?>
 		<?php endif; ?>
@@ -165,7 +165,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-phone"></span></span>
 		  </div>
-		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input type="tel" autocomplete="off" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
 
@@ -188,7 +188,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-envelope"></span></span>
 		  </div>
-		  <input type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input type="email" autocomplete="off" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
 
@@ -197,7 +197,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-key"></span></span>
 		  </div>
-		  <input type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
+		  <input type="password" autocomplete="off" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
 		  <?php
 		  if ($post[$module_input_slug_lang])
 		  	echo '<small class="col-12 row form-text text-muted">To keep the password unchanged, leave this field empty</small>'; ?>
