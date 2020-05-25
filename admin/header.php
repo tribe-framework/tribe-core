@@ -1,3 +1,4 @@
+<?php if (!$_SESSION['unique_id'])	header ('Location: /admin/auth?section=exit'); die(); ?>
 <!doctype html>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
 <head>

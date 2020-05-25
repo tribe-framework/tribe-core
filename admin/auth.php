@@ -16,12 +16,24 @@ include_once ('../config-init.php'); ?>
 
 <body class="text-center">
   <hr class="hr fixed-top" style="margin:0 !important;">
+
+  <?php if ($_GET['section']=='exit') {
+    session_destroy();
+  } ?>
+
+  <?php if ($_GET['action']=='login' && $_POST['email'] && $_POST['password']) {
+    $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+    if ($q[0]['id']) {
+      $user=$dash->get_content($q[0]['id']);
+      $_SESSION['unique_id']=$user['unique_id'];
+      $_SESSION['email']=$user['email'];
+      $_SESSION['user']=$user;
+      header('Location: /admin');
+    }
+  } ?>
+
   <form class="form-signin">
   <h2><?php echo $menus['main']['logo']['name']; ?></h2>
-
-<?php if ($_GET['section']=='exit'): ?>
-
-<?php endif; ?>
 
 <?php if ($_GET['section']=='register'): ?>
 
