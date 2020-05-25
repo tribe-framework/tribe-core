@@ -39,6 +39,7 @@ include_once ('../config-init.php'); ?>
   <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+  <div class="checkbox mb-3"><label><input type="checkbox" value="remember-me"> Remember me</label></div>
   <a class="btn btn-sm btn-primary btn-block" href="/admin">Sign in</a>
   <a class="btn btn-sm btn-primary btn-block" href="/admin">Register</a>
   <p class="text-muted small my-1"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-key"></span>&nbsp;Forgot password?</a>'; ?></p>
