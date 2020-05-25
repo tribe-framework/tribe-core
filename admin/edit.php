@@ -25,7 +25,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 		<?php echo get_admin_menu('edit', $type, $_GET['role'], $_GET['id']); ?>
 
-		<h2 class="form_title">Edit <?php echo $types[$type]['name'].($type=='user'?' / '.$role['title']:''); ?></h2>
+		<h2 class="form_title">Edit <?php echo ($type=='user'?$role['title'].'&nbsp;<span class="fas fa-angle-double-right"></span>&nbsp;':'').$types[$type]['name']; ?></h2>
 
 		<?php foreach ($types[$type]['modules'] as $module) {
 			if ((!$module['restrict_id_max'] || $pid<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $pid>=$module['restrict_id_min'])):
