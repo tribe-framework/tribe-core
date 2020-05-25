@@ -30,7 +30,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php foreach ($types[$type]['modules'] as $module) {
 			if ((!$module['restrict_id_max'] || $pid<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $pid>=$module['restrict_id_min'])):
 
-			if (!in_array($role['slug'], $module['restrict_to_roles']))
+			if ($module['restrict_to_roles'] && !in_array($role['slug'], $module['restrict_to_roles']))
 				continue;
 
 			$module_input_slug=$module['input_slug'];
