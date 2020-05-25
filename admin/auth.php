@@ -23,10 +23,8 @@
 
   <?php if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
     $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
-    echo "SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'";
     if ($q[0]['id']) {
       $user=$dash->get_content($q[0]['id']);
-      var_dump($user);
       $_SESSION['unique_id']=$user['unique_id'];
       $_SESSION['email']=$user['email'];
       $_SESSION['user']=$user;
