@@ -81,7 +81,13 @@ class dash {
 
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
-				$post[$password_slug]=md5($post[$password_slug]);
+				$password_slug_md5=$module['input_slug'].'_md5';
+				if ($post[$password_slug])
+					$post[$password_slug]=md5($post[$password_slug]);
+				else if ($post[$password_slug_md5]) {
+					$post[$password_slug]=$post[$password_slug_md5];
+					unset($post[$password_slug_md5]);
+				}
 			}
 
 			$i++;
