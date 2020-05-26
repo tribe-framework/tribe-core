@@ -33,7 +33,9 @@
   } ?>
 
 <?php if ($_GET['section']=='register'): ?>
-  <div class="form-signin"><?php include_once (ABSOLUTE_PATH.'/admin/form.php'); ?></div>
+  <div class="form-signin">
+    <?php include (ABSOLUTE_PATH.'/admin/form.php'); ?>
+  </div>
 
 <?php elseif ($_GET['section']=='change-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
