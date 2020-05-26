@@ -45,7 +45,7 @@
     <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=signin">Sign in</a>
   </form>
 
-<?php elseif ($_GET['section']=='change-password'): ?>
+<?php else if ($_GET['section']=='change-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
   <h4 class="my-3 font-weight-normal"><span class="fas fa-key"></span>&nbsp;Change password</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
@@ -61,7 +61,7 @@
     <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
   </form>
 
-<?php elseif ($_GET['section']=='edit-profile'): ?>
+<?php else if ($_GET['section']=='edit-profile'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=edit-profile"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Edit profile</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
@@ -73,7 +73,7 @@
     <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
   </form>
 
-<?php elseif ($_GET['section']=='forgot-password'): ?>
+<?php else if ($_GET['section']=='forgot-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
   <h4 class="my-3 font-weight-normal"><span class="fas fa-key"></span>&nbsp;Forgot password</h4>
   <label for="inputEmail" class="sr-only">Email address</label>
