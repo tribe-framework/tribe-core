@@ -33,7 +33,9 @@
   } ?>
 
 <?php if ($_GET['section']=='register'): ?>
-  <form class="form-signin" method="post" action="/admin/auth"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+  <form class="form-signin" method="post">
+    <h2><?php echo $menus['main']['logo']['name']; ?></h2>
+    <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register <?php echo $_GET['role']; ?></h4>
     <?php include (ABSOLUTE_PATH.'/admin/form.php'); ?>
     <button type="submit" class="btn btn-sm btn-primary btn-block my-1">Register</button>
     <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=signin">Sign in</a>
