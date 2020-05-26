@@ -7,7 +7,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <?php
 if ($_GET['role'])
-  $role = json_decode(urldecode($types['user']['roles'][$_GET[role]]), true);
+  $role = $types['user']['roles'][$_GET[role]];
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>

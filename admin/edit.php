@@ -6,7 +6,7 @@ if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
 if ($_GET['role'])
-	$role = json_decode(urldecode($types['user']['roles'][$_GET[role]]), true);
+	$role = $types['user']['roles'][$_GET[role]];
 
 if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
