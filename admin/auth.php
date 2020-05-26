@@ -33,17 +33,7 @@
   } ?>
 
 <?php if ($_GET['section']=='register'): ?>
-  <form class="form-signin" method="post" action="/admin/auth?action=register"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
-  <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register</h4>
-  <label for="inputEmail" class="sr-only">Email address</label>
-  <input type="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required>
-  <label for="inputPassword" class="sr-only">Password</label>
-  <input type="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
-  <label for="inputPassword" class="sr-only">Confirm password</label>
-  <input type="password" id="inputConfirmPassword" class="form-control my-1" placeholder="Confirm password" required>
-  <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=register">Register</a>
-  <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=signin">Sign in</a>
-  <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
+  <div class="form-signin"><?php include_once (ABSOLUTE_PATH.'/admin/form.php'); ?></div>
 
 <?php elseif ($_GET['section']=='change-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
@@ -57,6 +47,9 @@
   <label for="inputConfirmNewPassword" class="sr-only">Confirm new password</label>
   <input type="password" id="inputConfirmNewPassword" class="form-control my-1" placeholder="Confirm new password">
   <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=change-password">Submit</a>
+    <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
+    <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
+  </form>
 
 <?php elseif ($_GET['section']=='edit-profile'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=edit-profile"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
@@ -66,6 +59,9 @@
   <label for="inputFullName" class="sr-only" autofocus>Full name</label>
   <input type="text" id="inputFullName" class="form-control my-1" placeholder="Full name">
   <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=edit-profile">Submit</a>
+    <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
+    <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
+  </form>
 
 <?php elseif ($_GET['section']=='forgot-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
@@ -75,6 +71,9 @@
   <a class="btn btn-sm btn-primary btn-block my-1" href="/admin/auth?action=generate-password">Generate password</a>
   <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=register">Register</a>
   <p class="text-muted small my-1"><a href="/admin/auth?section=forgot-password"><span class="fas fa-lock"></span>&nbsp;Sign in</a></p>
+    <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
+    <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
+  </form>
 
 <?php else: ?>
   <form class="form-signin" method="post" action="/admin/auth?action=signin"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
@@ -87,11 +86,11 @@
   <button type="submit" class="btn btn-sm btn-primary btn-block my-1">Sign in</button>
   <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=register">Register</a>
   <p class="text-muted small my-2"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
-
-<?php endif; ?>
-
     <p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
     <p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
   </form>
+
+<?php endif; ?>
+
 </body>
 </html>

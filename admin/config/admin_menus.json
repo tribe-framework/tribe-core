@@ -15,6 +15,10 @@
         "submenu": "user"
       },
       {
+        "name": "Insights",
+        "href": "/admin/insights"
+      },
+      {
         "name": "Settings",
         "href": "#",
         "dropdown_class": "dropdown-menu-right",
