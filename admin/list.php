@@ -7,10 +7,10 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 <?php
 if ($_GET['role'])
-  $role = json_decode(urldecode($_GET['role']), true);
+  $role = json_decode(urldecode($types['user']['roles'][$_GET[role]]), true);
 ?>
 
-<?php echo get_admin_menu('list', $type, $_GET['role']); ?>
+<?php echo get_admin_menu('list', $type, $role['slug']); ?>
 
 <h2 class="mb-4"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'List of '.$types[$type]['plural']; ?></h2>
 

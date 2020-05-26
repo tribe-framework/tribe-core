@@ -6,7 +6,7 @@ if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
 if ($_GET['role'])
-	$role = json_decode(urldecode($_GET['role']), true);
+	$role = json_decode(urldecode($types['user']['roles'][$_GET[role]]), true);
 
 if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
@@ -23,7 +23,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	<form method="post" class="edit_form" action="/admin/json" autocomplete="off">
 
-		<?php echo get_admin_menu('edit', $type, $_GET['role'], $_GET['id']); ?>
+		<?php echo get_admin_menu('edit', $type, $role['slug'], $_GET['id']); ?>
 
 		<h2 class="form_title"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'Edit '.$types[$type]['name']; ?></h2>
 
@@ -439,12 +439,18 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php } endif; } ?>
 	
 		<input type="hidden" name="class" value="dash">
+		<?php
+		if ($role['slug'])
+			echo '<input type="hidden" name="role_slug" value="'.$role['slug'].'">';
+		else if ($post['role_slug'])
+			echo '<input type="hidden" name="role_slug" value="'.$post['role_slug'].'">';
+		?>
 		<input type="hidden" name="function" value="push_content">
 		<input type="hidden" name="type" value="<?php echo $types[$type]['slug']; ?>">
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $_GET['role'], $_GET['id']); } ?>
+		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $role['slug'], $_GET['id']); } ?>
 		<p>&nbsp;</p>
 	</form>
 

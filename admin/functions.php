@@ -1,5 +1,5 @@
 <?php
-function get_admin_menu ($page, $type='', $role_json='', $id=0) {
+function get_admin_menu ($page, $type='', $role_slug='', $id=0) {
 	$op='';
 	if ($page=='dash') {
 		$op.='
@@ -13,7 +13,7 @@ function get_admin_menu ($page, $type='', $role_json='', $id=0) {
 		$op.='
 		<div class="mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar justify-content-between">
-		  '.list_types($type).new_and_list($type, $role_json).'
+		  '.list_types($type).new_and_list($type, $role_slug).'
 		</div>
 		</div></div>';
 	}
@@ -21,7 +21,7 @@ function get_admin_menu ($page, $type='', $role_json='', $id=0) {
 		$op.='
 		<div class="mb-4"><div class="card-body p-0">
 		<div class="btn-toolbar justify-content-between">
-		'.list_types($type).edit_options($type, $id).new_and_list($type, $role_json).'
+		'.list_types($type).edit_options($type, $id).new_and_list($type, $role_slug).'
 		</div>
 		</div></div>';
 	}
@@ -37,12 +37,12 @@ function edit_options ($type, $id=0) {
 			</div>';
 }
 
-function new_and_list ($type, $role_json='') {
+function new_and_list ($type, $role_slug='') {
 	global $types;
 	return '
 	<div class="btn-group">
-		<a href="'.BASE_URL.'/admin/edit?type='.$type.(trim($role_json)?'&role='.urlencode($role_json):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
-		<a href="'.BASE_URL.'/admin/list?type='.$type.(trim($role_json)?'&role='.urlencode($role_json):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
+		<a href="'.BASE_URL.'/admin/edit?type='.$type.(trim($role_slug)?'&role='.urlencode($role_slug):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
+		<a href="'.BASE_URL.'/admin/list?type='.$type.(trim($role_slug)?'&role='.urlencode($role_slug):'').'" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-list"></span>&nbsp;List</a>
 	</div>';
 }
 

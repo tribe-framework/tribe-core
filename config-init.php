@@ -26,6 +26,11 @@ $types=$dash::get_types(THEME_PATH.'/config/types.json');
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
 $admin_menus=json_decode(file_get_contents(ABSOLUTE_PATH.'/admin/config/admin_menus.json'), true);
 
+$userless_install=0;
+$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
+if (!$q[0]['id'])
+	$userless_install=1;
+
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
 if (isset($_GET['ext'])) {

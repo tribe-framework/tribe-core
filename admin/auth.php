@@ -32,7 +32,6 @@
     }
   } ?>
 
-
 <?php if ($_GET['section']=='register'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=register"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
   <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register</h4>

@@ -1,4 +1,4 @@
-<?php if (!$_SESSION['user_id']) {header ('Location: /admin/auth?section=signin'); die();} ?>
+<?php if (!$_SESSION['user_id'] && !$userless_install) {header ('Location: /admin/auth?section=signin'); die();} ?>
 <!doctype html>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
 <head>

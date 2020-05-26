@@ -59,10 +59,10 @@ class theme {
 								$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
 							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
-							foreach ($subitems as $opt) {
+							foreach ($subitems as $key=>$opt) {
 								if ($is_user_role_menu) {
 									$subitem=$opt;
-									$subitem['href']='/admin/list?type='.$item['submenu'].'&role='.urlencode(json_encode($subitem));
+									$subitem['href']='/admin/list?type='.$item['submenu'].'&role='.$key;
 								}
 								else {
 									$subitem=$dash::get_content($opt['id']);
