@@ -33,6 +33,10 @@
   } ?>
 
 <?php if ($_GET['section']=='register'): ?>
+  <?php
+  if ($_GET['role'])
+    $role = $types['user']['roles'][$_GET[role]];
+  ?>
   <form class="form-signin" method="post">
     <h2><?php echo $menus['main']['logo']['name']; ?></h2>
     <h4 class="my-3 font-weight-normal"><span class="fas fa-user"></span>&nbsp;Register <?php echo $_GET['role']; ?></h4>
