@@ -1,4 +1,4 @@
-
+<?php
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
