@@ -33,9 +33,11 @@
   } ?>
 
 <?php if ($_GET['section']=='register'): ?>
-  <div class="form-signin">
+  <form class="form-signin" method="post" action="/admin/auth"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
     <?php include (ABSOLUTE_PATH.'/admin/form.php'); ?>
-  </div>
+    <button type="submit" class="btn btn-sm btn-primary btn-block my-1">Register</button>
+    <a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=signin">Sign in</a>
+  </form>
 
 <?php elseif ($_GET['section']=='change-password'): ?>
   <form class="form-signin" method="post" action="/admin/auth?action=change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
