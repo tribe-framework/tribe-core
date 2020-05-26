@@ -78,7 +78,10 @@ class dash {
 				$title_unique=$module['input_unique'];
 				break;
 			}
+			$i++;
+		}
 
+		foreach ($types[$posttype]['modules'] as $module) {
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
 				$password_slug_md5=$module['input_slug'].'_md5';
@@ -89,7 +92,6 @@ class dash {
 					unset($post[$password_slug_md5]);
 				}
 			}
-
 			$i++;
 		}
 
