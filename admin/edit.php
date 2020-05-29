@@ -354,7 +354,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	          scale: 1,
 	          strokeColor: 'gold',
 	          strokeWeight: 1,
-			  size: new google.maps.Size(288, 512),
+			  size: new google.maps.Size(36, 64),
 			  origin: new google.maps.Point(0, 0),
 			  anchor: new google.maps.Point(18, 64),
 			  scaledSize: new google.maps.Size(36, 64)
@@ -378,8 +378,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		      map: map,
 		      draggable: true,
 		      icon: fontawesomePin,
-		      animation: google.maps.Animation.DROP,
-		      anchorPoint: new google.maps.Point(0, -29)
+		      animation: google.maps.Animation.DROP
 		    });
 
 		    marker.addListener('dragend', function(event) {
