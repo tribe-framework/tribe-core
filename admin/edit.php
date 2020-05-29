@@ -353,7 +353,11 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	          fillOpacity: 0.8,
 	          scale: 0.1,
 	          strokeColor: 'gold',
-	          strokeWeight: 7
+	          strokeWeight: 7,
+			  size: new google.maps.Size(71, 71),
+			  origin: new google.maps.Point(0, 0),
+			  anchor: new google.maps.Point(17, 34),
+			  scaledSize: new google.maps.Size(25, 25)
 	        };
 
 		    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
@@ -374,6 +378,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		      map: map,
 		      draggable: true,
 		      icon: fontawesomePin,
+		      animation: google.maps.Animation.DROP,
 		      anchorPoint: new google.maps.Point(0, -29)
 		    });
 
