@@ -354,7 +354,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	          scale: 0.08,
 	          strokeColor: 'gold',
 	          strokeWeight: 1,
-	          anchor: new google.maps.Point(288,150)
+	          anchor: new google.maps.Point(144,512)
 	        };
 
 		    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
