@@ -363,6 +363,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		    infowindow.setContent(infowindowContent);
 		    var marker = new google.maps.Marker({
 		      map: map,
+		      draggable: true,
 		      anchorPoint: new google.maps.Point(0, -29)
 		    });
 
@@ -378,6 +379,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	          if (status === google.maps.places.PlacesServiceStatus.OK) {
 	            var marker = new google.maps.Marker({
 	              map: map,
+	              draggable: true,
 	              position: place.geometry.location
 	            });
 
