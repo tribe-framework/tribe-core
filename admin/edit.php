@@ -395,7 +395,8 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	            var marker = new google.maps.Marker({
 	              map: map,
 	              draggable: true,
-	     fontawesomePin 
+			      icon: fontawesomePin,
+			      animation: google.maps.Animation.DROP,
 	              position: place.geometry.location
 	            });
 
