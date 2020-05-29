@@ -366,6 +366,11 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		      draggable: true,
 		      anchorPoint: new google.maps.Point(0, -29)
 		    });
+		    
+		    marker.addListener('dragend', function() {
+		    	var place = autocomplete.getPlace();
+		    	alert('moved to: '+parseGoogleResponse(place.address_components));
+		    });
 
 		    <?php if ($post[$module_input_slug_lang]) { ?>
 	        var request = {
