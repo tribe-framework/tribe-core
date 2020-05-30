@@ -34,7 +34,7 @@ class theme {
 		if ($items) {
 			$op.='
 			<nav class="navbar '.$css_classes['navbar'].'">
-				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name'].($items['logo']['byline']?$items['logo']['byline']:'')).'</a>
+				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name']).'</a>
 				<button class="'.$css_classes['toggler'].'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					'.$hamburger_bars.'
 				</button>
