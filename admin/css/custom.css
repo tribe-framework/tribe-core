@@ -5,6 +5,8 @@
     background: #993399;
 }
 
+.byline {display: none;}
+
 #map {
 	height:400px;
 	max-height: 100%;
