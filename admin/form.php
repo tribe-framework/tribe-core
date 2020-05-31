@@ -103,7 +103,7 @@
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-calendar"></span></span>
 		  </div>
 		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
-		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
+		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<?php endif; ?>
 
@@ -151,7 +151,7 @@
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
 		  </div>
 		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
-		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
+		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<?php endif; ?>
 
@@ -172,7 +172,7 @@
 		  <input type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
 		  <?php
 		  if ($post[$module_input_slug_lang])
-		  	echo '<small class="col-12 row form-text text-muted">To keep the password unchanged, leave this field empty</small>'; ?>
+		  	echo '<small class="col-12 row form-text text-muted text-left">To keep the password unchanged, leave this field empty</small>'; ?>
 		  <input type="hidden" name="<?php echo $module_input_slug_lang; ?>_md5" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>
@@ -250,7 +250,7 @@
 			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" data-bunching='<?php echo json_encode($module['input_bunching']); ?>' data-descriptor="<?php echo ($module['input_descriptor']?'1':''); ?>" data-url="/admin/uploader" multiple>
 			<label class="custom-file-label border-top-0 border-left-0 border-right-0 rounded-0" for="fileupload">Choose file</label>
 			</div>
-		  	<?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted">'.$module_input_placeholder.'</small>':''); ?>
+		  	<?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
 		</div>
 		<div class="col-12 p-0 mb-4 d-none" id="<?php echo $module_input_slug_lang; ?>_fileuploads">
 			<div id="progress">
