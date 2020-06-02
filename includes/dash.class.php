@@ -153,11 +153,18 @@ class dash {
 
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql;
+		if (is_array($type)) {
+			$role_slug=$type['role_slug'];
+			$type=$type['type'];
+		}
+		else
+			$role_slug='';
+
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"`content`->'$.role_slug'='$role_slug'"?"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 	}
 
 	function get_ids ($search_arr, $priority_field='id', $priority_order='DESC', $limit='') {

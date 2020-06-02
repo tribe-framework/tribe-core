@@ -32,8 +32,11 @@ if ($_GET['role'])
     </tr>
   </thead>
   <tbody>
-  <?php 
-  $ids = $dash::get_all_ids($type);
+  <?php
+  if ($type=='user')
+    $ids = $dash::get_all_ids(array('type'=>$type, 'role_slug'=>$role['slug']));
+  else
+    $ids = $dash::get_all_ids($type);
   foreach ($ids as $arr) {
     $post = $dash::get_content($arr['id']);
     echo '<tr><th scope="row">'.$post['id'].'</th>';
