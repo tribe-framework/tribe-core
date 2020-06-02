@@ -34,7 +34,7 @@ if ($_GET['role'])
   <tbody>
   <?php
   if ($type=='user')
-    $ids = $dash::get_all_ids(array('type'=>$type, 'role_slug'=>$role['slug']));
+    $ids = $dash::get_all_ids(array('type'=>$type, 'role_slug'=>$_GET['role']));
   else
     $ids = $dash::get_all_ids($type);
   foreach ($ids as $arr) {
