@@ -32,8 +32,8 @@ if ($postids) {
   <script type="text/javascript"> 
   function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 15,
-      center: <?php echo '{lat: '.$pdata['end_lat'].', lng: '.$pdata['end_lng'].'}'; ?>
+      zoom: 16,
+      center: <?php echo '{lat: 28.6310992, lng: 77.2883984}'; ?>
     });
     <?php echo $op; ?>
   }
