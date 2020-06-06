@@ -11,7 +11,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 $op='';
 $postids=$dash::get_all_ids('lane');
 if ($postids) {
-  echo '<div id="map" style="height: 500px; margin-bottom: 20px; margin-top: 20px;"></div>';
+  echo '<div class="card my-2"><div class="card-header">Activity Overview</div><div class="card-body"><div id="map" style="height: 500px; margin-bottom: 20px; margin-top: 20px;"></div>';
   foreach ($postids as $postarr) {
     $pdata=$dash::get_content($postarr['id']);
     $i++;
@@ -38,7 +38,7 @@ if ($postids) {
     <?php echo $op; ?>
   }
   </script>
-<?php } ?>
+<?php echo '</div></div>'; } ?>
 
 <div class="card-group m-0">
 <div class="card my-2">
