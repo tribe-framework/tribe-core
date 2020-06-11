@@ -121,7 +121,7 @@ class dash {
 
 		dash::$last_info[]='Content saved.';
 		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug'], 'url'=>BASE_URL.'/'.$post['type'].'/'.$post['slug']);
-		return 1;
+		return $id;
 	}
 
 	function get_content_meta ($id, $meta_key) {
