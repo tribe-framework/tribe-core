@@ -38,12 +38,17 @@ if ($_GET['role'])
   else
     $ids = $dash::get_all_ids($type);
   foreach ($ids as $arr) {
-    $post = $dash::get_content($arr['id']);
+    //$post = $dash::get_content($arr['id']);
+    $post = array();
+    $post['id']=$arr['id'];
+    $post['type']=$type;
+    $post['slug']=$dash->get_content_meta($post['id'], 'slug');
+    
     echo '<tr><th scope="row">'.$post['id'].'</th>';
     foreach ($types[$type]['modules'] as $module) {
       if (isset($module['list_field']) && $module['list_field'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
         $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
-        echo '<td>'.$post[$module_input_slug_lang].'</td>';
+        echo '<td>'.$dash->get_content_meta($post['id'], $module_input_slug_lang).'</td>';
       }
     }
     echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
