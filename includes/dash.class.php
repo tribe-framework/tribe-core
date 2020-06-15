@@ -167,14 +167,14 @@ class dash {
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 	}
 
-	function get_ids ($search_arr, $priority_field='id', $priority_order='DESC', $limit='') {
+	function get_ids ($search_arr, $priority_field='id', $priority_order='DESC', $limit='', $comparison='LIKE') {
 		global $sql;
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
 		foreach ($search_arr as $key => $value) {
-			$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.".$key."'='".$value."' || `content`->'$.".$key."' LIKE '%".$value."%' ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+			$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.".$key."' $comparison '%".$value."%' ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 		}
 		return $r; 
 	}
