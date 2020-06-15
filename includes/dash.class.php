@@ -131,6 +131,16 @@ class dash {
 		return $or[$meta_key];
 	}
 
+	function push_content_meta ($id, $meta_key, $meta_value) {
+		global $sql;
+		if ($id && $meta_key) {
+			$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$.meta_key', '$meta_value') WHERE `id`='$id'");
+			return 1;
+		}
+		else
+			return 0;
+	}
+
 	function get_content ($val) {
 		global $sql;
 		$or=array();
