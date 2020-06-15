@@ -200,7 +200,6 @@ class dash {
 			$i++;
 		}
 		$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
-		echo "SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 		return $r; 
 	}
 
