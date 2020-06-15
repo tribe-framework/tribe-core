@@ -45,23 +45,18 @@ if ($_GET['role'])
     $post['slug']=$dash->get_content_meta($post['id'], 'slug');
     
     $tr_echo='<tr><th scope="row">'.$post['id'].'</th>';
+    $donotlist=0;
     foreach ($types[$type]['modules'] as $module) {
       if (isset($module['list_field']) && $module['list_field'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
-          if ($module['list_non_empty_only']) {
-            $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
-            if ($cont=$dash->get_content_meta($post['id'], $module_input_slug_lang)) {
-              $tr_echo.='<td>'.$cont.'</td>';
-              $list_it=1;  
-            }
-            else
-              $list_it=0;
-          }
-          else
-            $list_it=1;
+          $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
+          $cont=$dash->get_content_meta($post['id'], $module_input_slug_lang);
+          $tr_echo.='<td>'.$cont.'</td>';
+          if ($module['list_non_empty_only'] && !trim($cont))
+              $donotlist=1;
       }
     }
     $tr_echo.='<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
-    if ($list_it)
+    if (!$donotlist)
       echo $tr_echo;
   }
   ?>
