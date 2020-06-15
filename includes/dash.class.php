@@ -167,15 +167,16 @@ class dash {
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 	}
 
-	function get_ids ($search_arr, $comparison='LIKE', $priority_field='id', $priority_order='DESC', $limit='') {
+	function get_ids ($search_arr, $comparison='LIKE', $between='||', $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql;
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
-		foreach ($search_arr as $key => $value) {
-			$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.".$key."' $comparison ".(trim($value)?"'".$value."'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
-		}
+		$frechr=array();
+		foreach ($search_arr as $key => $value)
+			$frechr[]="`content`->'$.".$key."' $comparison ".(trim($value)?"'".$value."'":"");
+		$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 		return $r; 
 	}
 
