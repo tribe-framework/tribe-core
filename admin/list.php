@@ -44,14 +44,24 @@ if ($_GET['role'])
     $post['type']=$type;
     $post['slug']=$dash->get_content_meta($post['id'], 'slug');
     
-    echo '<tr><th scope="row">'.$post['id'].'</th>';
+    $tr_echo='<tr><th scope="row">'.$post['id'].'</th>';
     foreach ($types[$type]['modules'] as $module) {
       if (isset($module['list_field']) && $module['list_field'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
-        $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
-        echo '<td>'.$dash->get_content_meta($post['id'], $module_input_slug_lang).'</td>';
-      }
+        if ($module['list_non_empty_only']) {
+          $module_input_slug_lang=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
+          if ($cont=$dash->get_content_meta($post['id'], $module_input_slug_lang)) {
+            $tr_echo.='<td>'.$cont.'</td>';
+            $list_it=1;  
+          }
+          else
+            $list_it=0;
+        }
+        else
+          $list_it=1;
     }
-    echo '<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
+    $tr_echo.='<td><a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].'"><span class="fas fa-edit"></span></a>&nbsp;<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
+    if ($list_it)
+      echo $tr_echo;
   }
   ?>
   </tbody>
