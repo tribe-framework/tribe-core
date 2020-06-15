@@ -25,6 +25,14 @@ function get_admin_menu ($page, $type='', $role_slug='', $id=0) {
 		</div>
 		</div></div>';
 	}
+	if ($page=='view') {
+		$op.='
+		<div class="mb-4"><div class="card-body p-0">
+		<div class="btn-toolbar justify-content-between">
+		'.list_types($type).new_and_list($type, $role_slug).'
+		</div>
+		</div></div>';
+	}
 	return $op;
 }
 

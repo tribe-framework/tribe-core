@@ -23,7 +23,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 	<form method="post" class="edit_form" action="/admin/json" autocomplete="off">
 
-		<?php echo get_admin_menu('edit', $type, $role['slug'], $_GET['id']); ?>
+		<?php echo get_admin_menu(($types[$type]['disallow_editing']?'view':'edit'), $type, $role['slug'], $_GET['id']); ?>
 
 		<h2 class="form_title"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'Edit '.$types[$type]['name']; ?></h2>
 
@@ -469,7 +469,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 		
-		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu('edit', $type, $role['slug'], $_GET['id']); } ?>
+		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu(($types[$type]['disallow_editing']?'view':'edit'), $type, $role['slug'], $_GET['id']); } ?>
 		<p>&nbsp;</p>
 	</form>
 
