@@ -174,8 +174,15 @@ class dash {
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
 		$frechr=array();
-		foreach ($search_arr as $key => $value)
-			$frechr[]="`content`->'$.".$key."' $comparison ".(trim($value)?"'".$value."'":"");
+		$i=0;
+		if (!is_array($comparison))
+			$comparisonr=array_fill(0, count($search_arr), $comparison);
+		else
+			$comparisonr=$comparison;
+		foreach ($search_arr as $key => $value) {
+			$frechr[]="`content`->'$.".$key."' ".$comparison[$i]." ".(trim($value)?"'".$value."'":"");
+			$i++;
+		}
 		$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 		return $r; 
 	}
