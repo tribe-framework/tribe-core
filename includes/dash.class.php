@@ -131,15 +131,17 @@ class dash {
 		return $or[$meta_key];
 	}
 
-	function push_content_meta ($id, $meta_key, $meta_value) {
+	function push_content_meta ($id, $meta_key, $meta_value='') {
 		global $sql;
 		if ($id && $meta_key) {
 			if (!trim($meta_value)) {
 				echo "UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$.".$meta_key."') WHERE `id`='$id'";
 				$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$.".$meta_key."') WHERE `id`='$id'");
 			}
-			else
+			else {
+				echo "UPDATE `data` SET `content` = JSON_SET(`content`, '$.".$meta_key."', '$meta_value') WHERE `id`='$id'";
 				$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$.".$meta_key."', '$meta_value') WHERE `id`='$id'");
+			}
 			return 1;
 		}
 		else
