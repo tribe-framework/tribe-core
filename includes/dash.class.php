@@ -118,6 +118,7 @@ class dash {
 
 		$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
 		$id=$post['id'];
+		$this->push_content_meta($post['id'], 'content');
 
 		dash::$last_info[]='Content saved.';
 		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug'], 'url'=>BASE_URL.'/'.$post['type'].'/'.$post['slug']);
