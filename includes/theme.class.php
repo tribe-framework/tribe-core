@@ -73,7 +73,11 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$data_ext='';
+							foreach ($item['data'] as $k=>$v)
+								$data_ext.='data-'.$k.'="'.$v.'" ';
+
+							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" '.($data_ext?$data_ext:'').' href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
@@ -160,7 +164,11 @@ class theme {
 							$op.='</div></li>';
 						}
 						else {
-							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
+							$data_ext='';
+							foreach ($item['data'] as $k=>$v)
+								$data_ext.='data-'.$k.'="'.$v.'" ';
+
+							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" '.($data_ext?$data_ext:'').' href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
 
 					}
