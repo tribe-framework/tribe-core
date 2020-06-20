@@ -64,6 +64,11 @@ class dash {
 		return 1;
 	}
 
+	function get_ids_by_search_query ($query) {
+		global $sql;
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%".strtolower(urldecode($query))."%' && `content`->'$.content_privacy'='public' GROUP BY `id` LIMIT 25");
+	}
+
 	function push_content ($post) {
 		global $sql, $types;
 		$updated_on=time();
