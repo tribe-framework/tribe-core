@@ -1,7 +1,10 @@
 <?php
 include_once ('config-init.php');
 
-if ($type && $slug) {
+if ($_GET['q']) {
+	include_once (THEME_PATH.'/search.php');
+}
+else if ($type && $slug) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 	$postdata_modified=$postdata;
