@@ -69,6 +69,7 @@ class dash {
 		$updated_on=time();
 		$posttype=$post['type'];
 
+		//foreach loop that breaks
 		$i=0;
 		foreach ($types[$posttype]['modules'] as $module) {
 			if ($module['input_primary'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
@@ -78,9 +79,12 @@ class dash {
 				$title_unique=$module['input_unique'];
 				break;
 			}
+
 			$i++;
 		}
 
+		//loop that doesn't break
+		$post['view_searchable_data']='';
 		foreach ($types[$posttype]['modules'] as $module) {
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
@@ -92,7 +96,14 @@ class dash {
 					unset($post[$password_slug_md5]);
 				}
 			}
-			$i++;
+
+			if ($module['view_searchable'] && in_array($post['type'], $types['webapp']['searchable_types']) && $post['content_privacy']=='public') {
+				$slug=$module['input_slug'];
+				if (is_array($post[$slug]))
+					$post['view_searchable_data'].=implode(' ', array_map('strip_tags', $post[$slug])).' ';
+				else
+					$post['view_searchable_data'].=strip_tags($post[$slug]).' ';
+			}
 		}
 
 		if ($title_unique) {
