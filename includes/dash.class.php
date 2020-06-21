@@ -144,9 +144,13 @@ class dash {
 		return $id;
 	}
 
-	function get_content_meta ($id, $meta_key) {
+	function get_content_meta ($val, $meta_key) {
 		global $sql;
-		$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$id'");
+		if (is_numeric($val))
+			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
+		else 
+			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
+
 		$or=json_decode($q[0]['content'], true);
 		return $or[$meta_key];
 	}
@@ -215,7 +219,12 @@ class dash {
 		else
 			$comparisonr=$comparison;
 		foreach ($search_arr as $key => $value) {
-			$frechr[]="`content`->'$.".$key."' ".$comparisonr[$i]." ".(trim($value)?"'".$value."'":"");
+			if (is_array($value)) {
+				foreach ($value as $kv => $vv)
+					$frechr[]="`content`->'$.".$kv."' ".$comparisonr[$i]." ".(trim($vv)?"'".$vv."'":"");
+			}
+			else
+				$frechr[]="`content`->'$.".$key."' ".$comparisonr[$i]." ".(trim($value)?"'".$value."'":"");
 			$i++;
 		}
 		$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
