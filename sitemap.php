@@ -2,7 +2,7 @@
 <?php header('Content-type: application/xml; charset=utf-8'); ?>
 <?php
 $or=array();
-$or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
+$or[]=array('url'=>array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1'));
 $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
 array_to_xml($or, $xml);
 print $xml->asXML();
