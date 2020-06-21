@@ -4,7 +4,10 @@
 $or=array();
 $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
 $or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
-to_xml($xml, $or); print $xml->asXML();
+to_xml($xml, $or);
+$or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
+to_xml($xml, $or);
+print $xml->asXML();
 
 function to_xml(SimpleXMLElement $object, array $data) {
     foreach ($data as $key => $value) {
