@@ -4,22 +4,22 @@
 $or=array();
 $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
 $or[0]['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
-array_to_xml($or, $xml);
+to_xml($xml, $or);
 print $xml->asXML();
 
-function array_to_xml( $data, &$xml ) {
-    foreach( $data as $dt ) {
-    	foreach ($dt as $key => $value) {
-	        if( is_array($value) ) {
-	            if( is_numeric($key) ){
-	                $key = 'item'.$key; //dealing with <0/>..<n/> issues
-	            }
-	            $subnode = $xml->addChild($key);
-	            array_to_xml($value, $subnode);
-	        } else {
-	            $xml->addChild("$key",htmlspecialchars("$value"));
-	        }
-	    }
-     }
-}
+function to_xml(SimpleXMLElement $object, array $data) {   
+    foreach ($data as $key => $value) {
+        if (is_array($value)) {
+            $new_object = $object->addChild($key);
+            to_xml($new_object, $value);
+        } else {
+            // if the key is an integer, it needs text with it to actually work.
+            if ($key == (int) $key) {
+                $key = "key_$key";
+            }
+
+            $object->addChild($key, $value);
+        }   
+    }   
+}   
 ?>
