@@ -2,8 +2,6 @@
 include_once('config/config-vars.php');
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
-include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
-$dash = new dash();
 ?>
 <?php header('Content-type: application/xml; charset=utf-8'); ?>
 <?php
@@ -14,10 +12,10 @@ $or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
 to_xml($xml, $or);
 
 foreach ($types['webapp']['searchable_types'] as $tp) {
-	$ids=$dash->get_all_ids($tp);
-	foreach ($ids as $idr) {
-		$post=$dash->get_content($idr['id']);
-		$or['url']=array('loc'=>BASE_URL.'/'.$post['type'].'/'.$post['slug'], 'lastmod'=>date('Y-m-d', $post['updated_on']), 'priority'=>'0.7');
+	$posts=$sql->executeSQL("SELECT `id`, `content`->>'$.slug' `slug`, `updated_on` FROM `data` WHERE `content`->'$.content_privacy'='public' && `content`->'$.type'='$tp' ORDER BY `id` DESC");
+	foreach ($posts as $post) {
+		$post=$dash->get_content($post['id']);
+		$or['url']=array('loc'=>BASE_URL.'/'.$tp.'/'.$post['slug'], 'lastmod'=>date('Y-m-d', $post['updated_on']), 'priority'=>'0.7');
 		to_xml($xml, $or);
 	}
 }
