@@ -1,4 +1,10 @@
-<?php include_once ('config-init.php'); ?>
+<?php
+include_once('config/config-vars.php');
+include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
+$sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
+include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
+$dash = new dash();
+?>
 <?php header('Content-type: application/xml; charset=utf-8'); ?>
 <?php
 $or=array();
