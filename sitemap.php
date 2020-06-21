@@ -7,9 +7,8 @@ $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/site
 $or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
 to_xml($xml, $or);
 
-foreach ($types['webapp']['searchable_types'] as $type) {
-	echo $type;
-	$ids=$dash->get_all_ids($type);
+foreach ($types['webapp']['searchable_types'] as $tp) {
+	$ids=$dash->get_all_ids($tp);
 	foreach ($ids as $idr) {
 		$post=$dash->get_content($idr['id']);
 		$or['url']=array('loc'=>BASE_URL.'/'.$post['type'].'/'.$post['slug'], 'lastmod'=>date('Y-m-d', $post['updated_on']), 'priority'=>'0.7');
