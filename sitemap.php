@@ -11,8 +11,8 @@ function to_xml(SimpleXMLElement $xml, array $data) {
     foreach ($data as $dt) {
     	foreach ($dt as $key => $value) {
 	        if (is_array($value)) {
-	            $new_object = $xml->addChild($key);
-	            to_xml($new_object, $value);
+	            $xml = $xml->addChild($key);
+	            to_xml($xml, $value);
 	        } else {
 	            // if the key is an integer, it needs text with it to actually work.
 	            if ($key == (int) $key) {
