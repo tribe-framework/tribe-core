@@ -7,17 +7,17 @@ $or[0]['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
 array_to_xml($or, $xml);
 print $xml->asXML();
 
-function array_to_xml( $data, &$xml_data ) {
+function array_to_xml( $data, &$xml ) {
     foreach( $data as $dt ) {
     	foreach ($dt as $key => $value) {
 	        if( is_array($value) ) {
 	            if( is_numeric($key) ){
 	                $key = 'item'.$key; //dealing with <0/>..<n/> issues
 	            }
-	            $subnode = $xml_data->addChild($key);
+	            $subnode = $xml->addChild($key);
 	            array_to_xml($value, $subnode);
 	        } else {
-	            $xml_data->addChild("$key",htmlspecialchars("$value"));
+	            $xml->addChild("$key",htmlspecialchars("$value"));
 	        }
 	    }
      }
