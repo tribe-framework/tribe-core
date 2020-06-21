@@ -8,6 +8,7 @@ $or['url']=array('loc'=>BASE_URL, 'lastmod'=>'2020-06-20', 'priority'=>'1');
 to_xml($xml, $or);
 
 foreach ($types['webapp']['searchable_types'] as $type) {
+	echo $type;
 	$ids=$dash->get_all_ids($type);
 	foreach ($ids as $idr) {
 		$post=$dash->get_content($idr['id']);
