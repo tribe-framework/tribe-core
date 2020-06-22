@@ -201,6 +201,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		  <?php
 		  if ($post[$module_input_slug_lang])
 		  	echo '<small class="col-12 row form-text text-muted">To keep the password unchanged, leave this field empty</small>'; ?>
+		  <?php //important step for password_md5, connected with $dash->push_content ?>
 		  <input type="hidden" name="<?php echo $module_input_slug_lang; ?>_md5" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php endif; ?>

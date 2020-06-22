@@ -91,12 +91,21 @@ class dash {
 		//loop that doesn't break
 		$post['view_searchable_data']='';
 		foreach ($types[$posttype]['modules'] as $module) {
+			//password md5 handling is a tricky game
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
 				$password_slug_md5=$module['input_slug'].'_md5';
-				if ($post[$password_slug])
+				
+				if ($post[$password_slug] && !$post[$password_slug_md5]) {
+					if ($post['id']) //while importing from get_content function
+						$post[$password_slug]=$post[$password_slug];
+					else //for new entries
+						$post[$password_slug]=md5($post[$password_slug]);
+				}
+				else if ($post[$password_slug] && (md5($post[$password_slug])!=$post[$password_slug_md5])) { //post edit, password changed
 					$post[$password_slug]=md5($post[$password_slug]);
-				else if ($post[$password_slug_md5]) {
+				}
+				else if ($post[$password_slug_md5]) { //post edit, when password unchanged
 					$post[$password_slug]=$post[$password_slug_md5];
 					unset($post[$password_slug_md5]);
 				}
