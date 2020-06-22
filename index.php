@@ -1,16 +1,21 @@
 <?php
 include_once ('config-init.php');
 
-if ($_GET['q']) {
-	include_once (THEME_PATH.'/search.php');
+if ($type=='search') {
+	if ($slug && !$_GET['q'])
+		$_GET['q']=$slug;
+	if (file_exists(THEME_PATH.'/search.php'))
+		include_once (THEME_PATH.'/search.php');
+	else if (is_array($types['webapp']['searchable_types']))
+		include_once (ABSOLUTE_PATH.'/search.php');
+	else
+		include_once (THEME_PATH.'/index.php');
 }
 else if ($type && $slug) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 
-	if (!$postdata)
-		include_once (THEME_PATH.'/404.php');
-	else {
+	if ($postdata) {
 		$postdata_modified=$postdata;
 
 		$append_phrase='';
@@ -31,25 +36,31 @@ else if ($type && $slug) {
 
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
-		else if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
-			include_once (THEME_PATH.'/single-'.$type.'.php');
-		else
+		else if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
+			include_once (THEME_PATH.'/archive-'.$type.'.php');
+		else if (file_exists(THEME_PATH.'/single.php'))
 			include_once (THEME_PATH.'/single.php');
+		else
+			include_once (THEME_PATH.'/index.php');
 	}
+	else
+		include_once (THEME_PATH.'/404.php');
 }
 elseif ($type && !$slug) {
 	$typedata=$types[$type];
 	
-	if (!$typedata)
-		include_once (THEME_PATH.'/404.php');
-	else {
+	if ($typedata) {
 		$postids=$dash::get_all_ids($type);
 
 		if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
 			include_once (THEME_PATH.'/archive-'.$type.'.php');
-		else
+		else if (file_exists(THEME_PATH.'/archive.php'))
 			include_once (THEME_PATH.'/archive.php');
+		else
+			include_once (THEME_PATH.'/index.php');
 	}
+	else
+		include_once (THEME_PATH.'/404.php');
 }
 else {
 	include_once (THEME_PATH.'/index.php');
