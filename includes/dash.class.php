@@ -92,6 +92,8 @@ class dash {
 		$post['view_searchable_data']='';
 		foreach ($types[$posttype]['modules'] as $module) {
 			//password md5 handling is a tricky game
+			//connected to admin/edit.php
+			//$this->get_content can mess up passwords
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
 				$password_slug_md5=$module['input_slug'].'_md5';
@@ -143,7 +145,6 @@ class dash {
 
 		$sql->executeSQL("UPDATE `data` SET `content`='".mysqli_real_escape_string($sql->databaseLink, json_encode($post))."', `updated_on`='$updated_on' WHERE `id`='".$post['id']."'");
 		$id=$post['id'];
-		$this->push_content_meta($post['id'], 'content');
 
 		if (!trim($post['view_searchable_data']))
 			$this->push_content_meta($post['id'], 'view_searchable_data');
@@ -168,6 +169,7 @@ class dash {
 		global $sql;
 		if ($id && $meta_key) {
 			if (!trim($meta_value)) {
+				//to delete a key, leave it empty
 				$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$.".$meta_key."') WHERE `id`='$id'");
 			}
 			else {
@@ -186,7 +188,10 @@ class dash {
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
 		else 
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
-		$or=array_merge(json_decode($q[0]['content'], true), $q[0]);
+		$or=json_decode($q[0]['content'], true);
+		$or['id']=$q[0]['id'];
+		$or['updated_on']=$q[0]['updated_on'];
+		$or['created_on']=$q[0]['created_on'];
 		return $or;
 	}
 	
