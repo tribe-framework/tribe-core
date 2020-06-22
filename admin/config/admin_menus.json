@@ -25,17 +25,17 @@
         "submenu": [
           {
             "name": "Edit profile",
-            "href": "/admin/auth?section=profile"
+            "href": "/user/profile"
           },
           {
             "name": "Change password",
-            "href": "/admin/auth?section=change-password"
+            "href": "/user/profile?section=change-password"
           }
         ]
       },
       {
         "name": "<span class='fas fa-sign-out-alt'></span>&nbsp;Exit",
-        "href": "/admin/auth?section=exit"
+        "href": "/user/login?action=exit"
       }
     ]
   },
