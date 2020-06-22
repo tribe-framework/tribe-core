@@ -15,7 +15,7 @@ if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
 			$_SESSION['user_id']=$user['user_id'];
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
-			$_SESSION['wildfire_admin_access']=1;
+			$_SESSION['wildfire_dashboard_access']=1;
 			header('Location: /admin');
 		}
 
@@ -24,7 +24,7 @@ if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
 			$_SESSION['user_id']=$user['user_id'];
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
-			$_SESSION['wildfire_admin_access']=0;
+			$_SESSION['wildfire_dashboard_access']=0;
 			header('Location: /user');
 		}
 

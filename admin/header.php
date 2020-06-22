@@ -1,4 +1,4 @@
-<?php if (!$_SESSION['user_id'] && !$userless_install) {header ('Location: /user/login'); die();} ?>
+<?php if (!(($_SESSION['user_id'] && $_SESSION['wildfire_dashboard_access']) || $userless_install)) {header ('Location: /user/login'); die();} ?>
 <!doctype html>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
 <head>
