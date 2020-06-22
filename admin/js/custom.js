@@ -31,8 +31,8 @@ $( document ).ready(function() {
 		"order": [[ 0, "desc" ]],
 		"dom": 'Bfrtip',
         "buttons": [
-        	{"extend": 'excel', "text": '<span class="fas fa-download">&nbsp;PDF', "title": 'data'},
-        	{"extend": 'pdf', "text": '<span class="fas fa-download">&nbsp;Spreadsheet', "title": 'data'},
+        	{"extend": 'excel', "text": '<span class="fas fa-download">&nbsp;Spreadsheet', "title": 'data'},
+        	{"extend": 'pdf', "text": '<span class="fas fa-download">&nbsp;PDF', "title": 'data'},
         ]
 	});
 
