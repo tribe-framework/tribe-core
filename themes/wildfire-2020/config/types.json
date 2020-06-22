@@ -4,6 +4,48 @@
     "headmeta_description": "A content management system.",
     "searchable_types": ["page"]
   },
+  "user": {
+    "type": "entity",
+    "slug": "user",
+    "name": "user",
+    "plural": "users",
+    "roles": {
+      "admin": {"role":"admin","slug":"admin","title":"Admin"},
+      "editor": {"role":"crew","slug":"editor","title":"Editor"},
+      "guest_writer": {"role":"member","slug":"guest_writer","title":"Guest writer"},
+      "subscriber": {"role":"visitor","slug":"subscriber","title":"Newsletter subscriber"}
+    },
+    "modules": [
+      {
+        "input_primary": true,
+        "input_slug": "user_id",
+        "input_type": "hidden",
+        "autofill": "user_id",
+        "input_unique": true,
+        "list_field": true,
+        "list_searchable": true,
+        "list_sortable": false
+      },
+      {
+        "input_slug": "email",
+        "input_type": "email",
+        "input_unique": true,
+        "list_field": true,
+        "list_searchable": true,
+        "list_sortable": true
+      },
+      {
+        "input_slug": "password",
+        "input_placeholder": "Enter password",
+        "input_type": "password",
+        "input_unique": false,
+        "input_confirm": true,
+        "list_field": false,
+        "list_searchable": false,
+        "list_sortable": false
+      }
+    ]
+  },
   "section": {
     "type": "content",
     "slug": "section",
