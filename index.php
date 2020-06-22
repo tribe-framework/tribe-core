@@ -36,8 +36,8 @@ else if ($type && $slug) {
 
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
-		else if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
-			include_once (THEME_PATH.'/archive-'.$type.'.php');
+		else if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
+			include_once (THEME_PATH.'/single-'.$type.'.php');
 		else if (file_exists(THEME_PATH.'/single.php'))
 			include_once (THEME_PATH.'/single.php');
 		else
