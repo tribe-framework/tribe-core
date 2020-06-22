@@ -206,7 +206,7 @@ class dash {
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 	}
 
-	function get_ids ($search_arr, $comparison='LIKE', $between='||', $priority_field='id', $priority_order='DESC', $limit='') {
+	function get_ids ($search_arr, $comparison='LIKE', $between='||', $priority_field='id', $priority_order='DESC', $limit='', $debug_show_sql_statement=0) {
 		global $sql;
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
@@ -228,6 +228,8 @@ class dash {
 			$i++;
 		}
 		$r=$sql->executeSQL("SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+		if ($debug_show_sql_statement)
+			echo "SELECT `id` FROM `data` WHERE ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 		return $r; 
 	}
 
