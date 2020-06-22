@@ -20,8 +20,8 @@
 	display: inline;
 }
 
-.dataTables_filter {float: left;}
-.dt-buttons {float: left;}
-.paging_simple_numbers {float:right;}
-.dataTables_info {float:right;}
-.dataTables_length {float:left;}
+.dataTables_filter {float: left; margin-top:10px; margin-bottom: 10px;}
+.dt-buttons {float: left; margin-top:10px; margin-bottom: 10px;}
+.paging_simple_numbers {float:right; margin-top:10px; margin-bottom: 10px;}
+.dataTables_info {float:right; margin-top:10px; margin-bottom: 10px;}
+.dataTables_length {float:left; margin-left:20px; margin-top:10px; margin-bottom: 10px;}
