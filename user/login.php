@@ -4,7 +4,7 @@ include_once (ABSOLUTE_PATH.'/user/header.php');
 ?>
 
 <?php
-if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
+if ($_POST['email'] && $_POST['password']) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
@@ -35,7 +35,7 @@ if ($_GET['action']=='signin' && $_POST['email'] && $_POST['password']) {
 }
 ?>
 
-<form class="form-signin" method="post" action="/admin/auth?action=signin"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+<form class="form-signin" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
