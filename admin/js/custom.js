@@ -27,7 +27,7 @@ $( document ).ready(function() {
 	});
 
 	$('.datatable').DataTable({
-		"dom": '<"top"fli>rt<"bottom"pB><"clear">',
+		"dom": '<"top"ifl>rt<"bottom"Bp><"clear">',
 		"pageLength":50,
 		"order": [[ 0, "desc" ]],
         "buttons": [
