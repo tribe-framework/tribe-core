@@ -26,7 +26,15 @@ $( document ).ready(function() {
 		$(this).closest('p.file').remove();
 	});
 
-	$('.datatable').DataTable({"pageLength":50,"order": [[ 0, "desc" ]]});
+	$('.datatable').DataTable({
+		"pageLength":50,
+		"order": [[ 0, "desc" ]],
+		"dom": 'Bfrtip',
+        "buttons": [
+        	{"extend": 'excel', "text": '<span class="fas fa-download">&nbsp;PDF', "title": 'data'},
+        	{"extend": 'pdf', "text": '<span class="fas fa-download">&nbsp;Spreadsheet', "title": 'data'},
+        ]
+	});
 
 	var sli=0;
     $('.edit_form input[type=file]').fileupload({
