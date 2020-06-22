@@ -193,11 +193,15 @@ class dash {
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
 		else 
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
-		$or=json_decode($q[0]['content'], true);
-		$or['id']=$q[0]['id'];
-		$or['updated_on']=$q[0]['updated_on'];
-		$or['created_on']=$q[0]['created_on'];
-		return $or;
+		if ($q[0]['id']) {
+			$or=json_decode($q[0]['content'], true);
+			$or['id']=$q[0]['id'];
+			$or['updated_on']=$q[0]['updated_on'];
+			$or['created_on']=$q[0]['created_on'];
+			return $or;
+		}
+		else
+			return 0;
 	}
 	
 	function fetch_content_title_array ($slug, $column_key, $with_link=1) {
@@ -297,14 +301,14 @@ class dash {
 		return $types;
 	}
 
-	function push_wp_posts ($type='story', $meta_vars=array(), $max_records=0) {
+	function push_wp_posts ($type='story', $meta_vars=array(), $max_records=0, $overwrite=0) {
 		global $sql;
 		$i=0;
 
 		$q=$sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
 		
 		foreach ($q as $r) {
-			if (!$this->get_content_meta($r['ID'], 'slug')) {
+			if ($overwrite || !$this->get_content_meta($r['ID'], 'slug')) {
 				$post=$post_wp=array();
 				$post['wp_import']=1;
 			    $post['id']=$r['ID'];
@@ -360,7 +364,7 @@ class dash {
 			    }
 
 			    $post['wp_post_data']=serialize($post_wp);
-			    $post=update_wp_post_data($post);
+			    //$post=update_wp_post_data($post);
 			    
 			    $this->push_content($post);
 
