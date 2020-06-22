@@ -156,13 +156,18 @@ class dash {
 
 	function get_content_meta ($val, $meta_key) {
 		global $sql;
-		if (is_numeric($val))
-			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
-		else 
-			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
+		
+		if ($meta_key=='id' || $meta_key=='updated_on' || $meta_key=='created_on')
+			$qry="`".$meta_key."`";
+		else
+			$qry="`content`->>'$.".$meta_key."' `".$meta_key."`";
 
-		$or=json_decode($q[0]['content'], true);
-		return $or[$meta_key];
+		if (is_numeric($val))
+			$q=$sql->executeSQL("SELECT ".$qry." FROM `data` WHERE `id`='$val'");
+		else 
+			$q=$sql->executeSQL("SELECT ".$qry." FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
+
+		return $q[0][$meta_key];
 	}
 
 	function push_content_meta ($id, $meta_key, $meta_value='') {
