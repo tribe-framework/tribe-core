@@ -5,6 +5,8 @@ $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
 $types=$dash::get_types(THEME_PATH.'/config/types.json');
+echo THEME_PATH.'/config/types.json';
+var_dump($types);
 ?>
 <?php header('Content-type: application/xml; charset=utf-8'); ?>
 <?php
