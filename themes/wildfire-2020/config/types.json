@@ -1,9 +1,15 @@
 {
+  "webapp": {
+    "headmeta_title": "Wildfire",
+    "headmeta_description": "A content management system.",
+    "searchable_types": ["page"]
+  },
   "section": {
     "type": "content",
     "slug": "section",
     "name": "section",
     "plural": "sections",
+    //"disallow_editing": true,
     "modules": [
       {
         "input_slug": "title",
@@ -22,6 +28,7 @@
     "slug": "page",
     "name": "page",
     "plural": "pages",
+    //"disallow_editing": true,
     "modules": [
       {
         "input_slug": "title",
