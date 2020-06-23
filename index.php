@@ -1,16 +1,15 @@
 <?php
 include_once ('config-init.php');
 
-if ($_GET['q']) {
+if ($type=='search') {
 	if ($slug && !$_GET['q'])
 		$_GET['q']=$slug;
 
 	if (file_exists(THEME_PATH.'/search.php'))
 		include_once (THEME_PATH.'/search.php');
-	else if (is_array($types['webapp']['searchable_types']))
-		include_once (ABSOLUTE_PATH.'/search.php');
-	else
-		include_once (THEME_PATH.'/index.php');
+	else {
+		'Include a search.php file in your theme folder.'
+	}
 }
 else if ($type && $slug) {
 	$typedata=$types[$type];
