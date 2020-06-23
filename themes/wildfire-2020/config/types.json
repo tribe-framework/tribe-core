@@ -2,6 +2,7 @@
   "webapp": {
     "headmeta_title": "Wildfire",
     "headmeta_description": "A content management system.",
+    "headmeta_image_url": "",
     "searchable_types": ["page"]
   },
   "user": {
@@ -49,6 +50,10 @@
   "section": {
     "type": "content",
     "slug": "section",
+    "headmeta_title_prepend": "",
+    "headmeta_title_append": [{"type": "webapp", "slug": "headmeta_title"}],
+    "headmeta_title_glue": "&mdash;",
+    "headmeta_title": "title",
     "name": "section",
     "plural": "sections",
     //"disallow_editing": true,
@@ -68,8 +73,15 @@
   "page": {
     "type": "content",
     "slug": "page",
+    "headmeta_title_prepend": "",
+    "headmeta_title_append": [{"type": "webapp", "slug": "headmeta_title"}],
+    "headmeta_title_glue": "&mdash;",
+    "headmeta_title": "title",
+    "headmeta_description": "body",
+    "headmeta_image_url": "cover_media",
     "name": "page",
     "plural": "pages",
+    "description": "List of pages.",
     //"disallow_editing": true,
     "modules": [
       {
