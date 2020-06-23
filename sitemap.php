@@ -18,7 +18,7 @@ foreach ($types['webapp']['searchable_types'] as $tp) {
 	$posts=$sql->executeSQL("SELECT `id`, `content`->>'$.slug' `slug`, `updated_on` FROM `data` WHERE `content`->'$.content_privacy'='public' && `content`->'$.type'='$tp' ORDER BY `id` DESC");
 	foreach ($posts as $post) {
 		$or['url']=array('loc'=>BASE_URL.'/'.$tp.'/'.$post['slug'], 'lastmod'=>date('Y-m-d', $post['updated_on']), 'priority'=>'0.7');
-		to_xml($xml, array('loc'=>BASE_URL.'/'.$tp.'/'.$post['slug'], 'lastmod'=>date('Y-m-d', $post['updated_on']), 'priority'=>'0.7'));
+		to_xml($xml, $or);
 	}
 }
 
