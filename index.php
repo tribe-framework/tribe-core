@@ -7,9 +7,8 @@ if ($type=='search') {
 
 	if (file_exists(THEME_PATH.'/search.php'))
 		include_once (THEME_PATH.'/search.php');
-	else {
-		'Include a search.php file in your theme folder.'
-	}
+	else
+		echo 'Include a search.php file in your theme folder.';
 }
 else if ($type && $slug) {
 	$typedata=$types[$type];
