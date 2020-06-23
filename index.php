@@ -105,6 +105,10 @@ elseif ($type && !$slug) {
 		include_once (THEME_PATH.'/404.php');
 }
 else {
+	$meta_title=$types['webapp']['headmeta_title'];
+	$meta_description=$types['webapp']['headmeta_title'];
+	$meta_image_url=$types['webapp']['headmeta_image_url'];
+
 	include_once (THEME_PATH.'/index.php');
 }
 ?>
