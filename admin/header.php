@@ -4,8 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title><?php echo 'Wildfire Dashboard'.(isset($headmeta_title)?' &raquo; '.$headmeta_title:''); ?></title>
-	<meta name="description" content="Content management dashboard interface<?php echo (isset($headmeta_title)?' for '.$headmeta_title:''); ?>">
+	<title><?php echo 'Wildfire Dashboard'.(isset($types['webapp']['headmeta_title'])?' &raquo; '.$types['webapp']['headmeta_title']:''); ?></title>
+	<meta name="description" content="Content management dashboard interface<?php echo (isset($types['webapp']['headmeta_title'])?' for '.$types['webapp']['headmeta_title']:''); ?>">
 	<link rel="stylesheet" href="https://use.typekit.net/xkh7dxd.css">
 	<link href="<?php echo BASE_URL; ?>/admin/css/bootstrap.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/wildfire.css" rel="stylesheet">
