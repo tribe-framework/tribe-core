@@ -38,7 +38,8 @@ else if ($type && $slug) {
 		
 		$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 
-		if (strlen($postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]))>160)
+		$postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]);
+		if (strlen($postdata_modified[$headmeta_description]) > 160)
 			$postdata_modified[$headmeta_description]=substr($postdata_modified[$headmeta_description], 0, 154).' [...]';
 
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
