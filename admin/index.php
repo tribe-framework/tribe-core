@@ -11,15 +11,13 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 <div class="card my-2">
   <div class="card-header">Analytics</div>
   <div class="card-body">
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    <p class="card-text"><center><img src="/admin/img/analytics-coming-soon.png"></center></p>
   </div>
 </div>
 <div class="card my-2">
   <div class="card-header">Latest</div>
   <div class="card-body">
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    <p class="card-text">Eos et ut voluptas ad. Vero quis nihil quis impedit omnis ut. Quod non nesciunt illum qui in quidem repellendus libero. Odio molestiae voluptate neque vero architecto esse sunt quae. Quod molestiae est ut tenetur autem esse voluptas itaque. Et similique sunt ipsa libero numquam blanditiis.</p>
   </div>
 </div>
 </div>
