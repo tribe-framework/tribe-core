@@ -10,9 +10,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 <div class="card-group m-0">
 <div class="card my-2">
   <div class="card-header">Analytics</div>
-  <div class="card-body">
-    <p class="card-text"><center><img src="/admin/img/analytics-coming-soon.png"></center></p>
-  </div>
+  <div class="card-body" align="center"><img src="/admin/img/analytics-coming-soon.png" class="mx-auto"></div>
 </div>
 <div class="card my-2">
   <div class="card-header">Latest</div>
