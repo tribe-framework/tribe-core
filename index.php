@@ -45,19 +45,19 @@ else if ($type && $slug) {
 		if (isset($postdata_modified[$headmeta_title]) && $postdata_modified[$headmeta_title])
 			$meta_title=$postdata_modified[$headmeta_title];
 		else
-			$meta_title=$types['webapp']['headmeta_title']);
+			$meta_title=$types['webapp']['headmeta_title'];
 
 		if (isset($postdata_modified[$headmeta_description]) && $postdata_modified[$headmeta_description])
 			$meta_description=$postdata_modified[$headmeta_description];
 		else
-			$meta_description=$types['webapp']['headmeta_description']);
+			$meta_description=$types['webapp']['headmeta_description'];
 		
 		if (is_array($postdata_modified[$headmeta_image_url])
 			$meta_image_url=$postdata_modified[$headmeta_image_url][0];
 		else if (trim($postdata_modified[$headmeta_image_url]))
 			$meta_image_url=$postdata_modified[$headmeta_image_url];
 		else
-			$meta_image_url=$types['webapp']['headmeta_image_url']);
+			$meta_image_url=$types['webapp']['headmeta_image_url'];
 
 		//single-ID for specific post, or a single-type template for all posts in that type (single-type is different from archive-type)
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
@@ -81,17 +81,17 @@ elseif ($type && !$slug) {
 		if (isset($types[$type]['meta_title']))
 			$meta_title=$types[$type]['meta_title'];
 		else
-			$meta_title=$types['webapp']['headmeta_title']);
+			$meta_title=$types['webapp']['headmeta_title'];
 
 		if (isset($types[$type]['meta_description']))
 			$meta_description=$types[$type]['meta_description'];
 		else
-			$meta_description=$types['webapp']['headmeta_title']);
+			$meta_description=$types['webapp']['headmeta_title'];
 
 		if (isset($types[$type]['meta_image_url']))
 			$meta_image_url=$types[$type]['meta_image_url'];
 		else
-			$meta_image_url=$types['webapp']['headmeta_image_url']);
+			$meta_image_url=$types['webapp']['headmeta_image_url'];
 
 		//archive-type is template for how the type is listed, not to be confused with single-type
 		if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
