@@ -1,14 +1,12 @@
 <?php
 include_once ('config-init.php');
 
-if ($type=='search') {
+if ($_GET['q']) {
 	if ($slug && !$_GET['q'])
 		$_GET['q']=$slug;
-	echo 'SEARCH';
-	if (file_exists(THEME_PATH.'/search.php')) {
-		echo 'SEARCH';
+
+	if (file_exists(THEME_PATH.'/search.php'))
 		include_once (THEME_PATH.'/search.php');
-	}
 	else if (is_array($types['webapp']['searchable_types']))
 		include_once (ABSOLUTE_PATH.'/search.php');
 	else
