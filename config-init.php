@@ -33,14 +33,14 @@ if (!$q[0]['id'])
 
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
-if (isset($_GET['ext'])) {
+if (isset($_GET['ext'])) { //for theme
 	$ext=explode('/', $_GET['ext']);
 	if (count($ext))
 		$type=$dash::do_unslugify($ext[0]);
 	if (count($ext)>1)
 		$slug=$dash::do_unslugify($ext[1]);
 }
-else if (isset($_GET['type'])) {
+else if (isset($_GET['type'])) { //for dashboard
 	$type=$dash::do_unslugify($_GET['type']);
 }
 ?>
