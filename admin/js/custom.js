@@ -31,8 +31,8 @@ $( document ).ready(function() {
 		"pageLength":50,
 		"order": [[ 0, "desc" ]],
         "buttons": [
-        	{"extend": 'excel', "text": '<span class="fas fa-download"></span>&nbsp;Spreadsheet', "title": 'data'},
-        	{"extend": 'pdf', "text": '<span class="fas fa-download"></span>&nbsp;PDF', "title": 'data'},
+        	{"extend": 'excel', "text": '<span class="fas fa-file-excel"></span>&nbsp;XLSX', "title": 'data'},
+        	{"extend": 'pdf', "text": '<span class="fas fa-file-pdf"></span>&nbsp;PDF', "title": 'data'},
         ]
 	});
 
