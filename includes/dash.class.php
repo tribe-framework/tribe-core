@@ -74,19 +74,9 @@ class dash {
 		$updated_on=time();
 		$posttype=$post['type'];
 
-		//foreach loop that breaks
-		$i=0;
-		foreach ($types[$posttype]['modules'] as $module) {
-			if ($module['input_primary'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
-				$title_id=$i;
-				$title_slug=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
-				$title_primary=$module['input_primary'];
-				$title_unique=$module['input_unique'];
-				break;
-			}
-
-			$i++;
-		}
+		$title_data=$this->get_type_title_data($post);
+		$title_slug=$title_data['slug'];
+		$title_unique=$title_data['unique'];
 
 		//loop that doesn't break
 		$post['view_searchable_data']='';
@@ -299,6 +289,27 @@ class dash {
 		  	}
 		}
 		return $types;
+	}
+
+	function get_type_title_data ($post) {
+		global $types;
+		$posttype=$post['type'];
+		
+		//foreach loop that breaks
+		$i=0;
+		foreach ($types[$posttype]['modules'] as $module) {
+			$title = array();
+			if ($module['input_primary'] && (!$module['restrict_id_max'] || $post['id']<=$module['restrict_id_max']) && (!$module['restrict_id_min'] || $post['id']>=$module['restrict_id_min'])) {
+				$title_id=$i;
+				$title['slug']=$module['input_slug'].(is_array($module['input_lang'])?'_'.$module['input_lang'][0]['slug']:'');
+				$title['primary']=$module['input_primary'];
+				$title['unique']=$module['input_unique'];
+				break;
+			}
+
+			$i++;
+		}
+		return $title;
 	}
 
 	function push_wp_posts ($type='story', $meta_vars=array(), $max_records=0, $overwrite=0) {
