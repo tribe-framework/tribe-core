@@ -38,7 +38,7 @@ else if ($type && $slug) {
 		
 		$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 
-		$postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]);
+		$postdata_modified[$headmeta_description]=trim(strip_tags($postdata_modified[$headmeta_description]));
 		if (strlen($postdata_modified[$headmeta_description]) > 160)
 			$postdata_modified[$headmeta_description]=substr($postdata_modified[$headmeta_description], 0, 154).' [...]';
 
