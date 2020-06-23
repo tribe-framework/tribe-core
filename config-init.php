@@ -43,8 +43,4 @@ if (isset($_GET['ext'])) {
 else if (isset($_GET['type'])) {
 	$type=$dash::do_unslugify($_GET['type']);
 }
-else {
-	$headmeta_title=$types['webapp']['headmeta_title'];
-	$headmeta_description=$types['webapp']['headmeta_description'];
-}
 ?>

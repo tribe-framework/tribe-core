@@ -4,6 +4,7 @@ include_once ('config-init.php');
 if ($type=='search') {
 	if ($slug && !$_GET['q'])
 		$_GET['q']=$slug;
+
 	if (file_exists(THEME_PATH.'/search.php'))
 		include_once (THEME_PATH.'/search.php');
 	else if (is_array($types['webapp']['searchable_types']))
@@ -17,6 +18,9 @@ else if ($type && $slug) {
 
 	if ($postdata) {
 		$postdata_modified=$postdata;
+
+		$headmeta_title='title';
+		$headmeta_description='body';
 
 		$append_phrase='';
 		if ($types[$type]['headmeta_title_append']) {
@@ -32,7 +36,9 @@ else if ($type && $slug) {
 				$prepend_phrase.=$types[$key][$value].' '.$types[$type]['headmeta_title_glue'].' ';
 			}
 		}
+		
 		$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
+		$postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]);
 
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
