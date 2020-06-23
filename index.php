@@ -52,7 +52,7 @@ else if ($type && $slug) {
 		else
 			$meta_description=$types['webapp']['headmeta_description'];
 		
-		if (is_array($postdata_modified[$headmeta_image_url])
+		if (is_array($postdata_modified[$headmeta_image_url]))
 			$meta_image_url=$postdata_modified[$headmeta_image_url][0];
 		else if (trim($postdata_modified[$headmeta_image_url]))
 			$meta_image_url=$postdata_modified[$headmeta_image_url];
