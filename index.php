@@ -17,8 +17,9 @@ else if ($type && $slug) {
 	if ($postdata) {
 		$postdata_modified=$postdata;
 
-		$headmeta_title='title';
-		$headmeta_description='body';
+		$headmeta_title=$types[$type]['headmeta_title'];
+		$headmeta_description=$types[$type]['headmeta_description'];
+		$headmeta_image_url=$types[$type]['headmeta_image_url'];
 
 		$append_phrase='';
 		if ($types[$type]['headmeta_title_append']) {
@@ -36,7 +37,9 @@ else if ($type && $slug) {
 		}
 		
 		$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
-		$postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]);
+
+		if (strlen($postdata_modified[$headmeta_description]=strip_tags($postdata_modified[$headmeta_description]))>160);
+			$postdata_modified[$headmeta_description]=substr($postdata_modified[$headmeta_description], 0, 160);
 
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
