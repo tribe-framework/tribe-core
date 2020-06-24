@@ -45,7 +45,7 @@ class theme {
 							if (isset($item['submenu']) && is_array($item['submenu'])) {
 								$op.='<li class="'.(isset($css_classes['li'])?$css_classes['li']:'').' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 									</a><div class="dropdown-menu '.(isset($css_classes['dropdown'])?$css_classes['dropdown']:'').' '.(isset($item['dropdown_class'])?$item['dropdown_class']:'').'">';
-								if (isset($item['submenu']) {
+								if (isset($item['submenu'])) {
 									foreach ($item['submenu'] as $subitem)
 										$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
 								}
