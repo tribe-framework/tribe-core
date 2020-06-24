@@ -2,6 +2,8 @@
 session_start();
 include_once('config/config-vars.php');
 
+include_once(ABSOLUTE_PATH.'/admin/functions.php');
+
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 
@@ -19,7 +21,6 @@ $google = new google();
 
 include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
-include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(THEME_PATH.'/functions.php');
 
 $types=$dash::get_types(THEME_PATH.'/config/types.json');
