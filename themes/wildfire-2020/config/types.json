@@ -3,6 +3,7 @@
     "headmeta_title": "Wildfire",
     "headmeta_description": "A content management system.",
     "headmeta_image_url": "",
+    "allow_type_change": false,
     "searchable_types": ["page"]
   },
   "user": {
