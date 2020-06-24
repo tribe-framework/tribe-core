@@ -51,17 +51,17 @@ class theme {
 								}
 								$op.='</div></li>';
 							}
-							else if (isset_var($item['submenu'])) {
+							else if (isset($item['submenu'])) {
 								$submenu=$item['submenu'];
 								$is_user_role_menu=0;
-								if (isset_var($types[$submenu]['roles']) && is_array($types[$submenu]['roles'])) {
+								if (is_array(($types[$submenu]['roles']??''))) {
 									$subitems=$types[$submenu]['roles'];
 									$is_user_role_menu=1;
 								}
 								else
-									$subitems=$dash::get_all_ids(isset_var($item['submenu']), isset_var($types[$submenu]['priority_field']), isset_var($types[$submenu]['priority_order']));
-								$op.='<li class="'.isset_var($css_classes['li']).' dropdown"><a class="'.isset_var($css_classes['a']).' dropdown-toggle" href="#" title="'.isset_var($item['title']).'" role="button" data-toggle="dropdown">'.isset_var($item['name']).'
-									</a><div class="dropdown-menu '.isset_var($css_classes['dropdown']).' '.isset_var($item['dropdown_class']).'">';
+									$subitems=$dash::get_all_ids(($item['submenu']??''), ($types[$submenu]['priority_field']??''), ($types[$submenu]['priority_order']??''));
+								$op.='<li class="'.($css_classes['li']??'').' dropdown"><a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" title="'.($item['title']??'').'" role="button" data-toggle="dropdown">'.($item['name']??'').'
+									</a><div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'">';
 								foreach ($subitems as $key=>$opt) {
 									if ($is_user_role_menu) {
 										$subitem=$opt;
@@ -71,13 +71,13 @@ class theme {
 										$subitem=$dash::get_content($opt['id']);
 										$subitem['href']='/'.$item['submenu'].'/'.$subitem['slug'];
 									}
-									$op.='<a class="dropdown-item" href="'.isset_var($subitem['href']).'">'.isset_var($subitem['title']).'</a>';
+									$op.='<a class="dropdown-item" href="'.($subitem['href']??'').'">'.($subitem['title']??'').'</a>';
 								}
 								$op.='</div></li>';
 							}
 							else {
 								$data_ext='';
-								if ($item['data']) {
+								if (isset($item['data'])) {
 									foreach ($item['data'] as $data) {
 										foreach ($data as $k=>$v) {
 											$data_ext.='data-'.$k.'="'.$v.'" ';
@@ -85,7 +85,7 @@ class theme {
 									}
 								}
 
-								$op.='<li class="'.isset_var($css_classes['li']).'"><a class="'.isset_var($css_classes['a']).'" '.isset_var($data_ext).' href="'.isset_var($item['href']).'" title="'.isset_var($item['title']).'">'.isset_var($item['name']).'</a></li>';
+								$op.='<li class="'.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').'" '.($data_ext??'').' href="'.($item['href']??'').'" title="'.($item['title']??'').'">'.($item['name']??'').'</a></li>';
 							}
 
 						}
@@ -97,7 +97,7 @@ class theme {
 		}
 		else {
 			$op.='
-			<nav class="navbar '.isset_var($css_classes['navbar']).'">
+			<nav class="navbar '.($css_classes['navbar']??'').'">
 				<a class="navbar-brand" href="/">Website</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -105,25 +105,25 @@ class theme {
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav mr-auto">
-						<li class="'.isset_var($css_classes['li']).' active">
-							<a class="'.isset_var($css_classes['a']).'" href="#">Home</a>
+						<li class="'.($css_classes['li']??'').' active">
+							<a class="'.($css_classes['a']??'').'" href="#">Home</a>
 						</li>
-						<li class="'.isset_var($css_classes['li']).'">
-							<a class="'.isset_var($css_classes['a']).'" href="#">Link</a>
+						<li class="'.($css_classes['li']??'').'">
+							<a class="'.($css_classes['a']??'').'" href="#">Link</a>
 						</li>
-						<li class="'.isset_var($css_classes['li']).' dropdown">
-							<a class="'.isset_var($css_classes['a']).' dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<li class="'.($css_classes['li']??'').' dropdown">
+							<a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							Dropdown
 							</a>
-							<div class="dropdown-menu '.isset_var($css_classes['dropdown']).' '.isset_var($item['dropdown_class']).'" aria-labelledby="navbarDropdown">
+							<div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'" aria-labelledby="navbarDropdown">
 							<a class="dropdown-item" href="#">Action</a>
 							<a class="dropdown-item" href="#">Another action</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="#">Something else here</a>
 							</div>
 							</li>
-							<li class="'.isset_var($css_classes['li']).'">
-							<a class="'.isset_var($css_classes['a']).' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+							<li class="'.($css_classes['li']??'').'">
+							<a class="'.($css_classes['a']??'').' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
 						</li>
 					</ul>
 
@@ -152,56 +152,60 @@ class theme {
 
 		if ($items) {
 			$op.='
-			<ul class="'.$css_classes['ul'].'">';	
+			<ul class="'.($css_classes['ul']??'').'">';	
+				if (isset($items['menu'])) {
 					foreach ($items['menu'] as $item) {
-						if (isset_var($item['submenu']) && is_array($item['submenu'])) {
-							$op.='<li class="dropdown '.$css_classes['li'].'"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
-							foreach ($item['submenu'] as $subitem)
-								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
+						if (is_array(($item['submenu']??''))) {
+							$op.='<li class="dropdown '.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" title="'.($item['title']??'').'" role="button" data-toggle="dropdown">'.($item['name']??'').'
+								</a><div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'">';
+							if (isset($item['submenu'])) {
+								foreach ($item['submenu'] as $subitem)
+									$op.='<a class="dropdown-item" href="'.($subitem['href']??'').'" title="'.($subitem['title']??'').'">'.($subitem['name']??'').'</a>';
+							}
 							$op.='</div></li>';
 						}
-						else if (isset_var($item['submenu'])) {
+						else if (isset($item['submenu'])) {
 							$submenu=$item['submenu'];
-							$subitems=$dash::get_all_ids($item['submenu'], isset_var($types[$submenu]['priority_field']), isset_var($types[$submenu]['priority_order']));
-							$op.='<li class="dropdown '.isset_var($css_classes['li']).'"><a class="'.isset_var($css_classes['a']).' dropdown-toggle" href="#" title="'.isset_var($item['title']).'" role="button" data-toggle="dropdown">'.isset_var($item['name']).'
-								</a><div class="dropdown-menu '.isset_var($css_classes['dropdown']).' '.isset_var($item['dropdown_class']).'">';
+							$subitems=$dash::get_all_ids($item['submenu'], ($types[$submenu]['priority_field']??''), ($types[$submenu]['priority_order']??''));
+							$op.='<li class="dropdown '.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" title="'.($item['title']??'').'" role="button" data-toggle="dropdown">'.($item['name']??'').'
+								</a><div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'">';
 							foreach ($subitems as $opt) {
 								$subitem=$dash::get_content($opt['id']);
-								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.isset_var($subitem['title']).'</a>';
+								$op.='<a class="dropdown-item" href="/'.$item['submenu'].'/'.$subitem['slug'].'">'.($subitem['title']??'').'</a>';
 							}
 							$op.='</div></li>';
 						}
 						else {
 							$data_ext='';
-							if (isset_var($item['data'])) {
+							if (isset($item['data'])) {
 								foreach ($item['data'] as $data) {
 									foreach ($data as $k=>$v)
 										$data_ext.='data-'.$k.'="'.$v.'" ';
 								}
 							}
 							
-							$op.='<li class="'.isset_var($css_classes['li']).'"><a class="'.isset_var($css_classes['a']).'" '.isset_var($data_ext).' href="'.isset_var($item['href']).'" title="'.isset_var($item['title']).'">'.isset_var($item['name']).'</a></li>';
+							$op.='<li class="'.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').'" '.($data_ext).' href="'.($item['href']??'').'" title="'.($item['title']??'').'">'.($item['name']??'').'</a></li>';
 						}
 
 					}
-					$op.='
-					</ul>';
+				}
+				$op.='
+				</ul>';
 		}
 		else {
 			$op.='
-					<ul class="'.isset_var($css_classes['ul']).'">
-					  <li class="'.isset_var($css_classes['li']).'">
-					    <a class="'.isset_var($css_classes['a']).' active" href="#">Active</a>
+					<ul class="'.($css_classes['ul']??'').'">
+					  <li class="'.($css_classes['li']??'').'">
+					    <a class="'.($css_classes['a']??'').' active" href="#">Active</a>
 					  </li>
-					  <li class="'.isset_var($css_classes['li']).'">
-					    <a class="'.isset_var($css_classes['a']).'" href="#">Link</a>
+					  <li class="'.($css_classes['li']??'').'">
+					    <a class="'.($css_classes['a']??'').'" href="#">Link</a>
 					  </li>
-					  <li class="'.isset_var($css_classes['li']).'">
-					    <a class="'.isset_var($css_classes['a']).'" href="#">Link</a>
+					  <li class="'.($css_classes['li']??'').'">
+					    <a class="'.($css_classes['a']??'').'" href="#">Link</a>
 					  </li>
-					  <li class="'.isset_var($css_classes['li']).'">
-					    <a class="'.isset_var($css_classes['a']).' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+					  <li class="'.($css_classes['li']??'').'">
+					    <a class="'.($css_classes['a']??'').' disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
 					  </li>
 					</ul>';
 		}
