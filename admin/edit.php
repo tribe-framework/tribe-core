@@ -477,7 +477,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 
 		if (($types['webapp']['allow_type_change']??false) && ($types[$type]['type']=='content')) {
 			echo '
-			<div class="form-group mt-5"><select class="form-control" id="select_type" name="type">';
+			<div class="form-group mt-5"><select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_type" name="type">';
 			foreach ($types as $key => $value) {
 				if ($types[$key]['type']=='content')
 			    	echo '<option value="'.$types[$key]['slug'].'" '.(($types[$key]['slug']==$post['type'])?'selected="selected"':'').'>'.ucfirst($types[$key]['name']).'</option>';
