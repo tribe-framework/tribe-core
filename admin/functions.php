@@ -1,6 +1,6 @@
 <?php
 function isset_var ($var) {
-	return (isset($var)?$var:false);
+	return (isset($var)?$var:null);
 }
 
 function get_admin_menu ($page, $type='', $role_slug='', $id=0) {
