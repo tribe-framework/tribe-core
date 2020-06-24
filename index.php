@@ -1,7 +1,7 @@
 <?php
 include_once ('config-init.php');
 
-if ($type=='search') {
+if (($type??'')=='search') {
 	if ($slug && !$_GET['q'])
 		$_GET['q']=$slug;
 
@@ -10,7 +10,7 @@ if ($type=='search') {
 	else
 		echo 'Include a search.php file in your theme folder.';
 }
-else if ($type && $slug) {
+else if (isset($type) && isset($slug)) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 
@@ -42,19 +42,19 @@ else if ($type && $slug) {
 		if (strlen($postdata_modified[$headmeta_description]) > 160)
 			$postdata_modified[$headmeta_description]=substr($postdata_modified[$headmeta_description], 0, 154).' [...]';
 
-		if (!($meta_title=isset_var($postdata_modified[$headmeta_title]))) {
-			if (!($meta_title=isset_var($types['webapp']['headmeta_title'])))
+		if (!($meta_title=($postdata_modified[$headmeta_title]??null))) {
+			if (!($meta_title=($types['webapp']['headmeta_title']??null)))
 				$meta_title='';
 		}
 			
-		if (!($meta_description=isset_var($postdata_modified[$headmeta_description]))) {
-			if (!($meta_description=isset_var($types['webapp']['headmeta_description'])))
+		if (!($meta_description=($postdata_modified[$headmeta_description]??null))) {
+			if (!($meta_description=($types['webapp']['headmeta_description']??null)))
 				$meta_description='';
 		}
 			
-		if (!($meta_image_url=isset_var($postdata_modified[$headmeta_image_url][0]))) {
-			if (!($meta_image_url=isset_var($postdata_modified[$headmeta_image_url]))) {
-				if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url'])))
+		if (!($meta_image_url=($postdata_modified[$headmeta_image_url][0]??null))) {
+			if (!($meta_image_url=($postdata_modified[$headmeta_image_url]??null))) {
+				if (!($meta_image_url=($types['webapp']['headmeta_image_url']??null)))
 					$meta_image_url='';
 			}
 		}
@@ -72,24 +72,24 @@ else if ($type && $slug) {
 	else
 		include_once (THEME_PATH.'/404.php');
 }
-elseif ($type && !$slug) {
+elseif (isset($type)) {
 	$typedata=$types[$type];
 	
 	if ($typedata) {
 		$postids=$dash::get_all_ids($type);
 
-		if (!($meta_title=isset_var($types[$type]['meta_title']))) {
-			if (!($meta_title=isset_var($types['webapp']['headmeta_title'])))
+		if (!($meta_title=($types[$type]['meta_title']??null))) {
+			if (!($meta_title=($types['webapp']['headmeta_title']??null)))
 				$meta_title='';
 		}
 
-		if (!($meta_description=isset_var($types[$type]['meta_description']))) {
-			if (!($meta_description=isset_var($types['webapp']['headmeta_description'])))
+		if (!($meta_description=($types[$type]['meta_description']??null))) {
+			if (!($meta_description=($types['webapp']['headmeta_description']??null)))
 				$meta_description='';
 		}
 
-		if (!($meta_image_url=isset_var($types[$type]['meta_image_url']))) {
-			if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url'])))
+		if (!($meta_image_url=($types[$type]['meta_image_url']??null))) {
+			if (!($meta_image_url=($types['webapp']['headmeta_image_url']??null)))
 				$meta_image_url='';
 		}
 
@@ -105,9 +105,9 @@ elseif ($type && !$slug) {
 		include_once (THEME_PATH.'/404.php');
 }
 else {
-	$meta_title=(isset($types['webapp']['headmeta_title'])?$types['webapp']['headmeta_title']:'');
-	$meta_description=(isset($types['webapp']['headmeta_description'])?$types['webapp']['headmeta_description']:'');
-	$meta_image_url=(isset($types['webapp']['headmeta_image_url'])?$types['webapp']['headmeta_image_url']:'');
+	$meta_title=($types['webapp']['headmeta_title']??'');
+	$meta_description=($types['webapp']['headmeta_description']??'');
+	$meta_image_url=($types['webapp']['headmeta_image_url']??'');
 
 	include_once (THEME_PATH.'/index.php');
 }
