@@ -1,4 +1,8 @@
 <?php
+function isset_var ($var) {
+	return (isset($var)?$var:false);
+}
+
 function get_admin_menu ($page, $type='', $role_slug='', $id=0) {
 	$op='';
 	if ($page=='dash') {
