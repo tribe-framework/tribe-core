@@ -34,55 +34,61 @@ class theme {
 		if ($items) {
 			$op.='
 			<nav class="navbar '.$css_classes['navbar'].'">
-				<a class="navbar-brand" href="'.$items['logo']['href'].'" title="'.$items['logo']['title'].'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img height="'.$items['logo']['height'].'" src="'.$items['logo']['src'].'">':$items['logo']['name'].(isset($items['logo']['byline'])?'<span class="small byline">'.$items['logo']['byline'].'</span>':'')).'</a>
-				<button class="'.$css_classes['toggler'].'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+				<a class="navbar-brand" href="'.isset_var($items['logo']['href']).'" title="'.(isset($items['logo']['title'])?$items['logo']['title']:BASE_URL.' logo').'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img '.(isset($items['logo']['height'])?'height="'.$items['logo']['height'].'"':'').' src="'.$items['logo']['src'].'">':(isset($items['logo']['name'])?$items['logo']['name'].(isset($items['logo']['byline'])?'<span class="small byline">'.$items['logo']['byline'].'</span>':''):'Wildfire')).'</a>
+				<button class="'.(isset($css_classes['toggler'])?$css_classes['toggler']:'').'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					'.$hamburger_bars.'
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="'.$css_classes['ul'].'">';			
-					foreach ($items['menu'] as $item) {
-						if (is_array($item['submenu'])) {
-							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
-							foreach ($item['submenu'] as $subitem)
-								$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
-							$op.='</div></li>';
-						}
-						else if ($item['submenu']) {
-							$submenu=$item['submenu'];
-							$is_user_role_menu=0;
-							if (is_array($types[$submenu]['roles'])) {
-								$subitems=$types[$submenu]['roles'];
-								$is_user_role_menu=1;
+					<ul class="'.$css_classes['ul'].'">';
+					if (isset($items['menu'])) {
+						foreach ($items['menu'] as $item) {
+							if (isset($item['submenu']) && is_array($item['submenu'])) {
+								$op.='<li class="'.(isset($css_classes['li'])?$css_classes['li']:'').' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+									</a><div class="dropdown-menu '.(isset($css_classes['dropdown'])?$css_classes['dropdown']:'').' '.(isset($item['dropdown_class'])?$item['dropdown_class']:'').'">';
+								if (isset($item['submenu']) {
+									foreach ($item['submenu'] as $subitem)
+										$op.='<a class="dropdown-item" href="'.$subitem['href'].'" title="'.($subitem['title']?$subitem['title']:'').'">'.$subitem['name'].'</a>';
+								}
+								$op.='</div></li>';
 							}
-							else
-								$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
-							$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-								</a><div class="dropdown-menu '.$css_classes['dropdown'].' '.$item['dropdown_class'].'">';
-							foreach ($subitems as $key=>$opt) {
-								if ($is_user_role_menu) {
-									$subitem=$opt;
-									$subitem['href']='/admin/list?type='.$item['submenu'].'&role='.$key;
+							else if (isset($item['submenu'])) {
+								$submenu=$item['submenu'];
+								$is_user_role_menu=0;
+								if (isset($types[$submenu]['roles']) && is_array($types[$submenu]['roles'])) {
+									$subitems=$types[$submenu]['roles'];
+									$is_user_role_menu=1;
 								}
-								else {
-									$subitem=$dash::get_content($opt['id']);
-									$subitem['href']='/'.$item['submenu'].'/'.$subitem['slug'];
+								else
+									$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
+								$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
+									</a><div class="dropdown-menu '.isset($css_classes['dropdown']?$css_classes['dropdown']:'').' '.(isset($item['dropdown_class'])?$item['dropdown_class']:'').'">';
+								foreach ($subitems as $key=>$opt) {
+									if ($is_user_role_menu) {
+										$subitem=$opt;
+										$subitem['href']='/admin/list?type='.$item['submenu'].'&role='.$key;
+									}
+									else {
+										$subitem=$dash::get_content($opt['id']);
+										$subitem['href']='/'.$item['submenu'].'/'.$subitem['slug'];
+									}
+									$op.='<a class="dropdown-item" href="'.$subitem['href'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
 								}
-								$op.='<a class="dropdown-item" href="'.$subitem['href'].'">'.($subitem['title']?$subitem['title']:'').'</a>';
+								$op.='</div></li>';
 							}
-							$op.='</div></li>';
-						}
-						else {
-							$data_ext='';
-							foreach ($item['data'] as $data) {
-								foreach ($data as $k=>$v) {
-									$data_ext.='data-'.$k.'="'.$v.'" ';
+							else {
+								$data_ext='';
+								if ($item['data']) {
+									foreach ($item['data'] as $data) {
+										foreach ($data as $k=>$v) {
+											$data_ext.='data-'.$k.'="'.$v.'" ';
+										}
+									}
 								}
+
+								$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" '.($data_ext?$data_ext:'').' href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 							}
 
-							$op.='<li class="'.$css_classes['li'].'"><a class="'.$css_classes['a'].'" '.($data_ext?$data_ext:'').' href="'.$item['href'].'" title="'.$item['title'].'">'.$item['name'].'</a></li>';
 						}
-
 					}
 					$op.='
 					</ul>
