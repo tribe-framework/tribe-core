@@ -43,18 +43,18 @@ else if ($type && $slug) {
 			$postdata_modified[$headmeta_description]=substr($postdata_modified[$headmeta_description], 0, 154).' [...]';
 
 		if (!($meta_title=isset_var($postdata_modified[$headmeta_title]))) {
-			if (!($meta_title=isset_var($types['webapp']['headmeta_title']))
+			if (!($meta_title=isset_var($types['webapp']['headmeta_title'])))
 				$meta_title='';
 		}
 			
 		if (!($meta_description=isset_var($postdata_modified[$headmeta_description]))) {
-			if (!($meta_description=isset_var($types['webapp']['headmeta_description']))
+			if (!($meta_description=isset_var($types['webapp']['headmeta_description'])))
 				$meta_description='';
 		}
 			
 		if (!($meta_image_url=isset_var($postdata_modified[$headmeta_image_url][0]))) {
 			if (!($meta_image_url=isset_var($postdata_modified[$headmeta_image_url]))) {
-				if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url']))
+				if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url'])))
 					$meta_image_url='';
 			}
 		}
@@ -79,17 +79,17 @@ elseif ($type && !$slug) {
 		$postids=$dash::get_all_ids($type);
 
 		if (!($meta_title=isset_var($types[$type]['meta_title']))) {
-			if (!($meta_title=isset_var($types['webapp']['headmeta_title']))
+			if (!($meta_title=isset_var($types['webapp']['headmeta_title'])))
 				$meta_title='';
 		}
 
 		if (!($meta_description=isset_var($types[$type]['meta_description']))) {
-			if (!($meta_description=isset_var($types['webapp']['headmeta_description']))
+			if (!($meta_description=isset_var($types['webapp']['headmeta_description'])))
 				$meta_description='';
 		}
 
 		if (!($meta_image_url=isset_var($types[$type]['meta_image_url']))) {
-			if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url']))
+			if (!($meta_image_url=isset_var($types['webapp']['headmeta_image_url'])))
 				$meta_image_url='';
 		}
 
