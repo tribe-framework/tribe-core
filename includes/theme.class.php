@@ -42,7 +42,7 @@ class theme {
 					<ul class="'.$css_classes['ul'].'">';
 					if (isset_var($items['menu'])) {
 						foreach ($items['menu'] as $item) {
-							if (isset_var($item['submenu']) && is_array($item['submenu'])) {
+							if (is_array(isset_var($item['submenu']))) {
 								$op.='<li class="'.isset_var($css_classes['li']).' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
 									</a><div class="dropdown-menu '.isset_var($css_classes['dropdown']).' '.isset_var($item['dropdown_class']).'">';
 								if (isset_var($item['submenu'])) {
