@@ -465,7 +465,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		else if ($post['role_slug'])
 			echo '<input type="hidden" name="role_slug" value="'.$post['role_slug'].'">';
 
-		if ($types['webapp']['allow_type_change']) {
+		if (($types['webapp']['allow_type_change']??false) && ($types[$key]['type']=='content')) {
 			echo '
 			<div class="form-group my-4"><select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_type" name="type">';
 			foreach ($types as $key => $value) {
