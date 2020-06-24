@@ -34,7 +34,7 @@ class theme {
 		if ($items) {
 			$op.='
 			<nav class="navbar '.$css_classes['navbar'].'">
-				<a class="navbar-brand" href="'.isset_var($items['logo']['href']).'" title="'.isset_var($items['logo']['title']).'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img '.(isset($items['logo']['height'])?'height="'.$items['logo']['height'].'"':'').' src="'.$items['logo']['src'].'">':(isset($items['logo']['name'])?$items['logo']['name'].(isset($items['logo']['byline'])?'<span class="small byline">'.$items['logo']['byline'].'</span>':''):'Wildfire')).'</a>
+				<a class="navbar-brand" href="'.$items['logo']['href'] ?? '#'.'" title="'.isset_var($items['logo']['title']).'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img '.(isset($items['logo']['height'])?'height="'.$items['logo']['height'].'"':'').' src="'.$items['logo']['src'].'">':(isset($items['logo']['name'])?$items['logo']['name'].(isset($items['logo']['byline'])?'<span class="small byline">'.$items['logo']['byline'].'</span>':''):'Wildfire')).'</a>
 				<button class="'.isset_var($css_classes['toggler']).'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
 					'.$hamburger_bars.'
 				</button>
