@@ -61,7 +61,7 @@ class theme {
 								else
 									$subitems=$dash::get_all_ids($item['submenu'], (isset($types[$submenu]['priority_field'])?$types[$submenu]['priority_field']:''), (isset($types[$submenu]['priority_order'])?$types[$submenu]['priority_order']:''));
 								$op.='<li class="'.$css_classes['li'].' dropdown"><a class="'.$css_classes['a'].' dropdown-toggle" href="#" title="'.$item['title'].'" role="button" data-toggle="dropdown">'.$item['name'].'
-									</a><div class="dropdown-menu '.isset($css_classes['dropdown']?$css_classes['dropdown']:'').' '.(isset($item['dropdown_class'])?$item['dropdown_class']:'').'">';
+									</a><div class="dropdown-menu '.(isset($css_classes['dropdown'])?$css_classes['dropdown']:'').' '.(isset($item['dropdown_class'])?$item['dropdown_class']:'').'">';
 								foreach ($subitems as $key=>$opt) {
 									if ($is_user_role_menu) {
 										$subitem=$opt;
