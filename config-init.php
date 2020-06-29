@@ -44,5 +44,4 @@ if (isset($_GET['ext'])) { //for theme
 else if (isset($_GET['type'])) { //for dashboard
 	$type=$dash::do_unslugify($_GET['type']);
 }
-var_dump($types);
 ?>
