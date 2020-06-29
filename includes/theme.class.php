@@ -98,9 +98,9 @@ class theme {
 		else {
 			$op.='
 			<nav class="navbar '.($css_classes['navbar']??'').'">
-				<a class="navbar-brand" href="'.($items['logo']['href']??'#').'" title="'.($items['logo']['title']??BASE_URL.' logo').'">'.(isset($items['logo']['src']) && trim($items['logo']['src'])?'<img '.(isset($items['logo']['height'])?'height="'.$items['logo']['height'].'"':'').' src="'.$items['logo']['src'].'">':(isset($items['logo']['name'])?$items['logo']['name'].(isset($items['logo']['byline'])?'<span class="small byline">'.$items['logo']['byline'].'</span>':''):'Wildfire')).'</a>
-				<button class="'.($css_classes['toggler']??'').'" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
-					'.$hamburger_bars.'
+				<a class="navbar-brand" href="/">Website</a>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
 				</button>
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
