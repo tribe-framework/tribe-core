@@ -264,7 +264,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 				}
 			}
 			else {
-				$options=$dash->get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
+				$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
 				$i=0;
 				foreach ($options as $opt) {
 					$i++;
