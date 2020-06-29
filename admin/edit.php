@@ -243,7 +243,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php if ($module_input_type=='multi_select'): ?>
 		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
-			if ($options=$module_input_options) {
+			if (isset($module_input_options)) {
 				$i=0;
 				foreach ($options as $opt) {
 					$i++;
