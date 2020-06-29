@@ -272,7 +272,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					echo '
 					<div class="custom-control custom-switch">
 						<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
-						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option['title'].' (ID: '.$option['title'].')</label>
+						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option['title'].' (ID: '.$opt['id'].')</label>
 					</div>';
 				}
 			}
