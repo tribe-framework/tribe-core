@@ -243,7 +243,8 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php if ($module_input_type=='multi_select'): ?>
 		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
-			if (isset($module_input_options)) {
+			if ($options=$module_input_options) {
+			var_dump($options); echo 'A';
 				$i=0;
 				foreach ($options as $opt) {
 					$i++;
@@ -264,6 +265,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 				}
 			}
 			else {
+			var_dump($options); echo 'B';
 				$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
 				$i=0;
 				foreach ($options as $opt) {
