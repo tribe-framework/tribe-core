@@ -26,6 +26,7 @@ $( document ).ready(function() {
 		$(this).closest('p.file').remove();
 	});
 
+	$('.packery-table').DataTable();
 	$('.datatable').DataTable({
 		"dom": '<"top"ifl>rt<"bottom"Bp>',
 		"pageLength":50,
