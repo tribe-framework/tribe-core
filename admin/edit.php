@@ -241,7 +241,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_drop'): ?>
-		<div class="form-group mt-5 multi_drop"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
+		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><div class="multi_drop w-50 border-1">
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;
@@ -268,7 +268,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 				}
 			}
 			?>
-		</div>
+		</div></div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_select'): ?>
