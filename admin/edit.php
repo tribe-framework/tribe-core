@@ -249,11 +249,11 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					if (is_array($opt)) {
 						echo '
-						<tr><td class="packery-drop card card-body" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt['title'].'</td></tr>';
+						<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt['title'].'</td></tr>';
 					}
 					else {
 						echo '
-						 <tr><td class="packery-drop card card-body" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt.'</td></tr>';
+						 <tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt.'</td></tr>';
 					}
 				}
 			}
@@ -264,7 +264,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					$option=$dash::get_content($opt['id']);
 					echo '
-					<tr><td class="packery-drop card card-body" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$option['title'].' (ID: '.$opt['id'].')</td></tr>';
+					<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$option['title'].' (ID: '.$opt['id'].')</td></tr>';
 				}
 			}
 			?>
