@@ -8,6 +8,7 @@
       {
         "name": "Stories",
         "href": "#",
+        "dropdown_class": "dropdown-menu-right",
         "submenu": [
           {
             "name": "Story",

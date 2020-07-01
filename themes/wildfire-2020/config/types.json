@@ -57,7 +57,7 @@
     "headmeta_title": "title",
     "name": "section",
     "plural": "sections",
-    //"disallow_editing": true,
+    "disallow_editing": false,
     "modules": [
       {
         "input_slug": "title",
@@ -83,11 +83,13 @@
     "name": "page",
     "plural": "pages",
     "description": "List of pages.",
-    //"disallow_editing": true,
+    "disallow_editing": false,
     "modules": [
       {
         "input_slug": "title",
+        "input_primary": true,
         "input_type": "text",
+        "input_placeholder": "Enter page title",
         "input_unique": false,
         "list_field": true,
         "list_search": true,
