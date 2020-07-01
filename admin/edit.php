@@ -240,6 +240,37 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		</div>
 		<?php endif; ?>
 
+		<?php if ($module_input_type=='multi_drop'): ?>
+		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
+			<?php 
+			if ($options=$module_input_options) {
+				$i=0;
+				foreach ($options as $opt) {
+					$i++;
+					if (is_array($opt)) {
+						echo '
+						<div class="packery-drop" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt['title'].'</div>';
+					}
+					else {
+						echo '
+						 <div class="packery-drop" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$opt.'</div>';
+					}
+				}
+			}
+			else {
+				$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
+				$i=0;
+				foreach ($options as $opt) {
+					$i++;
+					$option=$dash::get_content($opt['id']);
+					echo '
+					<div class="packery-drop" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'>'.$option['title'].' (ID: '.$opt['id'].')</div>';
+				}
+			}
+			?>
+		</div>
+		<?php endif; ?>
+
 		<?php if ($module_input_type=='multi_select'): ?>
 		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
