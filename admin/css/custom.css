@@ -26,4 +26,4 @@
 .dataTables_info {float:right; margin-top:10px; margin-bottom: 10px;}
 .dataTables_length {float:left; margin-left:20px; margin-top:10px; margin-bottom: 10px;}
 
-.multi_drop {max-height: 400px; overflow-y: scroll;}
+.multi_drop {height: 400px; overflow-y: scroll;}
