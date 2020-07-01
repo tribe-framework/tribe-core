@@ -26,6 +26,8 @@
 	<script src="/plugins/keymaster.js"></script>
 	<script src="<?php echo BASE_URL; ?>/admin/js/custom.js"></script>
 
+	<script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
+
 	<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
 	<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -33,11 +35,13 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 	<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
 	<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
-	<script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
 
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.iframe-transport.js"></script>
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.fileupload.js"></script>
     <?php if (!empty(GOOGLE_MAP_API_KEY_1))	echo '<script src="https://maps.googleapis.com/maps/api/js?key='.GOOGLE_MAP_API_KEY_1.'&libraries=places&callback=initMap" async defer></script>'; ?>
+
+    <?php if ($type=='list') echo '<script src="<?php echo BASE_URL; ?>/admin/js/list.js"></script>'; ?>
+    <?php if ($type=='edit') echo '<script src="<?php echo BASE_URL; ?>/admin/js/edit.js"></script>'; ?>
 </body>
 </html>
