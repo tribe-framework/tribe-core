@@ -18,8 +18,8 @@ $( document ).ready(function() {
 	});
 
 	$(document).on('click', '.multi_add_btn', function(e) {
-		$(this).closest('#url-group-'+$(this).data('input-slug')+' .input-group').first().clone().appendTo('#url-group-'+$(this).data('input-slug'));
-		$('#url-group-'+$(this).data('input-slug')+' .input-group:last input').val('');
+		$(this).closest('#'+$(this).data('group-class')+'-'+$(this).data('input-slug')+' .input-group').first().clone().appendTo('#'+$(this).data('group-class')+'-'+$(this).data('input-slug'));
+		$('#'+$(this).data('group-class')+'-'+$(this).data('input-slug')+' .input-group:last input').val('');
 	});
 
 	$(document).on('click', '.delete_btn', function(e) {
