@@ -72,6 +72,7 @@ function process_json_out (data, btn_html='') {
 		if (!($('input[name="id"]').val()))
 			$('input[name="id"]').val(data.last_data[0].id);
 		$('input[name="slug"]').val(data.last_data[0].slug);
+		$('#title-slug').html(data.last_data[0].slug);
 		$('.view_btn').removeClass('disabled').attr('href', data.last_data[0].url);
 		$('#slug_update_div').addClass('d-block').removeClass('d-none');
 		$('.save_btn').prop('disabled', false);
