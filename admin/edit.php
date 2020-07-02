@@ -36,6 +36,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			$module_input_slug=$module['input_slug'];
 			$module_input_type=$module['input_type'];
 			$module_input_lang=$module['input_lang'];
+			$module_input_primary=$module['input_primary'];
 			$module_input_options=$module['input_options'];
 			$module_input_placeholder=$module['input_placeholder'];
 			$slug_displayed=0;
@@ -82,9 +83,12 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
 			  </div>
-			  <input type="text" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
-			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="text-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
+			  <input type="text" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_text'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <?php echo ($module_input_type=='multi_text'?'<div class="input-group-append multi_add_btn" data-group-class="text-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
+
+			<?php if ($module_input_primary && $module_input_type!='multi_text' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div></div>';} ?>
+
 			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php } $i++; } ?>
 		</div>
