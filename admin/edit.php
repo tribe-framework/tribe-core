@@ -79,9 +79,9 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			  <?php echo ($module_input_type=='multi_text'?'<div class="input-group-append multi_add_btn" data-group-class="text-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 
-			<?php if ($module_input_primary && $module_input_type!='multi_text' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link) | <span id="title-slug">'.$post['slug'].'</span></label></div></div>';} ?>
-
 			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
+
+			<?php if ($module_input_primary && $module_input_type!='multi_text' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link) | <span id="title-slug">'.$post['slug'].'</span></label></div></div>';} ?>
 		<?php } $i++; } ?>
 		</div>
 		<?php endif; ?>
