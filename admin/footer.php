@@ -41,7 +41,7 @@
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.fileupload.js"></script>
     <?php if (!empty(GOOGLE_MAP_API_KEY_1))	echo '<script src="https://maps.googleapis.com/maps/api/js?key='.GOOGLE_MAP_API_KEY_1.'&libraries=places&callback=initMap" async defer></script>'; ?>
 
-    <?php if ($_GET['type']=='list') echo '<script src="<?php echo BASE_URL; ?>/admin/js/list.js"></script>'; ?>
-    <?php if ($_GET['type']=='edit') echo '<script src="<?php echo BASE_URL; ?>/admin/js/edit.js"></script>'; ?>
+    <script src="<?php echo BASE_URL; ?>/admin/js/list.js?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo BASE_URL; ?>/admin/js/edit.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
