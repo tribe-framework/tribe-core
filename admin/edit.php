@@ -203,7 +203,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		?>
 			<div class="input-group mt-5">
 			  <div class="input-group-prepend">
-			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
+			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up-alt"></span></span>
 			  </div>
 			  <input type="number" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_number'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_number'?'<div class="input-group-append multi_add_btn" data-group-class="number-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
