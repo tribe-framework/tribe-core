@@ -29,9 +29,14 @@ $( document ).ready(function() {
 		$('#'+$(this).data('group-class')+'-'+$(this).data('input-slug')+' .input-group:last input').val('');
 	});
 
+	$(document).on('click', '.remove_multi_drop_option', function(e) {
+		e.preventDefault();
+		$(this).closest('tr').remove();
+	});
+
 	$(document).on('click', '.select_multi_drop_option', function(e) {
 		e.preventDefault();
-		alert($(this).parent().data('name')+':'+$(this).parent().data('value'));
+		$(this).closest('.multi_drop_filled').append('<tr><td class="p-3">'+$(this).closest('.multi_drop_option_text').html()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></td></tr>');
 	});
 
 	$(document).on('click', '.delete_btn', function(e) {
