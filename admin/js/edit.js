@@ -39,7 +39,8 @@ $( document ).ready(function() {
 		$('#'+$(this).data('multi_drop_filled_table')+' .grid').append('<div class="bg-light grid-item p-3">'+$('#'+$(this).data('multi_drop_option_text')).text()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></div>');
 	});
 
-	$('.grid').packery({'itemSelector': '.grid-item'});
+	$('.grid').packery( 'bindDraggabillyEvents', draggie )
+	$('.grid').packery({itemSelector: '.grid-item'});
 
 	$(document).on('click', '.delete_btn', function(e) {
 		$(this).closest('p.file').remove();
