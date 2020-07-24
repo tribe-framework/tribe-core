@@ -36,6 +36,7 @@ $( document ).ready(function() {
 
 	$(document).on('click', '.select_multi_drop_option', function(e) {
 		e.preventDefault();
+		alert('<tr><td class="p-3">'+$(this).closest('.multi_drop_option_text').html()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></td></tr>');
 		$(this).closest('.multi_drop_filled').append('<tr><td class="p-3">'+$(this).closest('.multi_drop_option_text').html()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></td></tr>');
 	});
 
