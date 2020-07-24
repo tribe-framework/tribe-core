@@ -9,10 +9,6 @@ $( document ).ready(function() {
 		"order": [[ 0, "desc" ]]
 	});
 
-	$('.grid').packery({
-		itemSelector: '.grid-item'
-	});
-
 	$('.typeout-content').each(function() {update_textarea($(this).data('input-slug'));});
 
 	$(document).on('keyup', '.typeout-content', function() {update_textarea($(this).data('input-slug'));});
@@ -35,13 +31,15 @@ $( document ).ready(function() {
 
 	$(document).on('click', '.remove_multi_drop_option', function(e) {
 		e.preventDefault();
-		$(this).closest('tr').remove();
+		$(this).closest('.grid-item').remove();
 	});
 
 	$(document).on('click', '.select_multi_drop_option', function(e) {
 		e.preventDefault();
-		$('#'+$(this).data('multi_drop_filled_table')+' .grid').append('<div class="grid-item p-3">'+$('#'+$(this).data('multi_drop_option_text')).text()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></div>');
+		$('#'+$(this).data('multi_drop_filled_table')+' .grid').append('<div class="grid-item p-3 pl-0">'+$('#'+$(this).data('multi_drop_option_text')).text()+' <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="'+$(this).parent().data('name')+'" value="'+$(this).parent().data('value')+'"></div>');
 	});
+
+	$('.grid').packery({'itemSelector': '.grid-item'});
 
 	$(document).on('click', '.delete_btn', function(e) {
 		$(this).closest('p.file').remove();
