@@ -308,11 +308,11 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$i++;
 					if (is_array($opt)) {
 						echo '
-						<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span class="multi_drop_option_text">'.$opt['title'].'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_filled_table="'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+						<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'">'.$opt['title'].'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
 					}
 					else {
 						echo '
-						 <tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span class="multi_drop_option_text">'.$opt.'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_filled_table="'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+						 <tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'">'.$opt.'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
 					}
 				}
 			}
@@ -325,7 +325,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 					$titler=$dash->get_type_title_data($option);
 					$title_slug=$titler['slug'];
 					echo '
-					<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span class="multi_drop_option_text">'.$option[$title_slug].' (ID: '.$opt['id'].')</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_filled_table="'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+					<tr><td class="packery-drop p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'">'.$option[$title_slug].' (ID: '.$opt['id'].')</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
 				}
 			}
 			?>
