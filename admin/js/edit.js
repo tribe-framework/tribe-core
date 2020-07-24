@@ -31,7 +31,7 @@ $( document ).ready(function() {
 
 	$(document).on('click', '.select_multi_drop_option', function(e) {
 		e.preventDefault();
-		alert($(this).parent().data('name'));
+		alert($(this).parent().data('name')+':'+$(this).parent().data('value'));
 	});
 
 	$(document).on('click', '.delete_btn', function(e) {
