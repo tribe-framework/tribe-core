@@ -298,9 +298,9 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
 		<?php endif; ?>
-
+		
 		<?php if ($module_input_type=='multi_drop'): ?>
-		<div class="clearfix form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><br><div class="float-left multi_drop w-50"><div class="table multi_drop_filled" id="multi_drop_filled_table_<?php echo $module_input_slug_lang; ?>"><div class="w-100 grid"></div></div></div><div class="float-left multi_drop w-50 pl-2"><table class="table multi_drop_select_table"><thead><th>Options</th></thead><tbody>
+		<div class="clearfix form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><br><div class="float-left multi_drop w-50"><div class="table multi_drop_filled" id="multi_drop_filled_table_<?php echo $module_input_slug_lang; ?>"><div class="w-100 grid"><div class="bg-light grid-item p-3">Will you recommend the company as a possible employer to your friends? (ID: 60) <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="question[]" value="will-you-recommend-the-company-as-a-possible-employer-to-your-friends--5eff8d0b8caea"></div><div class="bg-light grid-item p-3">What in your view are the key strengths of the company? Please feel free to add up to 3 key areas: (ID: 61) <a href="#" class="float-right remove_multi_drop_option"><span class="fas fa-minus-circle"></span></a><input type="hidden" name="question[]" value="what-in-your-view-are-the-key-strengths-of-the-company-please-feel-free-to-add-up-to-3-key-areas--5eff8d502ab48"></div></div></div></div><div class="float-left multi_drop w-50 pl-2"><table class="table multi_drop_select_table"><thead><th>Options</th></thead><tbody>
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;
