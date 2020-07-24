@@ -213,6 +213,15 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		</div>
 		<?php endif; ?>
 
+		<?php if ($module_input_type=='checkbox'): ?>
+		<div class="input-group mt-5">
+			<div class="custom-control custom-checkbox">
+			  <input type="checkbox" name="<?php echo $module_input_slug_lang; ?>" class="custom-control-input" id="customCheck_<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+			  <label class="custom-control-label" for="customCheck_<?php echo $module_input_slug_lang; ?>"><?php echo ($module_input_placeholder??''); ?></label>
+			</div>
+		</div>
+		<?php endif; ?>
+
 		<?php if ($module_input_type=='tel'): ?>
 		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
