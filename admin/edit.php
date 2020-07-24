@@ -300,7 +300,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_drop'): ?>
-		<div class="clearfix form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><br><table class="bg-light table float-left multi_drop w-50 multi_drop_filled" id="multi_drop_filled_table_<?php echo $module_input_slug_lang; ?>"></table><div class="float-left multi_drop w-50 pl-2"><table class="table packery-table"><thead><th>Options</th></thead><tbody>
+		<div class="clearfix form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><br><table class="bg-light table float-left multi_drop w-50 multi_drop_filled" id="multi_drop_filled_table_<?php echo $module_input_slug_lang; ?>"><tbody></tbody></table><div class="float-left multi_drop w-50 pl-2"><table class="table packery-table"><thead><th>Options</th></thead><tbody>
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;
