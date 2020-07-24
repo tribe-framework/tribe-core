@@ -24,7 +24,7 @@
 	<script src="/plugins/datatables/datatables.min.js"></script>
 	<script src="/plugins/clipboard.min.js"></script>
 	<script src="/plugins/keymaster.js"></script>
-	<script src="<?php echo BASE_URL; ?>/admin/js/custom.js"></script>
+	<script src="<?php echo BASE_URL; ?>/admin/js/custom.js?v=<?php echo time(); ?>"></script>
 
 	<script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
 
