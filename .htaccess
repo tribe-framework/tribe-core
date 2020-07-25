@@ -5,8 +5,7 @@ RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R,L]
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule (.*) $1\.php [L,QSA]
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
-RewriteRule ^(.*)\scss.css$ $1scss.php [L]
+RewriteRule (.*)\scss.css $1\scss.php [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule (.*)$ index.php?ext=$1 [L,QSA]
-#RewriteRule  ^(.*)\.json$ $1.php [NC]
