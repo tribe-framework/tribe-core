@@ -11,8 +11,8 @@ class captcha {
 		$captcha_input = strtolower(preg_replace('/\s+/', '', $captcha_input));
 		$captcha_secret=$this->get_captcha_string_from_code($captcha_code, 0);
 
-		unset(CAPTCHA_STRING);
-		unset(CAPTCHA_CODE);
+		unset($_SESSION['CAPTCHA_STRING']);
+		unset($_SESSION['CAPTCHA_CODE']);
 
 		if ($captcha_input==$captcha_secret)
 			return 1;
@@ -21,8 +21,8 @@ class captcha {
 	}
 	
 	function show_input_fields ($css_classes='form-control', $css_id='') {
-		unset(CAPTCHA_STRING);
-		unset(CAPTCHA_CODE);
+		unset($_SESSION['CAPTCHA_STRING']);
+		unset($_SESSION['CAPTCHA_CODE']);
 		define('CAPTCHA_STRING', rand(10000,99999));
 		define('CAPTCHA_CODE', uniqid());
 
