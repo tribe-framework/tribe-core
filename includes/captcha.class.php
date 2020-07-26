@@ -8,6 +8,7 @@ class captcha {
 	}
 
 	function check_captcha ($captcha_input, $captcha_code) {
+		global $_SESSION;
 		$captcha_input = strtolower(preg_replace('/\s+/', '', $captcha_input));
 		$captcha_secret=$this->get_captcha_string_from_code($captcha_code, 0);
 
@@ -21,25 +22,27 @@ class captcha {
 	}
 	
 	function show_input_fields ($css_classes='form-control', $css_id='') {
+		global $_SESSION;
 		unset($_SESSION['CAPTCHA_STRING']);
 		unset($_SESSION['CAPTCHA_CODE']);
-		define('CAPTCHA_STRING', rand(10000,99999));
-		define('CAPTCHA_CODE', uniqid());
+		$_SESSION['CAPTCHA_STRING']=rand(10000,99999);
+		$_SESSION['CAPTCHA_CODE']=uniqid();
 
 		$op = '
-		<div class="form-group col-6"><label for="captcha"><img src="/captcha.php?captcha_code='.CAPTCHA_CODE.'"></label>
+		<div class="form-group col-6"><label for="captcha"><img src="/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></label>
 		    <input type="text" name="captcha_input" id="captcha" class="captcha_input form-control" aria-describedby="captchaHelp" placeholder="Type the above digits here">
 		    <small id="emailHelp" class="form-text text-muted">Enter the digits in the CAPTCHA image above.</small>
-		    <input type="hidden" class="captcha_code" name="captcha_code" value="'.CAPTCHA_CODE.'"></div><div class="col">
+		    <input type="hidden" class="captcha_code" name="captcha_code" value="'.$_SESSION['CAPTCHA_CODE'].'"></div><div class="col">
 	    </div>';
 		
 		return $op;
 	}
 
 	function get_captcha_string_from_code ($captcha_code, $display=1) {
+		global $_SESSION;
 		if ($display)
-			return CAPTCHA_STRING;
+			return $_SESSION['CAPTCHA_STRING'];
 		else
-			return strtolower(preg_replace('/\s+/', '', CAPTCHA_STRING));
+			return strtolower(preg_replace('/\s+/', '', $_SESSION['CAPTCHA_STRING']));
 	}
 }
