@@ -29,7 +29,7 @@ class captcha {
 		$_SESSION['CAPTCHA_CODE']=uniqid();
 
 		$op = '
-		<div class="form-group col-6"><label for="captcha"><img src="/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></label>
+		<div class="form-group"><label for="captcha"><img src="/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></label>
 		    <input type="text" name="captcha_input" id="captcha" class="captcha_input form-control" aria-describedby="captchaHelp" placeholder="Type the above digits here">
 		    <small id="emailHelp" class="form-text text-muted">Enter the digits in the CAPTCHA image above.</small>
 		    <input type="hidden" class="captcha_code" name="captcha_code" value="'.$_SESSION['CAPTCHA_CODE'].'"></div><div class="col">
