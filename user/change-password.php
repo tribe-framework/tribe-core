@@ -6,6 +6,18 @@ include_once (ABSOLUTE_PATH.'/user/header.php');
 <?php
 if ($_POST['password'] && ($_POST['password']==$_POST['cpassword'])) {
 	$dash->push_content_meta($session_user['id'], 'password', md5($_POST['password']));
+
+	//for admin and crew (staff)
+	if ($session_user['role']=='admin' || $session_user['role']=='crew')
+		header('Location: /admin');
+
+	//for members
+	else if ($session_user['role']=='member')
+		header('Location: /user');
+
+	//for visitors and anybody else
+	else 
+		header('Location: /');
 }
 else if ($_POST)
 	echo '<div class="alert alert-warning">Password mismatch.</div>';
