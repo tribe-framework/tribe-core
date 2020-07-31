@@ -36,20 +36,13 @@ if ($_POST['email'] && $_POST['password']) {
 ?>
 
 <form class="form-user" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
-	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
-	<label for="inputEmail" class="sr-only">Email address</label>
-	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
-
-	<?php
-	echo '<select class="form-control" name="role_slug">';
-	foreach ($types['user']['roles'] as $role) {
-		echo '<option value="'.$role['slug'].'">'.$role['title'].'</option>';
-	}
-	echo '</select>';
-	?>
+	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Register</h4>
 
 	<?php
 	$type='user';
+	$role = $types['user']['roles'][$_GET[role]];
+	if ($role['slug'])
+		echo '<input type="hidden" name="role_slug" value="'.$role['slug'].'">';
 	include ('../admin/form.php');
 	?>
 
