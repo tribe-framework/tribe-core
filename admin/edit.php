@@ -5,8 +5,9 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
-if (!($session_user['role']=='admin' || $post['user_id']==$session_user['user_id'] || !$_GET['id']))
-	die('Not allowed.');
+if (!($session_user['role']=='admin' || $post['user_id']==$session_user['user_id'] || !$_GET['id'])) {
+	echo 'Not allowed. <a href="/admin">Go back</a>.'
+} else {
 
 if ($_GET['role'])
 	$role = $types['user']['roles'][$_GET[role]];
@@ -91,5 +92,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	</div>
 		
 <?php endif; ?>
+
+<?php } ?>
 
 <?php include_once (ABSOLUTE_PATH.'/admin/footer.php'); ?>
