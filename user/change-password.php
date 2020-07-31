@@ -19,12 +19,11 @@ if ($_POST['password'] && ($_POST['password']==$_POST['cpassword'])) {
 	else 
 		header('Location: /');
 }
-else if ($_POST)
-	echo '<div class="alert alert-warning">Password mismatch.</div>';
 ?>
 
 <form class="form-user" method="post" action="/user/change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Change Password</h4>
+	<?php if ($_POST && $_POST['password']!=$_POST['cpassword'])	echo '<div class="form-user alert alert-warning">Password mismatch.</div>'; ?>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" value="<?php echo $session_user['email']; ?>" id="inputEmail" class="form-control my-1" placeholder="Email address" required disabled="disabled">
 	<label for="inputPassword" class="sr-only">New Password</label>
