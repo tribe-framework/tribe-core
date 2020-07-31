@@ -177,7 +177,7 @@ class dash {
 	}
 
 	function get_content ($val) {
-		global $sql;
+		global $sql, $session_user;
 		$or=array();
 		if (is_numeric($val))
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
@@ -188,7 +188,21 @@ class dash {
 			$or['id']=$q[0]['id'];
 			$or['updated_on']=$q[0]['updated_on'];
 			$or['created_on']=$q[0]['created_on'];
-			return $or;
+
+			if ($or['content_privacy']=='draft') {
+				if ($session_user['user_id']==$or['user_id'])
+					return $or;
+				else
+					return 0;
+			}
+			else if ($or['content_privacy']=='pending') {
+				if ($session_user['role']=='admin' || $session_user['user_id']==$or['user_id'])
+					return $or;
+				else
+					return 0;
+			}
+			else
+				return $or;
 		}
 		else
 			return 0;
