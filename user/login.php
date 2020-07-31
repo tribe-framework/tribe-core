@@ -38,7 +38,7 @@ else if ($_POST['email'] && $_POST['password']) {
 }
 ?>
 
-<form class="form-signin" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+<form class="form-user" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
@@ -46,8 +46,8 @@ else if ($_POST['email'] && $_POST['password']) {
 	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
 	<div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> Remember me</label></div>
 	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Sign in</button>
-	<a class="btn btn-sm btn-outline-primary btn-block my-1" href="/admin/auth?section=register">Register</a>
-	<p class="text-muted small my-2"><a href="/admin/auth?section=forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
+	<a class="btn btn-sm btn-outline-primary btn-block my-1" href="/user/register">Register</a>
+	<p class="text-muted small my-2"><a href="/user/forgot-password"><span class="fas fa-key"></span>&nbsp;Forgot password?</a></p>
 	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
 	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
 </form>
