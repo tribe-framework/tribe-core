@@ -217,6 +217,10 @@ class dash {
 			return json_decode($q[0]['title']);
 	}
 
+	function get_all_ids_count ($type) {
+		return count($this->get_all_ids($type));
+	}
+
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql, $session_user;
 
