@@ -47,7 +47,7 @@
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-align-justify"></span></span>
 			  </div>
-			  <input type="text" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_text'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <input type="text" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_text'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_text'?'<div class="input-group-append multi_add_btn" data-group-class="text-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 
@@ -128,7 +128,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-calendar"></span></span>
 		  </div>
-		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		  <?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
 		<?php endif; ?>
@@ -151,7 +151,7 @@
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
 			  </div>
-			  <input type="url" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <input type="url" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
@@ -177,7 +177,7 @@
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up-alt"></span></span>
 			  </div>
-			  <input type="number" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_number'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <input type="number" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_number'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_number'?'<div class="input-group-append multi_add_btn" data-group-class="number-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
 			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
@@ -199,7 +199,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-phone"></span></span>
 		  </div>
-		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
@@ -213,7 +213,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
 		  </div>
-		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		  <?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
 		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
@@ -224,7 +224,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-envelope"></span></span>
 		  </div>
-		  <input autocomplete="off" type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input autocomplete="off" type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
 		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
@@ -234,7 +234,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-key"></span></span>
 		  </div>
-		  <input autocomplete="off" type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
+		  <input autocomplete="off" type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
 		  <?php
 		  if ($post[$module_input_slug_lang])
 		  	echo '<small class="col-12 row form-text text-muted">To keep the password unchanged, leave this field empty</small>'; ?>
@@ -393,7 +393,7 @@
 				  <div class="input-group-prepend">
 				    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-map-marked-alt"></span></span>
 				  </div>
-				  <input disabled type="text" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" value="'.substr($mapr_val,0,-2).'">
+				  <input disabled type="text" class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0" value="'.substr($mapr_val,0,-2).'">
 				  <div class="input-group-append">
 				    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><a href="#google_map_div" data-toggle="collapse">Edit map location</a></span>
 				  </div>
