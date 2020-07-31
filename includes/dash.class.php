@@ -295,23 +295,41 @@ class dash {
 	}
 
 	function get_types ($json_path) {
+		global $session_user;
+
 		$types=json_decode(file_get_contents($json_path), true);
 		foreach ($types as $key=>$type) {
 			if (($type['type']??'')=='content') {
 				if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
-				$content_privacy_json='{
-			        "input_slug": "content_privacy",
-			        "input_placeholder": "Content privacy",
-			        "input_type": "select",
-			        "input_options": [
-			          {"slug":"public", "title":"Public link"},
-			          {"slug":"private", "title":"Private link"},
-			          {"slug":"draft", "title":"Draft"}
-			        ],
-			        "list_field": true,
-			        "input_unique": false
-			      }';
-				$types[$key]['modules'][]=json_decode($content_privacy_json, true);
+					if ($session_user['role']=='admin') {
+						$content_privacy_json='{
+					        "input_slug": "content_privacy",
+					        "input_placeholder": "Content privacy",
+					        "input_type": "select",
+					        "input_options": [
+					          {"slug":"public", "title":"Public link"},
+					          {"slug":"private", "title":"Private link"},
+					          {"slug":"pending", "title":"Submit for moderation"},
+					          {"slug":"draft", "title":"Draft"}
+					        ],
+					        "list_field": true,
+					        "input_unique": false
+					    }';
+			  		}
+					else {
+						$content_privacy_json='{
+					        "input_slug": "content_privacy",
+					        "input_placeholder": "Content privacy",
+					        "input_type": "select",
+					        "input_options": [
+					          {"slug":"pending", "title":"Submit for moderation"},
+					          {"slug":"draft", "title":"Draft"}
+					        ],
+					        "list_field": true,
+					        "input_unique": false
+					    }';
+			  		}
+					$types[$key]['modules'][]=json_decode($content_privacy_json, true);
 		  		}
 
 		  		foreach ($types[$key]['modules'] as $module) {
