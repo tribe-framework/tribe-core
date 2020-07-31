@@ -11,7 +11,7 @@ else if ($_POST)
 	echo '<div class="alert alert-warning">Password mismatch.</div>';
 ?>
 
-<form class="form-user" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+<form class="form-user" method="post" action="/user/change-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Change Password</h4>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" value="<?php echo $session_user['email']; ?>" id="inputEmail" class="form-control my-1" placeholder="Email address" required disabled="disabled">
