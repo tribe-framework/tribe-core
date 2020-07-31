@@ -443,8 +443,14 @@ class dash {
 	}
 
 	function get_unique_user_id () {
-		$bytes = random_bytes(3);
-		return strtoupper(bin2hex($bytes));
+		global $sql;
+		$bytes = strtoupper(bin2hex(random_bytes(3)));
+		
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.user_id'='$bytes' && `content`->'$.type'='user'");
+		if ($q[0]['id'])
+			return $this->get_unique_user_id();
+		else
+			return $bytes;
 	}
 }
 ?>
