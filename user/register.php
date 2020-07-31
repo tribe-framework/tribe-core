@@ -39,6 +39,21 @@ if ($_POST['email'] && $_POST['password']) {
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
+
+	<?php
+	echo '<select class="form-control" name="role_slug">';
+	foreach ($types['user']['roles'] as $role) {
+		echo '<option value="'.$role['slug'].'">'.$role['title'].'</option>';
+	}
+	echo '</select>';
+
+	echo '<select class="form-control" name="role_slug">';
+	foreach ($types['user']['roles'] as $role) {
+		echo '<option value="'.$role['slug'].'">'.$role['title'].'</option>';
+	}
+	echo '</select>';
+	?>
+
 	<label for="inputPassword" class="sr-only">Password</label>
 	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
 	<div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> I agree with the terms and conditions</label></div>

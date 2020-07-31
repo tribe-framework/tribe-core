@@ -8,6 +8,7 @@
 			$module_input_slug=$module['input_slug'];
 			$module_input_type=$module['input_type'];
 			$module_input_lang=$module['input_lang'];
+			$module_input_primary=$module['input_primary'];
 			$module_input_options=$module['input_options'];
 			$module_input_placeholder=$module['input_placeholder'];
 			$slug_displayed=0;
@@ -27,19 +28,42 @@
 				if ($module_autofill=='user_id')
 					$module_input_default_value=$dash->get_unique_user_id();
 			?>
-			
-		<?php if ($module_input_type=='text'): ?>
-		<div class="input-group input-group-lg my-4"><input type="text" name="<?php echo $module_input_slug_lang; ?>" class=" border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>"></div>
 
-		<?php if ($module_input_slug=='title' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)</label></div></div>';} ?>
+		<?php if ($module_input_type=='text' || $module_input_type=='multi_text'): ?>
+		<div class="text-group" id="text-group-<?php echo $module_input_slug_lang; ?>">
+		<?php
+		$i=0;
+		$type_name_values=array();
+		if (is_array($post[$module_input_slug_lang]))
+			$type_name_values=$post[$module_input_slug_lang];
+		else if ($post[$module_input_slug_lang])
+			$type_name_values[0]=$post[$module_input_slug_lang];
+		else
+			$type_name_values[0]=$module_input_default_value;
+		foreach ($type_name_values as $type_name_value) { 
+			if ($i<1 || trim($type_name_value)) {
+		?>
+			<div class="input-group mt-5">
+			  <div class="input-group-prepend">
+			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-align-justify"></span></span>
+			  </div>
+			  <input type="text" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_text'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <?php echo ($module_input_type=='multi_text'?'<div class="input-group-append multi_add_btn" data-group-class="text-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
+			</div>
+
+			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
+
+			<?php if ($module_input_primary && $module_input_type!='multi_text' && !$slug_displayed) {$slug_displayed=1; echo '<div class="input-group"><div id="slug_update_div" class="custom-control custom-switch '.($_GET['id']?'d-block':'d-none').'"><input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1"><label class="custom-control-label" for="slug_update">Update the URL slug based on title (will change the link)  <span id="title-slug" class="text-muted ml-4"><em>/'.$post['slug'].'</em></span></label></div></div>';} ?>
+		<?php } $i++; } ?>
+		</div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='textarea'): ?>
-		<div class="input-group my-4"><textarea name="<?php echo $module_input_slug_lang; ?>" class=" border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></textarea></div>
+		<div class="input-group mt-5"><textarea name="<?php echo $module_input_slug_lang; ?>" class="pl-0 border-top-0 border-left-0 border-right-0 rounded-0 form-control" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" id="<?php echo $module_input_slug_lang; ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></textarea><?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?></div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='typeout'): ?>
-		<div class="typeout-menu my-4">
+		<div class="typeout-menu mt-5">
 			<?php if (in_array('fullScreen', $module_input_options)) { ?>
 			<button type="button" data-expanded="0" class="btn btn-outline-primary border-0 rounded-0 mt-1 typeout typeout-fullscreen" data-toggle="tooltip" data-placement="top" title="full screen"><span class="fas fa-compress"></span></button>
 			<?php } ?>
@@ -93,17 +117,19 @@
 			<?php } ?>
 		</div>
 
-		<div class="typeout-content my-4 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></div>
+		<div class="typeout-content mt-5 border-bottom" id="typeout-<?php echo $module_input_slug_lang; ?>" data-input-slug="<?php echo $module_input_slug_lang; ?>" contenteditable="true" style="overflow: auto;" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>"><?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?></div>
 		<input type="hidden" name="<?php echo $module_input_slug_lang; ?>">
+
+		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='date'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-calendar"></span></span>
 		  </div>
 		  <input type="date" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
-		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
+		  <?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
 		<?php endif; ?>
 
@@ -121,24 +147,61 @@
 		foreach ($type_name_values as $type_name_value) { 
 			if ($i<1 || trim($type_name_value)) {
 		?>
-			<div class="input-group my-4">
+			<div class="input-group mt-5">
 			  <div class="input-group-prepend">
 			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-link"></span></span>
 			  </div>
 			  <input type="url" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_url'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
 			  <?php echo ($module_input_type=='multi_url'?'<div class="input-group-append multi_add_btn" data-group-class="url-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
 			</div>
+			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php } $i++; } ?>
 		</div>
 		<?php endif; ?>
 
+		<?php if ($module_input_type=='number' || $module_input_type=='multi_number'): ?>
+		<div class="number-group" id="number-group-<?php echo $module_input_slug_lang; ?>">
+		<?php
+		$i=0;
+		$type_name_values=array();
+		if (is_array($post[$module_input_slug_lang]))
+			$type_name_values=$post[$module_input_slug_lang];
+		else if ($post[$module_input_slug_lang])
+			$type_name_values[0]=$post[$module_input_slug_lang];
+		else
+			$type_name_values[0]=$module_input_default_value;
+		foreach ($type_name_values as $type_name_value) { 
+			if ($i<1 || trim($type_name_value)) {
+		?>
+			<div class="input-group mt-5">
+			  <div class="input-group-prepend">
+			    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up-alt"></span></span>
+			  </div>
+			  <input type="number" name="<?php echo $module_input_slug_lang.($module_input_type=='multi_number'?'[]':''); ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo $type_name_value; ?>">
+			  <?php echo ($module_input_type=='multi_number'?'<div class="input-group-append multi_add_btn" data-group-class="number-group" data-input-slug="'.$module_input_slug_lang.'"><button class="btn btn-outline-primary" type="button"><span class="fas fa-plus"></span></button></div>':''); ?>
+			</div>
+			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
+		<?php } $i++; } ?>
+		</div>
+		<?php endif; ?>
+
+		<?php if ($module_input_type=='checkbox'): ?>
+		<div class="input-group mt-5">
+			<div class="custom-control custom-checkbox">
+			  <input type="checkbox" name="<?php echo $module_input_slug_lang; ?>" class="custom-control-input" id="customCheck_<?php echo $module_input_slug_lang; ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+			  <label class="custom-control-label" for="customCheck_<?php echo $module_input_slug_lang; ?>"><?php echo ($module_input_placeholder??''); ?></label>
+			</div>
+		</div>
+		<?php endif; ?>
+
 		<?php if ($module_input_type=='tel'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-phone"></span></span>
 		  </div>
 		  <input type="tel" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
+		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='hidden'): ?>
@@ -146,40 +209,44 @@
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='priority'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-sort-numeric-up"></span></span>
 		  </div>
 		  <input type="number" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" min="<?php echo (isset($module['input_min'])?$module['input_min']:''); ?>" max="<?php echo (isset($module['input_max'])?$module['input_max']:''); ?>"  placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
-		  <?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
+		  <?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
+		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='email'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-envelope"></span></span>
 		  </div>
-		  <input type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
+		  <input autocomplete="off" type="email" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
+		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='password'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-key"></span></span>
 		  </div>
-		  <input type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
+		  <input autocomplete="off" type="password" name="<?php echo $module_input_slug_lang; ?>" class="form-control border-top-0 border-left-0 border-right-0 rounded-0" placeholder="<?php echo ($module_input_placeholder?$module_input_placeholder:ucfirst($types[$type]['name']).' '.$module_input_slug_lang); ?>">
 		  <?php
 		  if ($post[$module_input_slug_lang])
-		  	echo '<small class="col-12 row form-text text-muted text-left">To keep the password unchanged, leave this field empty</small>'; ?>
+		  	echo '<small class="col-12 row form-text text-muted">To keep the password unchanged, leave this field empty</small>'; ?>
+		  <?php //important step for password_md5, connected with $dash->push_content ?>
 		  <input type="hidden" name="<?php echo $module_input_slug_lang; ?>_md5" value="<?php echo ($post[$module_input_slug_lang]?$post[$module_input_slug_lang]:$module_input_default_value); ?>">
 		</div>
+		<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='select'): ?>
-		<div class="form-group my-4">
-			<select class="form-control  border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>"><option <?php echo ($post[$module_input_slug_lang]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?></option>
+		<div class="form-group mt-5">
+			<select class="form-control pl-0 border-top-0 border-left-0 border-right-0 rounded-0 mt-1" id="select_<?php echo $module_input_slug_lang; ?>" name="<?php echo $module_input_slug_lang; ?>"><option <?php echo ($post[$module_input_slug_lang]?'':'selected="selected"'); ?> value=""><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?></option>
 				<?php 
 				if ($options=$module_input_options) {
 					foreach ($options as $opt) {
@@ -193,16 +260,52 @@
 					$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
 					foreach ($options as $opt) {
 						$option=$dash::get_content($opt['id']);
-						echo '<option value="'.$option['slug'].'" '.(($post[$module_input_slug_lang]==$option['slug'])?'selected="selected"':'').'>'.$option['title'].'</option>';
+						$titler=$dash->get_type_title_data($option);
+						$title_slug=$titler['slug'];
+						echo '<option value="'.$option['slug'].'" '.(($post[$module_input_slug_lang]==$option['slug'])?'selected="selected"':'').'>'.$option[$title_slug].'</option>';
 					}
 				}
 				?>
 			</select>
+			<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
+		<?php endif; ?>
+		
+		<?php if ($module_input_type=='multi_drop'): ?>
+		<div class="clearfix form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?><br><div class="float-left multi_drop w-50"><div class="table multi_drop_filled" id="multi_drop_filled_table_<?php echo $module_input_slug_lang; ?>"><div class="w-100 grid"></div></div></div><div class="float-left multi_drop w-50 pl-2"><table class="table multi_drop_select_table"><thead><th>Options</th></thead><tbody>
+			<?php 
+			if ($options=$module_input_options) {
+				$i=0;
+				foreach ($options as $opt) {
+					$i++;
+					if (is_array($opt)) {
+						echo '
+						<tr><td class="grid-item p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt['slug'].'" '.(in_array($opt['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'">'.$opt['title'].'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+					}
+					else {
+						echo '
+						 <tr><td class="grid-item p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$opt.'" '.(in_array($opt, $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'">'.$opt.'</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+					}
+				}
+			}
+			else {
+				$options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
+				$i=0;
+				foreach ($options as $opt) {
+					$i++;
+					$option=$dash::get_content($opt['id']);
+					$titler=$dash->get_type_title_data($option);
+					$title_slug=$titler['slug'];
+					echo '
+					<tr><td class="grid-item p-3" data-name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" data-value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'data-checked="checked"':'').'><span id="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'">'.$option[$title_slug].' (ID: '.$opt['id'].')</span> <a href="#" class="float-right select_multi_drop_option" data-multi_drop_option_text="multi_drop_option_text_'.$module_input_slug_lang.'_'.$i.'" data-multi_drop_filled_table="multi_drop_filled_table_'.$module_input_slug_lang.'"><span class="fas fa-chevron-circle-left"></span></a></td></tr>';
+				}
+			}
+			?>
+		</tbody></table></div></div>
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='multi_select'): ?>
-		<div class="form-group my-4"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
+		<div class="form-group mt-5"><?php echo ($module_input_placeholder?$module_input_placeholder:'Select '.$module_input_slug_lang); ?>
 			<?php 
 			if ($options=$module_input_options) {
 				$i=0;
@@ -230,10 +333,12 @@
 				foreach ($options as $opt) {
 					$i++;
 					$option=$dash::get_content($opt['id']);
+					$titler=$dash->get_type_title_data($option);
+					$title_slug=$titler['slug'];
 					echo '
 					<div class="custom-control custom-switch">
 						<input type="checkbox" class="custom-control-input" name="'.$module_input_slug_lang.'[]" id="'.$module_input_slug_lang.'_customSwitch_'.$i.'" value="'.$option['slug'].'" '.(in_array($option['slug'], $post[$module_input_slug_lang])?'checked="checked"':'').'>
-						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option['title'].'</label>
+						<label class="custom-control-label" for="'.$module_input_slug_lang.'_customSwitch_'.$i.'">'.$option[$title_slug].' (ID: '.$opt['id'].')</label>
 					</div>';
 				}
 			}
@@ -242,7 +347,7 @@
 		<?php endif; ?>
 
 		<?php if ($module_input_type=='file_uploader'): ?>
-		<div class="input-group my-4">
+		<div class="input-group mt-5">
 			<div class="input-group-prepend">
 			<span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="inputGroupFileAddon01"><span class="fas fa-upload"></span></span>
 			</div>
@@ -250,7 +355,7 @@
 			<input type="file" class="custom-file-input border-top-0 border-left-0 border-right-0 rounded-0" type="file" id="<?php echo $module_input_slug_lang; ?>" data-bunching='<?php echo json_encode($module['input_bunching']); ?>' data-descriptor="<?php echo ($module['input_descriptor']?'1':''); ?>" data-url="/admin/uploader" multiple>
 			<label class="custom-file-label border-top-0 border-left-0 border-right-0 rounded-0" for="fileupload">Choose file</label>
 			</div>
-		  	<?php echo ($module_input_placeholder?'<small class="col-12 row form-text text-muted text-left">'.$module_input_placeholder.'</small>':''); ?>
+		  	<?php echo ($module_input_placeholder?'<div class="col-12 row text-muted small m-0"><span class="ml-auto mr-0">'.$module_input_placeholder.'</span></div>':''); ?>
 		</div>
 		<div class="col-12 p-0 mb-4 d-none" id="<?php echo $module_input_slug_lang; ?>_fileuploads">
 			<div id="progress">
@@ -284,7 +389,7 @@
 			$mapr_val='';
 			foreach ($mapr['result']['address_components'] as $kv)
 				$mapr_val.=$kv['long_name'].', ';
-			echo '<div class="input-group my-4">
+			echo '<div class="input-group mt-5">
 				  <div class="input-group-prepend">
 				    <span class="input-group-text border-top-0 border-left-0 border-right-0 rounded-0" id="basic-addon1"><span class="fas fa-map-marked-alt"></span></span>
 				  </div>
@@ -319,6 +424,16 @@
 		    var card = document.getElementById('pac-card');
 		    var input = document.getElementById('pac-input');
 
+		    var fontawesomePin = {
+	          path: 'M112 316.94v156.69l22.02 33.02c4.75 7.12 15.22 7.12 19.97 0L176 473.63V316.94c-10.39 1.92-21.06 3.06-32 3.06s-21.61-1.14-32-3.06zM144 0C64.47 0 0 64.47 0 144s64.47 144 144 144 144-64.47 144-144S223.53 0 144 0zm0 76c-37.5 0-68 30.5-68 68 0 6.62-5.38 12-12 12s-12-5.38-12-12c0-50.73 41.28-92 92-92 6.62 0 12 5.38 12 12s-5.38 12-12 12z',
+	          fillColor: '#ffcc00',
+	          fillOpacity: 0.8,
+	          scale: 0.15,
+	          strokeColor: '#ff3300',
+	          strokeWeight: 1,
+	          anchor: new google.maps.Point(144,512)
+	        };
+
 		    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
 
 		    var autocomplete = new google.maps.places.Autocomplete(input);
@@ -335,7 +450,13 @@
 		    infowindow.setContent(infowindowContent);
 		    var marker = new google.maps.Marker({
 		      map: map,
-		      anchorPoint: new google.maps.Point(0, -29)
+		      draggable: true,
+		      icon: fontawesomePin,
+		      animation: google.maps.Animation.DROP
+		    });
+
+		    marker.addListener('dragend', function(event) {
+		    	alert('moved to: '+event.latLng.lat()+' '+event.latLng.lng());
 		    });
 
 		    <?php if ($post[$module_input_slug_lang]) { ?>
@@ -350,6 +471,9 @@
 	          if (status === google.maps.places.PlacesServiceStatus.OK) {
 	            var marker = new google.maps.Marker({
 	              map: map,
+	              draggable: true,
+			      icon: fontawesomePin,
+			      animation: google.maps.Animation.DROP,
 	              position: place.geometry.location
 	            });
 
