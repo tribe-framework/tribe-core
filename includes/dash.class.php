@@ -273,7 +273,7 @@ class dash {
 			$i++;
 		}
 
-		$qry="SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'=='public' && ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+		$qry="SELECT `id` FROM `data` WHERE `content`->'$.content_privacy' LIKE 'public' && ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 		$r=$sql->executeSQL($qry);
 		if ($debug_show_sql_statement)
 			echo $qry;
