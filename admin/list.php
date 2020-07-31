@@ -55,7 +55,7 @@ if ($_GET['role'])
               $donotlist=1;
       }
     }
-    $tr_echo.='<td>'.(($session_user['role']=='admin' || $session_user['user_id']==$post['user_id'])?'<a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].($type=='user'?'&role='.$_GET['role']:'').'"><span class="fas fa-edit"></span></a>&nbsp;':'')<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
+    $tr_echo.='<td>'.(($session_user['role']=='admin' || $session_user['user_id']==$post['user_id'])?'<a href="/admin/edit?type='.$post['type'].'&id='.$post['id'].($type=='user'?'&role='.$_GET['role']:'').'"><span class="fas fa-edit"></span></a>&nbsp;':'').'<a target="new" href="/'.$post['type'].'/'.$post['slug'].'"><span class="fas fa-external-link-alt"></span></a></td></tr>';
     if (!$donotlist)
       echo $tr_echo;
   }
