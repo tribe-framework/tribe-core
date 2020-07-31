@@ -1,0 +1,28 @@
+<?php
+include_once ('../config-init.php');
+include_once (ABSOLUTE_PATH.'/user/header.php');
+?>
+
+<?php
+if ($_POST['password'] && ($_POST['password']==$_POST['cpassword'])) {
+	$dash->push_content_meta($session_user['id'], 'password', md5($_POST['password']));
+}
+else if ($_POST)
+	echo '<div class="alert alert-warning">Password mismatch.</div>';
+?>
+
+<form class="form-user" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Change Password</h4>
+	<label for="inputEmail" class="sr-only">Email address</label>
+	<input type="email" name="email" value="<?php echo $session_user['email']; ?>" id="inputEmail" class="form-control my-1" placeholder="Email address" required disabled="disabled">
+	<label for="inputPassword" class="sr-only">New Password</label>
+	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="New password" required>
+	<label for="inputPassword" class="sr-only">Confirm Password</label>
+	<input type="password" name="cpassword" id="inputPassword" class="form-control my-1" placeholder="Confirm password" required>
+
+	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Change password</button>
+	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
+	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?> Wildfire</p>
+</form>
+
+<?php include_once (ABSOLUTE_PATH.'/user/footer.php'); ?>
