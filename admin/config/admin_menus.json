@@ -26,12 +26,8 @@
         "dropdown_class": "dropdown-menu-right",
         "submenu": [
           {
-            "name": "Edit profile",
-            "href": "/user/profile"
-          },
-          {
             "name": "Change password",
-            "href": "/user/profile?section=change-password"
+            "href": "/user/change-password"
           }
         ]
       },
