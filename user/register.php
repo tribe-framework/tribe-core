@@ -50,7 +50,7 @@ if ($_POST['email'] && $_POST['password']) {
 
 	<?php
 	$type='user';
-	include ('form.php');
+	include ('../admin/form.php');
 	?>
 
 	<label for="inputPassword" class="sr-only">Password</label>
