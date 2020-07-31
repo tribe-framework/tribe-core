@@ -2,6 +2,8 @@
 session_start();
 include_once('config/config-vars.php');
 
+$session_user=$_SESSION['user'];
+
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
