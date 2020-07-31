@@ -46,8 +46,6 @@ if ($_POST['email'] && $_POST['password']) {
 	include ('../admin/form.php');
 	?>
 
-	<label for="inputPassword" class="sr-only">Password</label>
-	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
 	<div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> I agree with the terms and conditions</label></div>
 	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Register</button>
 	<a class="btn btn-sm btn-outline-primary btn-block my-1" href="/user/login">Sign in</a>

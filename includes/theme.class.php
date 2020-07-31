@@ -20,7 +20,7 @@ class theme {
 	}
 
 	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link', 'toggler'=>'navbar-toggler'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
-		global $menus, $types, $dash;
+		global $menus, $types, $dash, $_SESSION;
 		
 		if (is_array($slug))
 			$items=$slug;
@@ -42,6 +42,9 @@ class theme {
 					<ul class="'.$css_classes['ul'].'">';
 					if (isset($items['menu'])) {
 						foreach ($items['menu'] as $item) {
+							if (($item['admin_access_only']??false) && $_SESSION['user']['role']!='admin')
+								continue;
+
 							if (is_array(($item['submenu']??''))) {
 								$op.='<li class="'.($css_classes['li']??'').' dropdown"><a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" title="'.($item['title']??'').'" role="button" data-toggle="dropdown">'.($item['name']??'').'
 									</a><div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'">';
@@ -139,7 +142,7 @@ class theme {
 	}
 
 	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center', 'li'=>'nav-item', 'a'=>'nav-link')) {
-		global $menus, $types, $dash;
+		global $menus, $types, $dash, $_SESSION;
 		
 		if (is_array($slug))
 			$items=$slug;
@@ -155,6 +158,9 @@ class theme {
 			<ul class="'.($css_classes['ul']??'').'">';	
 				if (isset($items['menu'])) {
 					foreach ($items['menu'] as $item) {
+						if (($item['admin_access_only']??false) && $_SESSION['user']['role']!='admin')
+							continue;
+
 						if (is_array(($item['submenu']??''))) {
 							$op.='<li class="dropdown '.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').' dropdown-toggle" href="#" title="'.($item['title']??'').'" role="button" data-toggle="dropdown">'.($item['name']??'').'
 								</a><div class="dropdown-menu '.($css_classes['dropdown']??'').' '.($item['dropdown_class']??'').'">';

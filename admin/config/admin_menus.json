@@ -12,11 +12,13 @@
         "name": "Users",
         "href": "#",
         "dropdown_class": "dropdown-menu-right",
-        "submenu": "user"
+        "submenu": "user",
+        "admin_access_only": 1
       },
       {
         "name": "Insights",
-        "href": "/admin/insights"
+        "href": "/admin/insights",
+        "admin_access_only": 1
       },
       {
         "name": "Settings",
