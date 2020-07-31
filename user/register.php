@@ -4,9 +4,14 @@ include_once (ABSOLUTE_PATH.'/auth/header.php');
 ?>
 
 <?php
-foreach ($types as $key => $value) {
-	if ($types[$key]['type']=='content')
-    	echo '<button type="button" class="btn btn-primary btn-lg">'.ucfirst($types[$key]['name']).'</button>';
+foreach ($types as $k => $v) {
+	if ($types[$k]['type']=='user') {
+		foreach ($types[$k]['roles'] as $key => $value) {
+			if ($value['role']!='admin')
+		    	echo '<button type="button" class="btn btn-primary btn-lg">'.ucfirst($value['title']).'</button>';	
+		}
+	}
+	break;
 }
 ?>
 
