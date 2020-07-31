@@ -14,7 +14,7 @@ else: ?>
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="/plugins/datatables/datatables.min.css" rel="stylesheet">
 	<link href="<?php echo BASE_URL; ?>/admin/css/custom.css" rel="stylesheet">
-  	<link href="<?php echo BASE_URL; ?>/admin/css/auth.css" rel="stylesheet">
+  	<link href="<?php echo BASE_URL; ?>/user/css/custom.css" rel="stylesheet">
 </head>
 
 <body class="text-center">
