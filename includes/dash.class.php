@@ -241,10 +241,10 @@ class dash {
 		else {
 			$role_slug='';
 			if ($session_user['role']=='admin') {
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' || `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 			}
 			else {
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'=='public' || `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
 			}
 		}
 
@@ -273,7 +273,7 @@ class dash {
 			$i++;
 		}
 
-		$qry="SELECT `id` FROM `data` WHERE `content`->'$.content_privacy' LIKE 'public' && ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+		$qry="SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'='public' AND ".join(' '.$between.' ', $frechr)." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 		$r=$sql->executeSQL($qry);
 		if ($debug_show_sql_statement)
 			echo $qry;
