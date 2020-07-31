@@ -10,8 +10,8 @@ foreach ($types as $k => $v) {
 			if ($value['role']!='admin')
 		    	echo '<button type="button" class="btn btn-primary btn-lg">'.ucfirst($value['title']).'</button>';	
 		}
+		break;
 	}
-	break;
 }
 ?>
 
