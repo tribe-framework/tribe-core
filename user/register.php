@@ -46,12 +46,11 @@ if ($_POST['email'] && $_POST['password']) {
 		echo '<option value="'.$role['slug'].'">'.$role['title'].'</option>';
 	}
 	echo '</select>';
+	?>
 
-	echo '<select class="form-control" name="role_slug">';
-	foreach ($types['user']['roles'] as $role) {
-		echo '<option value="'.$role['slug'].'">'.$role['title'].'</option>';
-	}
-	echo '</select>';
+	<?php
+	$type='user';
+	include ('form.php');
 	?>
 
 	<label for="inputPassword" class="sr-only">Password</label>
