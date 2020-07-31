@@ -218,19 +218,37 @@ class dash {
 	}
 
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
-		global $sql;
-		if (is_array($type)) {
-			$role_slug=$type['role_slug'];
-			$type=$type['type'];
-		}
-		else
-			$role_slug='';
+		global $sql, $session_user;
 
 		if ($priority_field=='id')
 			$priority="`".$priority_field."` ".$priority_order;
 		else
 			$priority="`content`->'$.".$priority_field."' IS NULL, `content`->'$.".$priority_field."' ".$priority_order.", `id` DESC";
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+
+		//user
+		if (is_array($type)) {
+			//accessible only to admins
+			if ($session_user['role']!='admin')
+				return 0;
+			else {
+				$role_slug=$type['role_slug'];
+				$type=$type['type'];
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+			}
+		}
+
+		//content
+		else {
+			$role_slug='';
+			if ($session_user['role']=='admin') {
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' || `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+			}
+			else {
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'=='public' || `content`->'$.user_id'=='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+			}
+		}
+
+		return $q;
 	}
 
 	function get_ids ($search_arr, $comparison='LIKE', $between='||', $priority_field='id', $priority_order='DESC', $limit='', $debug_show_sql_statement=0) {
