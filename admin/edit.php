@@ -5,6 +5,9 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
+if (!($session_user['role']=='admin' || $post['user_id']==$session_user['user_id'] || !$_GET['id']))
+	die('Not allowed.');
+
 if ($_GET['role'])
 	$role = $types['user']['roles'][$_GET[role]];
 
