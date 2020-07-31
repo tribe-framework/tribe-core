@@ -218,7 +218,33 @@ class dash {
 	}
 
 	function get_all_ids_count ($type) {
-		return count($this->get_all_ids($type));
+		
+		global $sql, $session_user;
+
+		//user
+		if (is_array($type)) {
+			//accessible only to admins
+			if ($session_user['role']!='admin')
+				return 0;
+			else {
+				$role_slug=$type['role_slug'];
+				$type=$type['type'];
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
+			}
+		}
+
+		//content
+		else {
+			$role_slug='';
+			if ($session_user['role']=='admin') {
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
+			}
+			else {
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
+			}
+		}
+
+		return $sql->records;
 	}
 
 	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
