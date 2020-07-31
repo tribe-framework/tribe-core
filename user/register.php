@@ -5,8 +5,7 @@ include_once (ABSOLUTE_PATH.'/auth/header.php');
 
 <?php
 foreach ($types as $k => $v) {
-	if ($types[$k]['type']=='user') {
-		var_dump($types[$k]['roles']);
+	if ($types[$k]['type']=='entity') {
 		foreach ($types[$k]['roles'] as $key => $value) {
 			if ($value['role']!='admin')
 		    	echo '<button type="button" class="btn btn-primary btn-lg">'.ucfirst($value['title']).'</button>';	
