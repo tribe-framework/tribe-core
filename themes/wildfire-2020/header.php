@@ -14,6 +14,7 @@
 	<link href="/plugins/fontawesome/css/all.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/flickity@2/dist/flickity.min.css" rel="stylesheet">
 	<link href="<?php echo THEME_URL; ?>/css/custom.css" rel="stylesheet">
+	<script type="text/javascript">var THEME_URL = "<?php echo THEME_URL; ?>";</script>
 </head>
 
 <body>
