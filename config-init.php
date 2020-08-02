@@ -9,6 +9,11 @@ include_once(ABSOLUTE_PATH.'/admin/functions.php');
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 
+$userless_install=0;
+$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
+if (!$q[0]['id'])
+	$userless_install=1;
+
 include_once(ABSOLUTE_PATH.'/includes/auth.class.php');
 $auth = new auth();
 
@@ -28,11 +33,6 @@ include_once(THEME_PATH.'/functions.php');
 $types=$dash::get_types(THEME_PATH.'/config/types.json');
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
 $admin_menus=json_decode(file_get_contents(ABSOLUTE_PATH.'/admin/config/admin_menus.json'), true);
-
-$userless_install=0;
-$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
-if (!$q[0]['id'])
-	$userless_install=1;
 
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
