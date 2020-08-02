@@ -325,13 +325,13 @@ class dash {
 	}
 
 	function get_types ($json_path) {
-		global $session_user;
+		global $session_user, $userless_install;
 
 		$types=json_decode(file_get_contents($json_path), true);
 		foreach ($types as $key=>$type) {
 			if (($type['type']??'')=='content') {
 				if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
-					if ($session_user['role']=='admin') {
+					if ($session_user['role']=='admin' || $userless_install) {
 						$content_privacy_json='{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
