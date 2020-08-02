@@ -482,5 +482,13 @@ class dash {
 		else
 			return $bytes;
 	}
+
+	function linux_command ($cmd) {
+		ob_start();
+		passthru($cmd);
+		$tml = ob_get_contents();
+		ob_end_clean();
+		return $tml;
+	}
 }
 ?>
