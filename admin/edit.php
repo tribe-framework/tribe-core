@@ -5,7 +5,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
 
-if (!($session_user['role']=='admin' || $post['user_id']==$session_user['user_id'] || !$_GET['id'])) {
+if (!($session_user['role']=='admin' || $post['user_id']==$session_user['user_id'] || !$_GET['id'] || $userless_install)) {
 	echo 'Not allowed. <a href="/admin">Go back</a>.';
 } else {
 
