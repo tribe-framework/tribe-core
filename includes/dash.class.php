@@ -483,12 +483,16 @@ class dash {
 			return $bytes;
 	}
 
-	function linux_command ($cmd) {
+	function do_shell_command ($cmd) {
 		ob_start();
 		passthru($cmd);
 		$tml = ob_get_contents();
 		ob_end_clean();
 		return $tml;
+	}
+
+	function get_upload_dir () {
+		return ABSOLUTE_PATH.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
 }
 ?>
