@@ -498,15 +498,5 @@ class dash {
 	function get_upload_dir_url () {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
-
-	function get_file_type ($filepath) {
-	    $result = new finfo();
-
-	    if (is_resource($result) === true) {
-	        return $result->file($filepath, FILEINFO_MIME_TYPE);
-	    }
-
-	    return false;
-	}
 }
 ?>
