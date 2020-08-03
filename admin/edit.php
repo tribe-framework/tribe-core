@@ -54,7 +54,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		else
 			echo '<input type="hidden" name="type" value="'.$types[$type]['slug'].'">';
 		?>
-		<input type="hidden" name="user_id" value="<?php echo ($post['user_id']?$post['user_id']:$session_user['user_id']); ?>">
+		<?php echo ($types[$type]['type']=='content'?'<input type="hidden" name="user_id" value="'.($post['user_id']?$post['user_id']:$session_user['user_id']).'">':''); ?>
 		<input type="hidden" name="function" value="push_content">
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
