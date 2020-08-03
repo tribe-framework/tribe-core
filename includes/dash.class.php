@@ -474,7 +474,7 @@ class dash {
 
 	function get_unique_user_id () {
 		global $sql;
-		$bytes = strtoupper(uniqid());
+		$bytes = strtoupper(bin2hex(random_bytes(3)));
 		
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.user_id'='$bytes' && `content`->'$.type'='user'");
 		if ($q[0]['id'])
