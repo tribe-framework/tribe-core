@@ -168,6 +168,8 @@ class dash {
 				$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$.".$meta_key."') WHERE `id`='$id'");
 			}
 			else {
+				if (is_array($meta_value))
+					$meta_value=json_encode($meta_value);
 				$q=$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$.".$meta_key."', '$meta_value') WHERE `id`='$id'");
 			}
 			return 1;
