@@ -137,7 +137,7 @@ class dash {
 		$id=$post['id'];
 
 		if (!trim($post['view_searchable_data']))
-			$this->push_content_meta($post['id'], 'view_searchable_data');
+			$this->push_content_meta($post['id'], 'view_searchable_data', '');
 
 		dash::$last_info[]='Content saved.';
 		dash::$last_data[]=array('updated_on'=>$updated_on, 'id'=>$id, 'slug'=>$post['slug'], 'url'=>BASE_URL.'/'.$post['type'].'/'.$post['slug']);
