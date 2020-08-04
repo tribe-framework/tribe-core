@@ -1,9 +1,7 @@
 <?php
 include_once ('../config-init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
-?>
 
-<?php
 if ($_GET['action']=='exit') {
 	session_destroy();
 }
