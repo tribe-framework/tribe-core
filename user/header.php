@@ -1,5 +1,5 @@
 <?php
-if (($types['webapp']['dashboard_theme']??false) && file_exists(THEME_PATH.'/header.php'))
+if (($types['webapp']['dashboard_theme']??false) && file_exists(THEME_PATH.'/header.php')):
 	include_once (THEME_PATH.'/header.php');
 else: ?>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
