@@ -4,7 +4,8 @@
     "headmeta_description": "A content management system.",
     "headmeta_image_url": "",
     "allow_type_change": false,
-    "searchable_types": ["page"]
+    "searchable_types": ["page"],
+    "dashboard_theme": true
   },
   "user": {
     "type": "entity",
