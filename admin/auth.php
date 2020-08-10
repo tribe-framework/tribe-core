@@ -1,4 +1,4 @@
-<?php include_once ('../config-init.php'); ?>
+<?php include_once ('../init.php'); ?>
 <html lang="<?php echo $types['webapp']['lang']; ?>">
 <head>
 	<meta charset="utf-8">

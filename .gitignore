@@ -1,6 +1,6 @@
 # Specify filepatterns you want git to ignore.
 sftp-config.json
-/config/config-vars.php
+vars.php
 /uploads/*
 !/uploads/index.php
 /themes/*

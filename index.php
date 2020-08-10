@@ -1,5 +1,5 @@
 <?php
-include_once ('config-init.php');
+include_once ('init.php');
 
 if (($type??'')=='search') {
 	if ($slug && !$_GET['q'])

@@ -1,5 +1,5 @@
 <?php
-include_once ('../config-init.php');
+include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/admin/header.php');
 
 if ($_GET['id'])

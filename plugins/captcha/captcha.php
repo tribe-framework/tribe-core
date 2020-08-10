@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include_once('config-init.php');
+include_once('init.php');
 include_once(ABSOLUTE_PATH.'/includes/captcha.class.php');
 $captcha = new captcha;
 

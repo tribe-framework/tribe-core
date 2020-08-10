@@ -1,5 +1,5 @@
 <?php
-include_once ('../config-init.php');
+include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email'] && $_POST['password']) {

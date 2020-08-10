@@ -1,5 +1,5 @@
 <?php
-include_once('config-vars.php');
+include_once('vars.php');
 
 $folders_to_backup=array(ABSOLUTE_PATH.'/uploads', ABSOLUTE_PATH.'/themes');
 foreach ($folders_to_backup as $folder)
