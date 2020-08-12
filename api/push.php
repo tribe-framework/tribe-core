@@ -1,5 +1,5 @@
 <?php
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 include_once ('../init.php');
 if ($_GET['WEBAPP_API_KEY']) {
 	if (!$_GET['content_privacy'])
