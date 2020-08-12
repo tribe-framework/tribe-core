@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: application/json');
-echo json_encode($_GET);
-echo json_encode($_POST);
+//header('Content-Type: application/json');
+var_dump($_GET);
+var_dump($_POST);
 ?>
