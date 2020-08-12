@@ -1,16 +1,13 @@
 <?php
 //header('Content-Type: application/json');
 include_once ('../init.php');
-var_dump($_GET);
-var_dump($_POST);
-/*
-if ($_POST['WEBAPP_API_KEY']) {
-	if (!$_POST['content_privacy'])
-		$_POST['content_privacy']='public';
+if ($_GET['WEBAPP_API_KEY']) {
+	if (!$_GET['content_privacy'])
+		$_GET['content_privacy']='public';
 	$or=array();
-	$or['id']=$dash->push_content($_POST);
+	$or['id']=$dash->push_content($_GET);
 	echo json_encode($or);
 }
 else
-	echo 'Not allowed.';
+	echo json_encode('error'=>'Not allowed.');
 ?>
