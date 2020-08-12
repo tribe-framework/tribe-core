@@ -12,5 +12,5 @@ if ($_GET['WEBAPP_API_KEY']) {
 	echo json_encode($or);
 }
 else
-	echo json_encode('error'=>'Not allowed.');
+	echo 'Not allowed.';
 ?>
