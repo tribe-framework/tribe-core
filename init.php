@@ -2,7 +2,7 @@
 session_start();
 include_once('config/vars.php');
 
-if (file_exists(THEME_PATH.'/vars.php'))
+if (file_exists(THEME_PATH.'/config/vars.php'))
 	include_once(THEME_PATH.'/config/vars.php');
 
 $session_user=$_SESSION['user'];
