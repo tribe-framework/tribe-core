@@ -1,16 +1,24 @@
 <?php
+$json = file_get_contents('php://input');
+$data = json_decode($json);
+
 header('Content-Type: application/json');
 include_once ('../init.php');
-if ($_POST['WEBAPP_API_KEY']==WEBAPP_API_KEY) {
-	if (!$_POST['content_privacy'])
-		$_POST['content_privacy']='public';
-	$or=array();
-	if ($_POST['id']) {
-		$or['id']=$_POST['id'];
-		$dash->push_content_meta($_POST['id'], $_POST['meta_key'], $_POST['meta_value']);
+
+if ($data->WEBAPP_API_KEY) {
+	if (!$data->content_privacy) {
+		$data->content_privacy='public';
 	}
+
+	$or=array();
+
+	if ($data->id) {
+		$or['id']=$data->id;
+		$dash->push_content_meta($data->id, $data->meta_key, $data->meta_value);
+	}
+
 	echo json_encode($or);
-}
-else
+} else {
 	echo json_encode(array('error'=>'Not allowed.'));
+}
 ?>

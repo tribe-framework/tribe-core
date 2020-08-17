@@ -35,7 +35,7 @@ else if (isset($type) && isset($slug)) {
 				$prepend_phrase.=$types[$key][$value].' '.$types[$type]['headmeta_title_glue'].' ';
 			}
 		}
-		
+
 		$postdata_modified[$headmeta_title]=$prepend_phrase.$postdata[$headmeta_title].$append_phrase;
 
 		$postdata_modified[$headmeta_description]=trim(strip_tags($postdata_modified[$headmeta_description]));
@@ -46,12 +46,12 @@ else if (isset($type) && isset($slug)) {
 			if (!($meta_title=($types['webapp']['headmeta_title']??null)))
 				$meta_title='';
 		}
-			
+
 		if (!($meta_description=($postdata_modified[$headmeta_description]??null))) {
 			if (!($meta_description=($types['webapp']['headmeta_description']??null)))
 				$meta_description='';
 		}
-			
+
 		if (!($meta_image_url=($postdata_modified[$headmeta_image_url][0]??null))) {
 			if (!($meta_image_url=($postdata_modified[$headmeta_image_url]??null))) {
 				if (!($meta_image_url=($types['webapp']['headmeta_image_url']??null)))
@@ -74,7 +74,7 @@ else if (isset($type) && isset($slug)) {
 }
 elseif (isset($type)) {
 	$typedata=$types[$type];
-	
+
 	if ($typedata) {
 		$postids=$dash::get_all_ids($type);
 

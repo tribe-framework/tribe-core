@@ -2,9 +2,12 @@
 $json = file_get_contents('php://input');
 $data = json_decode($json);
 
-var_dump($_GET);
-var_dump($_POST);
+header('Content-Type: application/json');
+include_once ('../init.php');
 
-var_dump($json);
-var_dump($data);
+if ($data->WEBAPP_API_KEY) {
+  echo json_encode(array('ok'=>'true'));
+} else {
+  echo json_encode(array('ok'=>'false'));
+}
 ?>

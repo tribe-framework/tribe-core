@@ -8,7 +8,7 @@
 	is_ is for a yes/no answer
 */
 
-class dash {  
+class dash {
 
 	public static $last_error = null; //array of error messages
 	public static $last_info = null; //array of info messages
@@ -16,7 +16,7 @@ class dash {
 	public static $last_redirect = null; //redirection url
 
 	function __construct () {
-		
+
 	}
 
 	function get_last_error () {
@@ -87,7 +87,7 @@ class dash {
 			if ($module['input_type']=='password') {
 				$password_slug=$module['input_slug'];
 				$password_slug_md5=$module['input_slug'].'_md5';
-				
+
 				if ($post[$password_slug] && !$post[$password_slug_md5]) {
 					if ($post['id']) //while importing from get_content function
 						$post[$password_slug]=$post[$password_slug];
@@ -146,7 +146,7 @@ class dash {
 
 	function get_content_meta ($val, $meta_key) {
 		global $sql;
-		
+
 		if ($meta_key=='id' || $meta_key=='updated_on' || $meta_key=='created_on')
 			$qry="`".$meta_key."`";
 		else
@@ -154,7 +154,7 @@ class dash {
 
 		if (is_numeric($val))
 			$q=$sql->executeSQL("SELECT ".$qry." FROM `data` WHERE `id`='$val'");
-		else 
+		else
 			$q=$sql->executeSQL("SELECT ".$qry." FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
 
 		return $q[0][$meta_key];
@@ -181,7 +181,7 @@ class dash {
 		$or=array();
 		if (is_numeric($val))
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
-		else 
+		else
 			$q=$sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
 		if ($q[0]['id']) {
 			$or=json_decode($q[0]['content'], true);
@@ -207,7 +207,7 @@ class dash {
 		else
 			return 0;
 	}
-	
+
 	function fetch_content_title_array ($slug, $column_key, $with_link=1) {
 		global $types, $sql;
 		$q=$sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `content`->'$.type'='$column_key' && `content`->'$.slug'='$slug'");
@@ -217,8 +217,8 @@ class dash {
 			return json_decode($q[0]['title']);
 	}
 
-	function get_all_ids_count ($type) {
-		
+	public static function get_all_ids_count ($type) {
+
 		global $sql, $session_user;
 
 		//user
@@ -247,7 +247,7 @@ class dash {
 		return $sql->records;
 	}
 
-	function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
+	public static function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
 		global $sql, $session_user;
 
 		if ($priority_field=='id')
@@ -307,7 +307,7 @@ class dash {
 		$r=$sql->executeSQL($qry);
 		if ($debug_show_sql_statement)
 			echo $qry;
-		return $r; 
+		return $r;
 	}
 
 	function get_date_ids ($publishing_date) {
@@ -319,12 +319,12 @@ class dash {
 		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string?$string:'untitled')))).($input_itself_is_unique?'':'-'.uniqid());
 		return $slug;
 	}
-	
+
 	function do_unslugify ($url_part) {
 		return strtolower(trim(urlencode($url_part)));
 	}
 
-	function get_types ($json_path) {
+	public static function get_types ($json_path) {
 		global $session_user, $userless_install;
 
 		$types=json_decode(file_get_contents($json_path), true);
@@ -376,7 +376,7 @@ class dash {
 	function get_type_title_data ($post) {
 		global $sql, $types;
 		$posttype=$post['type'];
-		
+
 		if (!($post_id=$post['id'])) {
 			$last_id=$sql->executeSQL("SELECT `id` FROM `data` ORDER BY `id` DESC LIMIT 1");
 			$post_id=$last_id[0]['id']+1;
@@ -403,7 +403,7 @@ class dash {
 		$i=0;
 
 		$q=$sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
-		
+
 		foreach ($q as $r) {
 			if ($overwrite || !$this->get_content_meta($r['ID'], 'slug')) {
 				$post=$post_wp=array();
@@ -446,7 +446,7 @@ class dash {
 						}
 					}
 				}
-			    
+
 			    $cv=$sql->executeSQL("SELECT `guid` FROM `wp_posts` WHERE `post_parent` != 0 AND `guid` LIKE '%wp-content/uploads%' AND `post_type` LIKE 'attachment' AND `post_status` LIKE 'inherit' AND `guid` != '' AND `post_parent`='".$r['ID']."' ORDER BY `ID` DESC");
 			    $post['files']=array();
 			    foreach ($cv as $file) {
@@ -462,7 +462,7 @@ class dash {
 
 			    $post['wp_post_data']=serialize($post_wp);
 			    //$post=update_wp_post_data($post);
-			    
+
 			    $this->push_content($post);
 
 			    $i++;
@@ -475,7 +475,7 @@ class dash {
 	function get_unique_user_id () {
 		global $sql;
 		$bytes = strtoupper(bin2hex(random_bytes(3)));
-		
+
 		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.user_id'='$bytes' && `content`->'$.type'='user'");
 		if ($q[0]['id'])
 			return $this->get_unique_user_id();
