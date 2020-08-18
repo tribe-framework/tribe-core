@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 include_once ('../init.php');
 
 // if the client isn't authorised for server, end the connection
-if ($data->WEBAPP_API_KEY == WEBAPP_API_KEY) {
+if ($data->WEBAPP_API_KEY != WEBAPP_API_KEY) {
 	http_response_code(401);
 	die(json_encode(array('error'=>'Not allowed.')));
 }
