@@ -18,7 +18,7 @@ if ($_POST['password'] && ($_POST['password']==$_POST['cpassword'])) {
 		header('Location: /');
 }
 
-if (($types['webapp']['dashboard_theme']??false) && file_exists(THEME_PATH.'/user-change-password.php')):
+if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-change-password.php')):
 	include_once (THEME_PATH.'/user-change-password.php');
 else: ?>
 

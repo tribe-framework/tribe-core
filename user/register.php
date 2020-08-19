@@ -32,7 +32,7 @@ if ($_POST['email'] && $_POST['password']) {
 	}
 }
 
-if (($types['webapp']['dashboard_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
+if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
 	include_once (THEME_PATH.'/user-register.php');
 else: ?>
 

@@ -36,7 +36,7 @@ else if ($_POST['email'] && $_POST['password']) {
 	}
 }
 
-if (($types['webapp']['dashboard_theme']??false) && file_exists(THEME_PATH.'/user-login.php')):
+if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-login.php')):
 	include_once (THEME_PATH.'/user-login.php');
 else: ?>
 
