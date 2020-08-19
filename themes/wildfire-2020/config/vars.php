@@ -25,4 +25,6 @@ define('INSTAMOJO_TOKEN', '');
 define('INSTAMOJO_SALT', '');
 define('RAZORPAY_KEY', '');
 define('RAZORPAY_SECRET', '');
+define('PAYUMONEY_KEY', '');
+define('PAYUMONEY_SALT', '');
 ?>
