@@ -14,7 +14,7 @@ if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confir
 	$dash->after_login($user['role_slug']);
 }
 else if ($_POST) {
-	echo '<div class="alert alert-danger">Form not submitted. Please try again.</div>'
+	echo '<div class="alert alert-danger">Form not submitted. Please try again.</div>';
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
