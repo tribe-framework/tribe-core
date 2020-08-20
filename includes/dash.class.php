@@ -498,5 +498,34 @@ class dash {
 	function get_upload_dir_url () {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
+
+	function after_login ($roleslug) { 
+		global $types, $_SESSION, $user;
+
+		$roleslug=$user['role_slug'];
+		$user['role']=$types['user']['roles'][$roleslug]['role'];
+		
+		//for admin and crew (staff)
+		if ($types['user']['roles'][$roleslug]['role']=='admin' || $types['user']['roles'][$roleslug]['role']=='crew') {
+			$_SESSION['user_id']=$user['user_id'];
+			$_SESSION['email']=$user['email'];
+			$_SESSION['user']=$user;
+			$_SESSION['wildfire_dashboard_access']=1;
+			header('Location: /admin');
+		}
+
+		//for members
+		else if ($types['user']['roles'][$roleslug]['role']=='member') {
+			$_SESSION['user_id']=$user['user_id'];
+			$_SESSION['email']=$user['email'];
+			$_SESSION['user']=$user;
+			$_SESSION['wildfire_dashboard_access']=0;
+			header('Location: /user');
+		}
+
+		//for visitors and anybody else
+		else 
+			header('Location: /');
+	}
 }
 ?>

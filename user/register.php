@@ -2,34 +2,19 @@
 include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
-if ($_POST['email'] && $_POST['password']) {
+if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
-		$roleslug=$user['role_slug'];
-
-		//for admin and crew (staff)
-		if ($types['user']['roles'][$roleslug]['role']=='admin' || $types['user']['roles'][$roleslug]['role']=='crew') {
-			$_SESSION['user_id']=$user['user_id'];
-			$_SESSION['email']=$user['email'];
-			$_SESSION['user']=$user;
-			$_SESSION['wildfire_dashboard_access']=1;
-			header('Location: /admin');
-		}
-
-		//for members
-		else if ($types['user']['roles'][$roleslug]['role']=='member') {
-			$_SESSION['user_id']=$user['user_id'];
-			$_SESSION['email']=$user['email'];
-			$_SESSION['user']=$user;
-			$_SESSION['wildfire_dashboard_access']=0;
-			header('Location: /user');
-		}
-
-		//for visitors and anybody else
-		else 
-			header('Location: /');
 	}
+	else {
+		$user_id=$dash->push_content($_POST);
+		$user=$dash->get_content($user_id);
+	}
+	$dash->after_login($user['role_slug']);
+}
+else if ($_POST) {
+	echo '<div class="alert alert-danger">Form not submitted. Please try again.</div>'
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
