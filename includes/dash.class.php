@@ -502,7 +502,6 @@ class dash {
 	function after_login ($roleslug) { 
 		global $types, $_SESSION, $user;
 
-		$roleslug=$user['role_slug'];
 		$user['role']=$types['user']['roles'][$roleslug]['role'];
 		
 		//for admin and crew (staff)
