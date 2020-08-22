@@ -41,6 +41,8 @@
 	<script src="https://blueimp.github.io/jQuery-File-Upload/js/jquery.fileupload.js"></script>
     <?php if (!empty(GOOGLE_MAP_API_KEY_1))	echo '<script src="https://maps.googleapis.com/maps/api/js?key='.GOOGLE_MAP_API_KEY_1.'&libraries=places&callback=initMap" async defer></script>'; ?>
 
+	<?php echo (isset($types['webapp']['admin_confetti'])?'<script src="https://cdn.jsdelivr.net/gh/mathusummut/confetti.js/confetti.min.js"></script><script>$(document).on(\'click\', \'.save_btn\', function(e) {confetti.start(1000);});</script>':''); ?>
+
     <script src="<?php echo BASE_URL; ?>/admin/js/list.js?v=<?php echo time(); ?>"></script>
     <script src="<?php echo BASE_URL; ?>/admin/js/edit.js?v=<?php echo time(); ?>"></script>
 </body>
