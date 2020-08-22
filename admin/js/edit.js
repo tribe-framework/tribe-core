@@ -19,8 +19,15 @@ $( document ).ready(function() {
 		var btn_html=$('.save_btn').html();
 		$('.save_btn').html('<div class="spinner-border spinner-border-sm mb-1" role="status"><span class="sr-only">Loading...</span></div>&nbsp;Save');
 		$('.save_btn').prop('disabled', true);
+
+		if ($('input[name="type"]').val())
+			var type_val=$('input[name="type"]').val();
+		else
+			var type_val=$('select[name="type"]').val();
+
 		$.post('json.php', $(this).serialize(), function(data) {
 			process_json_out(data, btn_html);
+			$('#infos').removeClass('d-none').html('Content has been saved. <a href="/admin/list?type='+type_val+'" class="alert-link">Click here</a> to go back.');
 		}, 'json');
 	});
 

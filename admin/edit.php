@@ -22,7 +22,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	<link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
 	<div class="p-3">
-	<a name="infos"></a><div id="infos" class="d-none alert alert-info"></div>
+	<a name="infos"></a><div id="infos" class="d-none alert alert-success"></div>
 	<a name="errors"></a><div id="errors" class="d-none alert alert-danger"></div>
 
 	<form method="post" class="edit_form" action="/admin/json" autocomplete="off">
