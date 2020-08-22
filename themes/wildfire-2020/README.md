@@ -14,12 +14,9 @@
 ## post
 1. single.php is general post layout
 2. single-&lt;ID&gt;.php is layout for a particular post
-
-## post-type
-1. post-type
-2. archive.php is general multiple-stories list layout for any post-type
-3. archive-&lt;type-name&gt;.php is list layout of a particular type
-4. single-&lt;type-name&gt;.php is layout for individual post of a particular post-type
+3. archive.php is general multiple-stories list layout for any post-type
+4. archive-&lt;type-name&gt;.php is list layout of a particular type
+5. single-&lt;type-name&gt;.php is layout for individual post of a particular post-type
 
 ## user
 1. there are 4 broad user-roles
