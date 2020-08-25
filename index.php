@@ -101,8 +101,12 @@ elseif (isset($type)) {
 		else
 			include_once (THEME_PATH.'/index.php');
 	}
-	else
-		include_once (THEME_PATH.'/404.php');
+	else {
+		if ($type=='user' && file_exists(THEME_PATH.'/user-'.$slug.'.php'))
+			include_once (THEME_PATH.'/user-'.$slug.'.php');
+		else
+			include_once (THEME_PATH.'/404.php');
+	}
 }
 else {
 	$meta_title=($types['webapp']['headmeta_title']??'');
