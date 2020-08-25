@@ -25,3 +25,9 @@
 4. member users and visitor users do not have access to dashboard
 5. member and visitor user roles can be differentiated in the theme usage
 6. user interface or member users can be modified by including php files in theme folder with these names: user-header.php, user-footer.php, user-index.php, user-dashboard.php and so on. file name references from /user/ from the wildfire-dev/core repository.
+
+##docs
+all documentation of the project, client references, presentations, design files etc. to be maintained in docs/ folder of the theme.
+
+##assets
+any external codebase, like a theme, plugin etc. to be added to assets/ folder of the theme.
