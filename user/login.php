@@ -1,6 +1,6 @@
 <?php
 include_once ('../init.php');
-if ($_GET['action']=='exit') {session_destroy();}
+if ($_GET['action']=='exit') {session_destroy(); header('Location: '.BASE_URL.'/user/login');}
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email'] && $_POST['password']) {
