@@ -69,8 +69,12 @@ else if (isset($type) && isset($slug)) {
 		else
 			include_once (THEME_PATH.'/index.php');
 	}
-	else
-		include_once (THEME_PATH.'/404.php');
+	else {
+		if ($type=='user')
+			include_once (ABSOLUTE_PATH.'/user/404.php');
+		else
+			include_once (THEME_PATH.'/404.php');
+	}
 }
 elseif (isset($type)) {
 	$typedata=$types[$type];
@@ -101,12 +105,8 @@ elseif (isset($type)) {
 		else
 			include_once (THEME_PATH.'/index.php');
 	}
-	else {
-		if ($type=='user')
-			include_once (ABSOLUTE_PATH.'/user/404.php');
-		else
-			include_once (THEME_PATH.'/404.php');
-	}
+	else
+		include_once (THEME_PATH.'/404.php');
 }
 else {
 	$meta_title=($types['webapp']['headmeta_title']??'');
