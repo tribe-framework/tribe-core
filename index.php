@@ -102,8 +102,8 @@ elseif (isset($type)) {
 			include_once (THEME_PATH.'/index.php');
 	}
 	else {
-		if ($type=='user' && file_exists(THEME_PATH.'/user-'.$slug.'.php'))
-			include_once (THEME_PATH.'/user-'.$slug.'.php');
+		if ($type=='user')
+			include_once (ABSOLUTE_PATH.'/user/404.php');
 		else
 			include_once (THEME_PATH.'/404.php');
 	}
