@@ -1,4 +1,5 @@
 <?php
+$type='user';
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-header.php')):
 	include_once (THEME_PATH.'/user-header.php');
 else: ?>
