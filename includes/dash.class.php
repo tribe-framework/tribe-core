@@ -316,7 +316,7 @@ class dash {
 	}
 
 	function do_slugify ($string, $input_itself_is_unique=0) {
-		$slug = strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string?$string:'untitled')))).($input_itself_is_unique?'':'-'.uniqid());
+		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string?$string:'untitled')))),0,1500).($input_itself_is_unique?'':'-'.uniqid());
 		return $slug;
 	}
 
