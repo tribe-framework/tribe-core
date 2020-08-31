@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
 include_once ('../init.php');
-echo json_encode($_POST);
+unset($_SERVER['SERVER_SIGNATURE']);
+echo json_encode($_SERVER);
 ?>
