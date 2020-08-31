@@ -2,7 +2,10 @@
 include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
-if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
+if ($_SESSION['user']) {
+	$dash->after_login($_SESSION['user']['role_slug']);
+}
+else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
