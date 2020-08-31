@@ -11,7 +11,6 @@ unset($_SERVER['SERVER_SIGNATURE']);
 $prism_visit_id=$_POST['prism_visit_id'];
 
 if (!$prism_visit_id) {
-	$_SERVER['prism_visit_id']=uniqid().time();
 	$prism_visit_id=$trac->push_visit(array_merge($_SERVER, $_POST));
 }
 else if ($_POST['action']=='click') {
