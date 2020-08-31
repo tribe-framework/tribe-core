@@ -10,6 +10,9 @@ if ($_POST['email'] && $_POST['password']) {
 		$dash->after_login($user['role_slug']);
 	}
 }
+else if ($_SESSION['user']) {
+	$dash->after_login($_SESSION['user']['role_slug']);
+}
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-login.php')):
 	include_once (THEME_PATH.'/user-login.php');
