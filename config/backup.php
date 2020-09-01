@@ -1,5 +1,7 @@
 <?php
 include_once('vars.php');
+if (file_exists(THEME_PATH.'/config/vars.php'))
+	include_once(THEME_PATH.'/config/vars.php');
 
 $folders_to_backup=array(ABSOLUTE_PATH.'/uploads', ABSOLUTE_PATH.'/themes');
 foreach ($folders_to_backup as $folder)
