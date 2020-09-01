@@ -3,17 +3,18 @@ class captcha {
 	public $errormsg;
 	public $successmsg;
 	
-	public $left_arr=array();
-	
 	function __construct() {
-		$this->left_arr=array_map('trim', explode(',', CAPTCHA_WORDS));
+
 	}
 
 	function check_captcha ($captcha_input, $captcha_code) {
-		global $sql;
+		global $_SESSION;
 		$captcha_input = strtolower(preg_replace('/\s+/', '', $captcha_input));
 		$captcha_secret=$this->get_captcha_string_from_code($captcha_code, 0);
-		$sql->executeSQL("DELETE FROM `captcha` WHERE `code`='$captcha_code'");
+
+		unset($_SESSION['CAPTCHA_STRING']);
+		unset($_SESSION['CAPTCHA_CODE']);
+
 		if ($captcha_input==$captcha_secret)
 			return 1;
 		else
@@ -21,29 +22,27 @@ class captcha {
 	}
 	
 	function show_input_fields ($css_classes='form-control', $css_id='') {
-		global $sql;
-		$string = rand(10000,99999);
-		$code = uniqid();
-		$sql->executeSQL("INSERT INTO `captcha` (`string`, `code`) VALUES ('$string', '$code')");
-		if ($sql->lastInsertID()) {
-			$op = '<div class="form-group col-6"><label for="captcha"><img src="/captcha.php?captcha_code='.$code.'"></label>
-		    <input type="text" name="captcha_input" id="captcha" class="captcha_input form-control" aria-describedby="captchaHelp" placeholder="Type the above digits here">
-		    <small id="emailHelp" class="form-text text-muted">Enter the digits in the CAPTCHA image above.</small>
-		    <input type="hidden" class="captcha_code" name="captcha_code" value="'.$code.'"></div><div class="col"></div>';
-		}
-		else {
-			$op = '<div class="col-6">ERROR: please report to the system administrator.</div><div class="col"></div>';
-		}
+		global $_SESSION;
+		unset($_SESSION['CAPTCHA_STRING']);
+		unset($_SESSION['CAPTCHA_CODE']);
+		$_SESSION['CAPTCHA_STRING']=rand(10000,99999);
+		$_SESSION['CAPTCHA_CODE']=uniqid();
+
+		$op = '
+		<div class="input-group input-group-lg">
+			<div class="input-group-prepend"><span class="input-group-text"><img src="/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></span></div>
+		    <input type="text" name="captcha_input" id="captcha" class="border captcha_input form-control" aria-describedby="captchaHelp" placeholder="Enter the digits in the CAPTCHA image">
+	    </div>
+	    <input type="hidden" class="captcha_code" name="captcha_code" value="'.$_SESSION['CAPTCHA_CODE'].'"></div><div class="col">';
+		
 		return $op;
 	}
 
-	function get_captcha_string_from_code($captcha_code, $display=1) {
-		global $sql;
-		$q=$sql->executeSQL("SELECT `string` FROM `captcha` WHERE `code`='$captcha_code'
-			");
+	function get_captcha_string_from_code ($captcha_code, $display=1) {
+		global $_SESSION;
 		if ($display)
-			return $q[0]['string'];
+			return $_SESSION['CAPTCHA_STRING'];
 		else
-			return strtolower(preg_replace('/\s+/', '', $q[0]['string']));
+			return strtolower(preg_replace('/\s+/', '', $_SESSION['CAPTCHA_STRING']));
 	}
 }
