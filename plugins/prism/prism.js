@@ -1,3 +1,29 @@
+//add device details, screen size and other one-time page-load details
+var load_data = {
+    pageOn: window.location.pathname,
+    referrer: document.referrer,
+    previousSites: history.length,
+    browserName: navigator.appName,
+    browserEngine: navigator.product,
+    browserVersion1a: navigator.appVersion,
+    browserVersion1b: navigator.userAgent,
+    browserLanguage: navigator.language,
+    browserOnline: navigator.onLine,
+    browserPlatform: navigator.platform,
+    javaEnabled: navigator.javaEnabled(),
+    dataCookiesEnabled: navigator.cookieEnabled,
+    sizeScreenW: screen.width,
+    sizeScreenH: screen.height,
+    sizeDocW: document.width,
+    sizeDocH: document.height,
+    sizeInW: innerWidth,
+    sizeInH: innerHeight,
+    sizeAvailW: screen.availWidth,
+    sizeAvailH: screen.availHeight,
+    scrColorDepth: screen.colorDepth,
+    scrPixelDepth: screen.pixelDepth
+};
+
 $.getScript('/plugins/timeme.min.js', function() {
 
 	TimeMe.initialize({
@@ -8,9 +34,6 @@ $.getScript('/plugins/timeme.min.js', function() {
 		
 		//initialize common prism_visit_id
 		var prism_visit_id;
-		
-		//add device details, screen size and other one-time page-load details
-		var load_data = {};
 
 		//first push data when document is ready, saves all the PHP server details
 		//returns prism_visit_id that can be used later
