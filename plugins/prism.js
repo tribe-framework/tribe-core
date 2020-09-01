@@ -8,6 +8,8 @@ $.getScript('/plugins/timeme.min.js', function() {
 		
 		//initialize common prism_visit_id
 		var prism_visit_id;
+
+		var last_time_spent = 0;
 		
 		//add device details, screen size and other one-time page-load details
 		var load_data = {};
