@@ -1,8 +1,7 @@
 <?php
 session_start();
 
-include_once('init.php');
-include_once(ABSOLUTE_PATH.'/includes/captcha.class.php');
+include_once('captcha.class.php');
 $captcha = new captcha;
 
 $captcha_code=$_GET['captcha_code'];
@@ -19,7 +18,7 @@ $font_size = 21;
 $src_img = @imagecreate((40+strlen($string)*$font_size/1.5), $font_size+10);
 $background = imagecolorallocate($src_img, 255, 255, 255);
 $text_colour = imagecolorallocate($src_img, 33, 33, 33);
-imagettftext($src_img, $font_size, 0, 20, $font_size+4, $text_colour, ABSOLUTE_PATH.'/admin/img/captcha.ttf', $string);
+imagettftext($src_img, $font_size, 0, 20, $font_size+4, $text_colour, 'captcha.ttf', $string);
 
 $magnify = rand(2,6);
 $w = imagesx($src_img); 
