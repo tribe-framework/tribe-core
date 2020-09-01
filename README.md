@@ -11,7 +11,7 @@ apache, php7, mysql8 (LAMP server) on any operating system
 5. use /themes/wildfire-2020/config/types.json to update content type and user type details
 
 ## upgrade instructions
-git pull https://github.com/wildfirego/demo.wildfirego.com.git
+git pull https://github.com/wildfire-dev/core.git
 
 ### note
 if you're not using git to update - config, uploads and themes folders need not be updated with new versions of wildfire template, unless otherwise mentioned
@@ -24,4 +24,4 @@ if you're not using git to update - config, uploads and themes folders need not 
 5. crontab -e : @daily  php /path/to/config/backup.php > /dev/null 2>&1
 
 ## contact
-write to tech@wildfire.world if you face any issues or have suggestions 
+write to tech@connect.wf if you face any issues or have suggestions 
