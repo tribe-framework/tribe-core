@@ -18,19 +18,11 @@ $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
 if (!$q[0]['id'])
 	$userless_install=1;
 
-include_once(ABSOLUTE_PATH.'/includes/auth.class.php');
-$auth = new auth();
-
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
 
 include_once(ABSOLUTE_PATH.'/includes/theme.class.php');
 $theme = new theme();
-
-include_once(ABSOLUTE_PATH.'/includes/google.class.php');
-$google = new google();
-
-include_once(ABSOLUTE_PATH.'/includes/blueimp.class.php');
 
 include_once(THEME_PATH.'/functions.php');
 
