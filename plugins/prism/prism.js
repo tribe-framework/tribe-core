@@ -26,7 +26,6 @@ $.getScript('/plugins/timeme.min.js', function() {
 			"javaEnabled": navigator.javaEnabled(),
 			"dataCookiesEnabled": navigator.cookieEnabled,
 			"dataCookies1": document.cookie,
-			"dataCookies2": decodeURIComponent(document.cookie.split(";")),
 			"dataStorage": localStorage,
 			"sizeScreenW": screen.width,
 			"sizeScreenH": screen.height,
