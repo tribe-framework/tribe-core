@@ -30,7 +30,7 @@ class captcha {
 
 		$op = '
 		<div class="input-group input-group-lg">
-			<div class="input-group-prepend"><span class="input-group-text"><img src="/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></span></div>
+			<div class="input-group-prepend"><span class="input-group-text"><img src="/plugins/captcha/captcha.php?captcha_code='.$_SESSION['CAPTCHA_CODE'].'"></span></div>
 		    <input type="text" name="captcha_input" id="captcha" class="border captcha_input form-control" aria-describedby="captchaHelp" placeholder="Enter the digits in the CAPTCHA image">
 	    </div>
 	    <input type="hidden" class="captcha_code" name="captcha_code" value="'.$_SESSION['CAPTCHA_CODE'].'"></div><div class="col">';
