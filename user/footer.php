@@ -8,7 +8,6 @@ else: ?>
 	<script src="/plugins/moment.js"></script>
 	<script src="/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="/plugins/typeout/typeout.js"></script>
-	<script src="<?php echo BASE_URL; ?>/admin/js/user.js"></script>
 </body>
 </html>
 
