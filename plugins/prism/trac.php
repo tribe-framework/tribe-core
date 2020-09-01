@@ -1,9 +1,9 @@
 <?php
 session_start();
-include_once('../config/vars.php');
+include_once('../../config/vars.php');
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
-include_once(ABSOLUTE_PATH.'/includes/trac.class.php');
+include_once('trac.class.php');
 $trac = new trac();
 
 unset($_SERVER['SERVER_SIGNATURE']);
