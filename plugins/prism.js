@@ -9,7 +9,7 @@ $.getScript('/plugins/timeme.min.js', function() {
 		//initialize common prism_visit_id
 		var prism_visit_id;
 
-		var last_time_spent = 0;
+		var time_spent = 0;
 		
 		//add device details, screen size and other one-time page-load details
 		var load_data = {};
@@ -28,11 +28,9 @@ $.getScript('/plugins/timeme.min.js', function() {
 
 		//update time every 10 seconds (not ideal, but good for now)
 		setInterval(function() {
-			if (TimeMe.getTimeOnCurrentPageInSeconds() != last_time_spent) {
-				last_time_spent = TimeMe.getTimeOnCurrentPageInSeconds();
-				time_data={'unload': 1, 'prism_visit_id': prism_visit_id, 'time_spent': TimeMe.getTimeOnCurrentPageInSeconds()};
-				$.post('/api/trac', time_data, function(output) {}, 'json');
-			}
+			time_spent = TimeMe.getTimeOnCurrentPageInSeconds();
+			time_data={'unload': 1, 'prism_visit_id': prism_visit_id, 'time_spent': time_spent};
+			$.post('/api/trac', time_data, function(output) {}, 'json');
 		}, 10000);
 
 	});
