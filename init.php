@@ -15,11 +15,11 @@ if (file_exists(THEME_PATH.'/config/vars.php')) {
 	include_once(THEME_PATH.'/config/vars.php');
 }
 
-$session_user=$_SESSION['user'];
+$session_user = $_SESSION['user'] ?? NULL;
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 
-$sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
+$sql = new MySQL();
 
 $userless_install=0;
 $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
@@ -41,10 +41,14 @@ isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
 if (isset($_GET['ext'])) { //for theme
 	$ext=explode('/', $_GET['ext']);
-	if (count($ext))
-		$type=$dash::do_unslugify($ext[0]);
-	if (count($ext)>1)
-		$slug=$dash::do_unslugify($ext[1]);
+
+	if (count($ext)) {
+		$type=$dash->do_unslugify($ext[0]);
+	}
+
+	if (count($ext)>1) {
+		$slug=$dash->do_unslugify($ext[1]);
+	}
 } elseif (isset($_GET['type'])) { //for dashboard
 	$type=$dash::do_unslugify($_GET['type']);
 }
