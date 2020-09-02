@@ -1,32 +1,31 @@
 <?php
 class MySQL {
-    
     var $lastError;         // Holds the last error
     var $lastQuery;         // Holds the last query
     var $result;            // Holds the MySQL query result
     var $records;           // Holds the total number of records returned
     var $affected;          // Holds the total number of records affected
     var $arrayedResult;     // Holds an array of the result
-    
+
     var $hostname;          // MySQL Hostname
     var $username;          // MySQL Username
     var $password;          // MySQL Password
     var $database;          // MySQL Database
-    
+
     var $databaseLink;      // Database Connection Link
-    
-    function __construct ($database, $username, $password, $hostname='localhost', $port=3306) {
-        $this->database = $database;
-        $this->username = $username;
-        $this->password = $password;
-        $this->hostname = $hostname;
-        
+
+    function __construct () {
         $this->Connect();
     }
-    
+
     private function Connect () {
         $this->CloseConnection();
-        
+
+        $this->database = DB_NAME;
+        $this->username = DB_USER;
+        $this->password = DB_PASS;
+        $this->hostname = DB_HOST;
+
         $this->databaseLink = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
         if (!$this->databaseLink) {
             $this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
@@ -36,7 +35,7 @@ class MySQL {
         }
 
         mysqli_set_charset($this->databaseLink, 'utf8');
-        
+
         return true;
     }
 
@@ -87,7 +86,7 @@ class MySQL {
         if (is_array($variable))
             foreach($variable as $i=>$value)
                 $variable[$i] = $this->unstrip_array($value) ;
-        return $variable; 
+        return $variable;
     }
 
     public function arrayResults () {
@@ -108,3 +107,4 @@ class MySQL {
         return $this->arrayedResult;
     }
 }
+?>
