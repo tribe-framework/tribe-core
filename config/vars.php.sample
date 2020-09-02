@@ -11,7 +11,7 @@ define('DB_HOST', 'localhost');
 define('BARE_URL', $_SERVER['HTTP_HOST']);
 define('BASE_URL', 'https://' . BARE_URL);
 define('ABSOLUTE_PATH', $_SERVER['DOCUMENT_ROOT']);
-define('THEME_URL', BARE_URL . '/themes/' . THEME);
+define('THEME_URL', BASE_URL . '/themes/' . THEME);
 define('THEME_PATH', ABSOLUTE_PATH . '/themes/' . THEME);
 
 /**
