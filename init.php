@@ -1,10 +1,12 @@
 <?php
 session_save_path('/tmp');
 session_start();
-include_once('config/vars.php');
 
-if (file_exists(THEME_PATH.'/config/vars.php'))
+include_once 'config/vars.php';
+
+if (file_exists(THEME_PATH.'/config/vars.php')) {
 	include_once(THEME_PATH.'/config/vars.php');
+}
 
 $session_user=$_SESSION['user'];
 
@@ -15,8 +17,10 @@ $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 
 $userless_install=0;
 $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
-if (!$q[0]['id'])
+
+if (!$q[0]['id']) {
 	$userless_install=1;
+}
 
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
@@ -38,8 +42,7 @@ if (isset($_GET['ext'])) { //for theme
 		$type=$dash::do_unslugify($ext[0]);
 	if (count($ext)>1)
 		$slug=$dash::do_unslugify($ext[1]);
-}
-else if (isset($_GET['type'])) { //for dashboard
+} elseif (isset($_GET['type'])) { //for dashboard
 	$type=$dash::do_unslugify($_GET['type']);
 }
 ?>

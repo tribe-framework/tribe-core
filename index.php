@@ -1,16 +1,18 @@
 <?php
-include_once ('init.php');
+include_once 'init.php';
 
-if (($type??'')=='search') {
-	if ($slug && !$_GET['q'])
+if (($type ?? '')=='search') {
+	if ($slug && !$_GET['q']) {
 		$_GET['q']=$slug;
+	}
 
-	if (file_exists(THEME_PATH.'/search.php'))
-		include_once (THEME_PATH.'/search.php');
-	else
+	if (!file_exists(THEME_PATH.'/search.php')) {
 		echo 'Include a search.php file in your theme folder.';
-}
-else if (isset($type) && isset($slug)) {
+		return false;
+	}
+
+	include_once (THEME_PATH.'/search.php');
+} elseif (isset($type) && isset($slug)) {
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 
@@ -75,8 +77,7 @@ else if (isset($type) && isset($slug)) {
 		else
 			include_once (THEME_PATH.'/404.php');
 	}
-}
-elseif (isset($type)) {
+} elseif (isset($type)) {
 	$typedata=$types[$type];
 
 	if ($typedata) {
@@ -107,8 +108,7 @@ elseif (isset($type)) {
 	}
 	else
 		include_once (THEME_PATH.'/404.php');
-}
-else {
+} else {
 	$meta_title=($types['webapp']['headmeta_title']??'');
 	$meta_description=($types['webapp']['headmeta_description']??'');
 	$meta_image_url=($types['webapp']['headmeta_image_url']??'');
