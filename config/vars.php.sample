@@ -1,14 +1,11 @@
 <?php
-define('THEME', 'wildfire-2020');
+define('THEME', 'xyz-domain-var');
 
 # database credentials
-define('DB_NAME', 'database');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'xyz-db-name-var');
+define('DB_USER', 'xyz-db-name-var');
+define('DB_PASS', 'xyz-db-pass-var');
 define('DB_HOST', 'localhost');
-
-# set ENV to dev for verbose debug of app
-define('ENV', 'prod');
 
 # do not modify beyond this line if not needed
 define('BARE_URL', $_SERVER['HTTP_HOST']);
