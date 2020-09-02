@@ -8,9 +8,10 @@
 	is_ is for a yes/no answer
 */
 
-class trac {
-	
-	function push_visit ($post) {
+class Trac
+{
+	function push_visit ($post)
+	{
 		global $sql;
 		$updated_on=time();
 
@@ -18,7 +19,8 @@ class trac {
 		return $sql->lastInsertID();
 	}
 
-	function push_visit_meta ($id, $meta_key, $meta_value='') {
+	function push_visit_meta ($id, $meta_key, $meta_value='')
+	{
 		global $sql;
 		if ($id && $meta_key) {
 			if (!trim($meta_value)) {
@@ -34,5 +36,4 @@ class trac {
 			return 0;
 	}
 }
-
 ?>
