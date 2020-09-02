@@ -1,7 +1,5 @@
 Options +FollowSymLinks -Indexes 
 RewriteEngine On
-RewriteCond %{HTTPS} !=on
-RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R,L]
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule (.*) $1\.php [L,QSA]
 RewriteRule	(.*)/scss.css $1/scss.php [L]
