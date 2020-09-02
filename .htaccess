@@ -1,5 +1,6 @@
 Options +FollowSymLinks -Indexes 
 RewriteEngine On
+RewriteBase /
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule (.*) $1\.php [L,QSA]
 RewriteRule	(.*)/scss.css $1/scss.php [L]
