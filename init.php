@@ -4,6 +4,13 @@ session_start();
 
 include_once 'config/vars.php';
 
+// browser debugging
+if (ENV == 'dev') {
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	error_reporting(E_ALL);
+}
+
 if (file_exists(THEME_PATH.'/config/vars.php')) {
 	include_once(THEME_PATH.'/config/vars.php');
 }
@@ -12,7 +19,6 @@ $session_user=$_SESSION['user'];
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 
-include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 
 $userless_install=0;
@@ -22,10 +28,7 @@ if (!$q[0]['id']) {
 	$userless_install=1;
 }
 
-include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
 $dash = new dash();
-
-include_once(ABSOLUTE_PATH.'/includes/theme.class.php');
 $theme = new theme();
 
 include_once(THEME_PATH.'/functions.php');
