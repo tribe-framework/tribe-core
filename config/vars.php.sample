@@ -1,11 +1,19 @@
 <?php
-define('BASE_URL', 'https://xyz-domain-var');
-define('BARE_URL', 'xyz-domain-var');
-define('ABSOLUTE_PATH', '/var/www/html/xyz-domain-var');
-define('THEME_URL', 'https://xyz-domain-var/themes/xyz-domain-var');
-define('THEME_PATH', '/var/www/html/xyz-domain-var/themes/xyz-domain-var');
-define('DB_NAME', 'xyz-db-name-var');
-define('DB_USER', 'xyz-db-name-var');
-define('DB_PASS', 'xyz-db-pass-var');
+define('THEME', 'wildfire-2020');
+
+# database credentials
+define('DB_NAME', 'database');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_HOST', 'localhost');
+
+# set ENV to dev for verbose debug of app
+define('ENV', 'prod');
+
+# do not modify beyond this line if not needed
+define('BARE_URL', $_SERVER['HTTP_HOST']);
+define('BASE_URL', 'https://' . BARE_URL);
+define('ABSOLUTE_PATH', $_SERVER['DOCUMENT_ROOT']);
+define('THEME_URL', BARE_URL . '/themes/' . THEME);
+define('THEME_PATH', ABSOLUTE_PATH . '/themes/' . THEME);
 ?>
