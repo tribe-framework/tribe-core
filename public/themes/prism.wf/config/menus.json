@@ -1,0 +1,16 @@
+{
+  "main": {
+    "logo": {
+      "name": "Prism",
+      "href": "/"
+    },
+    "menu": [
+      {
+        "name": "About",
+        "href": "#"
+      }
+    ]
+  },
+  "dash": {},
+  "minor": {}
+}

@@ -22,18 +22,18 @@ class Trac
 	function push_visit_meta ($id, $meta_key, $meta_value='')
 	{
 		global $sql;
-		if ($id && $meta_key) {
-			if (!trim($meta_value)) {
-				//to delete a key, leave it empty
-				$q=$sql->executeSQL("UPDATE `trac` SET `visit` = JSON_REMOVE(`visit`, '$.".$meta_key."') WHERE `id`='$id'");
-			}
-			else {
-				$q=$sql->executeSQL("UPDATE `trac` SET `visit` = JSON_SET(`visit`, '$.".$meta_key."', '$meta_value') WHERE `id`='$id'");
-			}
-			return 1;
-		}
-		else
+
+		if (!($id && $meta_key)) {
 			return 0;
+		}
+
+		if (!trim($meta_value)) {
+			//to delete a key, leave it empty
+			$q=$sql->executeSQL("UPDATE `trac` SET `visit` = JSON_REMOVE(`visit`, '$.".$meta_key."') WHERE `id`='$id'");
+		} else {
+			$q=$sql->executeSQL("UPDATE `trac` SET `visit` = JSON_SET(`visit`, '$.".$meta_key."', '$meta_value') WHERE `id`='$id'");
+		}
+		return 1;
 	}
 }
 ?>
