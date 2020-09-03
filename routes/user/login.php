@@ -1,9 +1,6 @@
 <?php
-include_once ('../init.php');
 if ($_GET['action']=='exit') {session_destroy(); header('Location: '.BASE_URL.'/user/login');}
-include_once (ABSOLUTE_PATH.'/user/header.php');
-
-echo $_SERVER['REQUEST_URI'];
+include_once 'header.php';
 
 if ($_POST['email'] && $_POST['password']) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
@@ -11,8 +8,7 @@ if ($_POST['email'] && $_POST['password']) {
 		$user=$dash->get_content($q[0]['id']);
 		$dash->after_login($user['role_slug']);
 	}
-}
-else if ($_SESSION['user']['id']) {
+} elseif ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
 	$dash->after_login($user['role_slug']);
 }

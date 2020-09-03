@@ -8,7 +8,7 @@ define('DB_PASS', 'root');
 define('DB_HOST', 'localhost');
 
 # set ENV to dev for verbose debug of app
-define('ENV', 'dev');
+define('ENV', '');
 
 # do not modify beyond this line if not needed
 define('BARE_URL', $_SERVER['HTTP_HOST']);

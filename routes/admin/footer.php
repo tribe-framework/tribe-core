@@ -3,7 +3,7 @@
 		<div class="container my-5">
 		    <div class="row">
 		      <div class="col-md">
-		        <a href="https://wildfirego.com"><img class="w-40" src="/admin/img/logo.png"></a>
+		        <a href="https://wildfirego.com"><img class="w-40" src="/assets/img/admin/logo.png"></a>
 		        <p class="text-muted small mb-3 mt-4 pr-5">Made with <span class="fas fa-heart"></span><?php echo ($types['webapp']['headmeta_title']?'<br><em>for '.$types['webapp']['headmeta_title'].'</em>':''); ?></p><p class="text-muted small my-3 pr-5">Wildfire is a technology consultancy based in New Delhi, India</p><p class="text-muted small my-3 pr-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')); ?></p>
 		      </div>
 		      <div class="col-md">
@@ -24,7 +24,7 @@
 	<script src="/plugins/datatables/datatables.min.js"></script>
 	<script src="/plugins/clipboard.min.js"></script>
 	<script src="/plugins/keymaster.js"></script>
-	<script src="<?php echo BASE_URL; ?>/admin/js/custom.js?v=<?php echo time(); ?>"></script>
+	<script src="<?php echo BASE_URL; ?>/assets/js/admin/custom.js?v=<?php echo time(); ?>"></script>
 	<script src="https://unpkg.com/draggabilly@2/dist/draggabilly.pkgd.min.js"></script>
 	<script src="https://unpkg.com/packery@2/dist/packery.pkgd.min.js"></script>
 
@@ -43,7 +43,7 @@
 
 	<?php echo (isset($types['webapp']['admin_confetti'])?'<script src="https://cdn.jsdelivr.net/gh/mathusummut/confetti.js/confetti.min.js"></script><script>$(document).on(\'click\', \'.save_btn\', function(e) {confetti.start(1000);});</script>':''); ?>
 
-    <script src="<?php echo BASE_URL; ?>/admin/js/list.js?v=<?php echo time(); ?>"></script>
-    <script src="<?php echo BASE_URL; ?>/admin/js/edit.js?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo BASE_URL; ?>/assets/js/admin/list.js?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo BASE_URL; ?>/assets/js/admin/edit.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
-include_once ('../init.php');
-include_once (ABSOLUTE_PATH.'/admin/header.php');
+include_once ABSOLUTE_PATH.'/init.php';
+include_once 'header.php';
 ?>
 
 <div class="p-3">
@@ -34,16 +34,17 @@ if ($_GET['role'])
   <tbody>
   <?php
   if ($type=='user')
-    $ids = $dash::get_all_ids(array('type'=>$type, 'role_slug'=>$_GET['role']));
+    $ids = $dash->get_all_ids(array('type'=>$type, 'role_slug'=>$_GET['role']));
   else
-    $ids = $dash::get_all_ids($type);
+    $ids = $dash->get_all_ids($type);
+
   foreach ($ids as $arr) {
     //$post = $dash::get_content($arr['id']);
     $post = array();
     $post['id']=$arr['id'];
     $post['type']=$type;
     $post['slug']=$dash->get_content_meta($post['id'], 'slug');
-    
+
     $tr_echo='<tr><th scope="row">'.$post['id'].'</th>';
     $donotlist=0;
     foreach ($types[$type]['modules'] as $module) {
@@ -65,4 +66,4 @@ if ($_GET['role'])
 
 </div>
 
-<?php include_once (ABSOLUTE_PATH.'/admin/footer.php'); ?>
+<?php include_once 'footer.php'; ?>

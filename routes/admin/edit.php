@@ -1,6 +1,5 @@
 <?php
-include_once ('../init.php');
-include_once (ABSOLUTE_PATH.'/admin/header.php');
+include_once 'header.php';
 
 if ($_GET['id'])
 	$post = $dash::get_content($_GET['id']);
@@ -32,7 +31,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<h2 class="form_title"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'Edit '.$types[$type]['name']; ?></h2>
 
 		<?php include ('form.php'); ?>
-	
+
 		<input type="hidden" name="class" value="dash">
 		<?php
 		if ($role['slug'])
@@ -58,7 +57,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 		<input type="hidden" name="function" value="push_content">
 		<input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
 		<input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
-		
+
 		<?php if (count($types[$type]['modules'])>3) { echo get_admin_menu(($types[$type]['disallow_editing']?'view':'edit'), $type, $role['slug'], $_GET['id']); } ?>
 		<p>&nbsp;</p>
 	</form>
@@ -90,7 +89,7 @@ if (($_GET['id'] && $post['type']==$type) || !$_GET['id']):
 	    </div>
 	  </div>
 	</div>
-		
+
 <?php endif; ?>
 
 <?php } ?>

@@ -1,29 +1,26 @@
 <?php
-include_once ('../init.php');
-include_once (ABSOLUTE_PATH.'/user/header.php');
+include_once 'header.php';
 
 if ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
 	$dash->after_login($user['role_slug']);
-}
-else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
+} elseif ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
-	}
-	else {
+	} else {
 		$user_id=$dash->push_content($_POST);
 		$user=$dash->get_content($user_id);
 	}
 	$dash->after_login($user['role_slug']);
-}
-else if ($_POST) {
+} elseif ($_POST) {
 	echo '<div class="alert alert-danger">Form not submitted. Please try again.</div>';
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
 	include_once (THEME_PATH.'/user-register.php');
-else: ?>
+else:
+?>
 
 <form class="form-user" method="post" action="/user/register"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Register</h4>
@@ -33,7 +30,7 @@ else: ?>
 	$role = $types['user']['roles'][$_GET[role]];
 	if ($role['slug'])
 		echo '<input type="hidden" name="role_slug" value="'.$role['slug'].'">';
-	include ('../admin/form.php');
+	include ABSOLUTE_PATH . '/routes/admin/form.php';
 	?>
 
 	<div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> I agree with the terms and conditions</label></div>
@@ -46,4 +43,4 @@ else: ?>
 
 <?php endif; ?>
 
-<?php include_once (ABSOLUTE_PATH.'/user/footer.php'); ?>
+<?php include_once 'footer.php'; ?>
