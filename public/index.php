@@ -7,11 +7,23 @@ $routeFull = $routeDir . $route . '.php';
 $routeFullIndex = $routeDir . $route . '/index.php';
 
 if (file_exists($routeFull)) {
+    // checking if endpoint is valid php file
     include_once $routeFull;
 } elseif (file_exists($routeFullIndex)) {
+    // checking if the endpoint is directory with index
     include_once $routeFullIndex;
-} else {
+}
+
+// 403 error
+if ($_SERVER['REDIRECT_STATUS'] == 403) {
     $e = new PageError();
-    $e->pageNotFound();
+    $e->forbidden();
+    die();
+}
+
+// 404 error
+if (!(file_exists($routeFull) || file_exists($routeFullIndex))) {
+    $e = new PageError();
+    $e->notFound();
 }
 ?>

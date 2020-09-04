@@ -1,9 +1,11 @@
 <?php
 class PageError {
-    function pageNotFound () {
-        if (file_exists(THEME_PATH.'/404.php')) {
-            include_once THEME_PATH.'/404.php';
-        }
+    function notFound () {
+        include_once '../routes/errors/404.php';
+    }
+
+    function forbidden () {
+        include_once '../routes/errors/403.php';
     }
 }
 ?>
