@@ -1,5 +1,6 @@
 <?php
-include_once('vars.php');
+include_once __DIR__.'/../config.php';
+
 if (file_exists(THEME_PATH.'/config/vars.php'))
 	include_once(THEME_PATH.'/config/vars.php');
 
