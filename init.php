@@ -1,8 +1,13 @@
 <?php
-session_save_path('/tmp');
+require_once 'config.php';
+require_once __DIR__.'/vendor/autoload.php';
+
 session_start();
 
-include_once 'config.php';
+use WildFire\MySQL;
+use WildFire\Dash;
+use WildFire\Theme;
+
 
 if (file_exists(THEME_PATH.'/config/vars.php')) {
     include_once(THEME_PATH.'/config/vars.php');
@@ -32,7 +37,7 @@ if (!$q[0]['id']) {
     $userless_install=1;
 }
 
-$dash = new dash();
+$dash = new Dash();
 $theme = new theme();
 
 include_once(THEME_PATH.'/functions.php');
