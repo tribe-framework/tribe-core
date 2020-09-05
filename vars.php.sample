@@ -1,0 +1,9 @@
+<?php
+define('THEME', 'xyz-domain-var');
+
+# database credentials
+define('DB_NAME', 'xyz-db-name-var');
+define('DB_USER', 'xyz-db-name-var');
+define('DB_PASS', 'xyz-db-pass-var');
+define('DB_HOST', 'localhost');
+?>
