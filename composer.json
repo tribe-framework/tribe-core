@@ -1,0 +1,11 @@
+{
+    "name": "wildfire/core",
+    "type": "project",
+    "minimum-stability": "beta",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "WildFire\\":"src/"
+        }
+    }
+}
