@@ -2,7 +2,8 @@
 var load_data = {
     pageOn: window.location.pathname,
     referrer: document.referrer,
-    previousSites: history.length,
+		previousSites: history.length,
+		// browser related data
     browserName: navigator.appName,
     browserEngine: navigator.product,
     browserVersion1a: navigator.appVersion,
@@ -11,7 +12,8 @@ var load_data = {
     browserOnline: navigator.onLine,
     browserPlatform: navigator.platform,
     javaEnabled: navigator.javaEnabled(),
-    dataCookiesEnabled: navigator.cookieEnabled,
+		dataCookiesEnabled: navigator.cookieEnabled,
+		// screen related data
     sizeScreenW: screen.width,
     sizeScreenH: screen.height,
     sizeDocW: document.width,
@@ -31,7 +33,7 @@ $.getScript('/plugins/timeme.min.js', function() {
 	});
 
 	$(document).ready(function() {
-		
+
 		//initialize common prism_visit_id
 		var prism_visit_id;
 
@@ -55,5 +57,5 @@ $.getScript('/plugins/timeme.min.js', function() {
 		}, 10000);
 
 	});
-	
+
 });
