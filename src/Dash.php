@@ -1,4 +1,6 @@
 <?php
+namespace WildFire;
+
 /*
 	functions start with push_, pull_, get_, do_ or is_
 	push_ is to save to database
@@ -8,7 +10,7 @@
 	is_ is for a yes/no answer
 */
 
-class dash {
+class Dash {
 
 	public static $last_error = null; //array of error messages
 	public static $last_info = null; //array of info messages
@@ -499,11 +501,11 @@ class dash {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
 
-	function after_login ($roleslug) { 
+	function after_login ($roleslug) {
 		global $types, $_SESSION, $user;
 
 		$user['role']=$types['user']['roles'][$roleslug]['role'];
-		
+
 		//for admin and crew (staff)
 		if ($types['user']['roles'][$roleslug]['role']=='admin' || $types['user']['roles'][$roleslug]['role']=='crew') {
 			$_SESSION['user_id']=$user['user_id'];
@@ -523,7 +525,7 @@ class dash {
 		}
 
 		//for visitors and anybody else
-		else 
+		else
 			header('Location: /');
 	}
 }

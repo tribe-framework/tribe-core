@@ -1,4 +1,6 @@
 <?php
+namespace WildFire;
+
 /*
 	functions start with push_, pull_, get_, do_ or is_
 	push_ is to save to database
@@ -8,7 +10,7 @@
 	is_ is for a yes/no answer
 */
 
-class theme {  
+class Theme {
 
 	public static $last_error = null; //array of error messages
 	public static $last_info = null; //array of info messages
@@ -16,12 +18,12 @@ class theme {
 	public static $last_redirect = null; //redirection url
 
 	function __construct () {
-		
+
 	}
 
 	function get_navbar_menu ($slug='', $css_classes=array('navbar'=>'navbar-expand-md navbar-light bg-light', 'ul'=>'navbar-nav ml-auto mr-0', 'li'=>'nav-item', 'a'=>'nav-link', 'toggler'=>'navbar-toggler'), $hamburger_bars='<span class="navbar-toggler-icon"></span>') {
 		global $menus, $types, $dash, $_SESSION, $userless_install;
-		
+
 		if (is_array($slug))
 			$items=$slug;
 		else if ($slug)
@@ -137,13 +139,13 @@ class theme {
 				</div>
 			</nav>';
 		}
-		
+
 		return $op;
 	}
 
 	function get_menu ($slug='', $css_classes=array('ul'=>'justify-content-center', 'li'=>'nav-item', 'a'=>'nav-link')) {
 		global $menus, $types, $dash, $_SESSION, $userless_install;
-		
+
 		if (is_array($slug))
 			$items=$slug;
 		else if ($slug)
@@ -155,7 +157,7 @@ class theme {
 
 		if ($items) {
 			$op.='
-			<ul class="'.($css_classes['ul']??'').'">';	
+			<ul class="'.($css_classes['ul']??'').'">';
 				if (isset($items['menu'])) {
 					foreach ($items['menu'] as $item) {
 						if ($item['admin_access_only'] && !$userless_install && $types['user']['roles'][$_SESSION[user][role_slug]]['role']!='admin')
@@ -189,7 +191,7 @@ class theme {
 										$data_ext.='data-'.$k.'="'.$v.'" ';
 								}
 							}
-							
+
 							$op.='<li class="'.($css_classes['li']??'').'"><a class="'.($css_classes['a']??'').'" '.($data_ext).' href="'.($item['href']??'').'" title="'.($item['title']??'').'">'.($item['name']??'').'</a></li>';
 						}
 
@@ -215,7 +217,7 @@ class theme {
 					  </li>
 					</ul>';
 		}
-		
+
 		return $op;
 	}
 }

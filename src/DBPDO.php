@@ -1,4 +1,5 @@
 <?php
+namespace WildFire;
 
 class DBPDO {
     public $pdo;
