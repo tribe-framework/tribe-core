@@ -1,6 +1,5 @@
 <?php
 require_once 'config.php';
-require_once __DIR__.'/vendor/autoload.php';
 
 session_start();
 
@@ -8,20 +7,8 @@ use WildFire\MySQL;
 use WildFire\Dash;
 use WildFire\Theme;
 
-
 if (file_exists(THEME_PATH.'/config/vars.php')) {
     include_once(THEME_PATH.'/config/vars.php');
-}
-
-// browser debugging
-if (ENV == 'dev') {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-} else {
-    ini_set('display_errors', 0);
-    ini_set('display_startup_errors', 0);
-	error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 }
 
 $session_user = $_SESSION['user'] ?? NULL;
@@ -38,9 +25,9 @@ if (!$q[0]['id']) {
 }
 
 $dash = new Dash();
-$theme = new theme();
+$theme = new Theme();
 
-include_once(THEME_PATH.'/functions.php');
+include_once THEME_PATH.'/functions.php';
 
 $types=$dash->get_types(THEME_PATH.'/config/types.json');
 $menus=json_decode(file_get_contents(THEME_PATH.'/config/menus.json'), true);
