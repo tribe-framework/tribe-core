@@ -8,5 +8,5 @@ sftp-config.json
 /plugins/bootstrap/sass/.sass-cache*
 /vendor/
 vars.php
-/plugins/themes
-/plugins/plugins
+/public/themes
+/public/plugins
