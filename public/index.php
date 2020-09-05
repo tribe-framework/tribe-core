@@ -15,7 +15,7 @@ if (file_exists($routeFull)) {
 }
 
 // 403 error
-if ($_SERVER['REDIRECT_STATUS'] == 403) {
+if (array_key_exists('REDIRECT_STATUS', $_SERVER) && $_SERVER['REDIRECT_STATUS'] == 403) {
     $e = new PageError();
     $e->forbidden();
     die();

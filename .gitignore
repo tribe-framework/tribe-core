@@ -6,3 +6,5 @@ sftp-config.json
 /themes/*
 !/themes/wildfire-2020
 /plugins/bootstrap/sass/.sass-cache*
+/vendor/
+vars.php
