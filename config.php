@@ -11,6 +11,10 @@ define('THEME_PATH', ABSOLUTE_PATH . '/themes/' . THEME);
 
 session_save_path('/tmp');
 
+if (file_exists(THEME_PATH.'/config/vars.php')) {
+    include_once(THEME_PATH.'/config/vars.php');
+}
+
 // browser debugging
 if (ENV == 'dev') {
     ini_set('display_errors', 1);

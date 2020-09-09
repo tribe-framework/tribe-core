@@ -7,10 +7,6 @@ use WildFire\MySQL;
 use WildFire\Dash;
 use WildFire\Theme;
 
-if (file_exists(THEME_PATH.'/config/vars.php')) {
-    include_once(THEME_PATH.'/config/vars.php');
-}
-
 $session_user = $_SESSION['user'] ?? NULL;
 
 include_once 'routes/admin/functions.php';
