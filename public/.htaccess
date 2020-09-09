@@ -21,3 +21,4 @@
 </IfModule>
 
 ErrorDocument 403 /
+ErrorDocument 500 /

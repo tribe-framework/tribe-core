@@ -16,14 +16,11 @@ if (file_exists($routeFull)) {
 
 // 403 error
 if (array_key_exists('REDIRECT_STATUS', $_SERVER) && $_SERVER['REDIRECT_STATUS'] == 403) {
-    $e = new PageError();
-    $e->forbidden();
-    die();
+    WildFire\PageError::forbidden();
 }
 
 // 404 error
 if (!(file_exists($routeFull) || file_exists($routeFullIndex))) {
-    $e = new PageError();
-    $e->notFound();
+    WildFire\PageError::notFound();
 }
 ?>
