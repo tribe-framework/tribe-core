@@ -17,10 +17,6 @@ class Dash {
 	public static $last_data = null; //array of data to be sent for display
 	public static $last_redirect = null; //redirection url
 
-	function __construct () {
-
-	}
-
 	function get_last_error () {
 		if (count(dash::$last_error)) {
 			$op=implode('<br>', dash::$last_error);

@@ -12,8 +12,7 @@ namespace WildFire;
 
 class Trac
 {
-	function push_visit ($post)
-	{
+	function push_visit ($post) {
 		global $sql;
 		$updated_on=time();
 
@@ -21,8 +20,7 @@ class Trac
 		return $sql->lastInsertID();
 	}
 
-	function push_visit_meta ($id, $meta_key, $meta_value='')
-	{
+	function push_visit_meta ($id, $meta_key, $meta_value='') {
 		global $sql;
 
 		if (!($id && $meta_key)) {
