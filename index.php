@@ -1,7 +1,7 @@
 <?php
 include_once 'init.php';
 
-if (($type ?? '')=='search') {
+if (($type ?? '')=='search'):
 	if ($slug && !$_GET['q']) {
 		$_GET['q']=$slug;
 	}
@@ -12,7 +12,7 @@ if (($type ?? '')=='search') {
 	}
 
 	include_once (THEME_PATH.'/search.php');
-} elseif (isset($type) && isset($slug)) {
+elseif (isset($type) && isset($slug)):
 	$typedata=$types[$type];
 	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
 
@@ -77,7 +77,7 @@ if (($type ?? '')=='search') {
 		else
 			include_once (THEME_PATH.'/404.php');
 	}
-} elseif (isset($type)) {
+elseif (isset($type)):
 	$typedata=$types[$type];
 
 	if ($typedata) {
@@ -108,11 +108,11 @@ if (($type ?? '')=='search') {
 	}
 	else
 		include_once (THEME_PATH.'/404.php');
-} else {
+else:
 	$meta_title=($types['webapp']['headmeta_title']??'');
 	$meta_description=($types['webapp']['headmeta_description']??'');
 	$meta_image_url=($types['webapp']['headmeta_image_url']??'');
 
 	include_once (THEME_PATH.'/index.php');
-}
+endif;
 ?>
