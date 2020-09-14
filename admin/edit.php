@@ -29,12 +29,15 @@
 
         <link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
 
-        <div class="p-3 container d-flex justify-content-center">
+        <div class="container">
             <a name="infos"></a>
             <div id="infos" class="d-none alert alert-success"></div>
 
             <a name="errors"></a>
             <div id="errors" class="d-none alert alert-danger"></div>
+        </div>
+
+        <div class="p-3 container d-flex justify-content-center">
 
             <form method="post" class="edit_form col-lg-11" action="/admin/json" autocomplete="off">
                 <?=
