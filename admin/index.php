@@ -3,7 +3,7 @@ include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/admin/header.php');
 ?>
 
-<div class="p-3">
+<div class="p-3 container">
 
 <?php echo get_admin_menu('dash'); ?>
 
