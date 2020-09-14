@@ -6,11 +6,13 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 <div class="p-3 container">
 
   <?php
-  if ($_GET['role'])
+  $role = NULL;
+
+  if (isset($_GET['role']))
     $role = $types['user']['roles'][$_GET[role]];
   ?>
 
-  <?php echo get_admin_menu('list', $type, $role['slug']); ?>
+  <?= get_admin_menu('list', $type, $role['slug']); ?>
 
   <h2 class="mb-4"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'List of '.$types[$type]['plural']; ?></h2>
 
