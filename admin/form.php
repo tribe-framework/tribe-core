@@ -1,9 +1,32 @@
 <?php
 $post = $post ?? NULL; // set $post to NULL if it doesn't exist
 
-function fc ($v) {
+function formComponent ($v) {
     return 'form-components/'.$v.'.php';
 }
+
+$components = [
+    'text' => 'text',
+    'multi-text' => 'text',
+    'textarea' => 'textarea',
+    'typeout' => 'typeout',
+    'date' => 'date',
+    'url' => 'url',
+    'multi_url' => 'url',
+    'number' => 'number',
+    'multi_number' => 'number',
+    'checkbox' => 'checkbox',
+    'tel' => 'tel',
+    'hidden' => 'hidden',
+    'priority' => 'priority',
+    'email' => 'email',
+    'password' => 'password',
+    'select' => 'select',
+    'multi_drop' => 'multi-drop',
+    'multi_select' => 'multi-select',
+    'file_uploader' => 'file-uploader',
+    'google_map_marker' => 'google-map-marker'
+];
 
 foreach ($types[$type]['modules'] as $module) {
     if (
@@ -40,81 +63,10 @@ foreach ($types[$type]['modules'] as $module) {
                 $module_input_default_value = $dash->get_unique_user_id();
             }
 
-            switch ($module_input_type) {
-                case 'text':
-                case 'multi-text':
-                    include_once fc('text');
-                    break;
-
-                case 'textarea':
-                    include_once fc('textarea');
-                    break;
-
-                case 'typeout':
-                    include_once fc('typeout');
-                    break;
-
-                case 'date':
-                    include_once fc('date');
-                    break;
-
-                case 'url':
-                case 'multi_url':
-                    include_once fc('url');
-                    break;
-
-                case 'number':
-                case 'multi_number':
-                    include_once fc('number');
-                    break;
-
-                case 'checkbox':
-                    include_once fc('checkbox');
-                    break;
-
-                case 'tel':
-                    include_once fc('tel');
-                    break;
-
-                case 'hidden':
-                    include_once fc('hidden');
-                    break;
-
-                case 'priority':
-                    include_once fc('priority');
-                    break;
-
-                case 'email':
-                    include_once fc('email');
-                    break;
-
-                case 'password':
-                    include_once fc('password');
-                    break;
-
-                case 'select':
-                    include_once fc('select');
-                    break;
-
-                case 'multi_drop':
-                    include_once fc('multi-drop');
-                    break;
-
-                case 'multi_select':
-                    include_once fc('multi-select');
-                    break;
-
-                case 'file_uploader':
-                    include_once fc('file-uploader');
-                    break;
-
-                case 'google_map_marker':
-                    include_once fc('google-map-marker');
-                    break;
-
-                default:
-                    echo $module_input_type . " isn't valid.";
-                    break;
+            if (array_key_exists($module_input_type, $components)) {
+                include formComponent($components[$module_input_type]);
+            } else {
+                echo '<em style="color:red; border-left:2px solid red; padding: 2px 8px;">"'. $module_input_type . '"' . ': form-component not found</em><br/>';
             }
         }
     }
