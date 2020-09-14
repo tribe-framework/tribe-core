@@ -1,26 +1,37 @@
-h2 {outline: none;}
-.typeout-content {width: 100%; height: 500px; outline: none;}
+h2 {
+   outline: none;
+}
+
+.typeout-content {
+   width: 100%;
+   height: 500px;
+   outline: none;
+}
+
 .file {
    position: relative;
-   background: linear-gradient(90deg, rgba(153,51,153,1) 0%, rgba(255,0,102,1) 24%, rgba(255,0,51,1) 60%, rgba(255,102,0,1) 100%);
+   background: linear-gradient(90deg, rgba(153, 51, 153, 1) 0%, rgba(255, 0, 102, 1) 24%, rgba(255, 0, 51, 1) 60%, rgba(255, 102, 0, 1) 100%);
    background-size: 200% 100%;
    background-position: right bottom;
-   transition:all 1s ease;
+   transition: all 1s ease;
 }
+
 .file.done {
    background: #fff;
    border-bottom: 1px solid #993399;
 }
+
 .file a {
    display: block;
    position: relative;
    padding: 5px;
 }
+
 .typeout-content[placeholder]:empty:before {
-    content: attr(placeholder);
-    color: #868e96; 
+   content: attr(placeholder);
+   color: #868e96;
 }
 
 .typeout-content[placeholder]:empty:focus:before {
-    content: "";
+   content: "";
 }
