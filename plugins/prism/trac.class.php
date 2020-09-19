@@ -41,7 +41,7 @@ class Trac
 		$or=array();
 		$q=$sql->executeSQL("SELECT * FROM `trac` WHERE `id`='$val'");
 		if ($q[0]['id']) {
-			$or=json_decode($q[0]['content'], true);
+			$or=json_decode($q[0]['visit'], true);
 			$or['id']=$q[0]['id'];
 			$or['updated_on']=$q[0]['updated_on'];
 			$or['created_on']=$q[0]['created_on'];
@@ -57,12 +57,12 @@ class Trac
 		if ($meta_key=='id' || $meta_key=='updated_on' || $meta_key=='created_on')
 			$qry="`".$meta_key."`";
 		else
-			$qry="`content`->>'$.".$meta_key."' `".$meta_key."`";
+			$qry="`visit`->>'$.".$meta_key."' `".$meta_key."`";
 
 		if (is_numeric($val))
 			$q=$sql->executeSQL("SELECT ".$qry." FROM `trac` WHERE `id`='$val'");
 		else
-			$q=$sql->executeSQL("SELECT ".$qry." FROM `trac` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
+			$q=$sql->executeSQL("SELECT ".$qry." FROM `trac` WHERE `visit`->'$.slug'='".$val['slug']."' && `visit`->'$.type'='".$val['type']."'");
 
 		return $q[0][$meta_key];
 	}
