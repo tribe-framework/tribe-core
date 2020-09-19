@@ -66,7 +66,7 @@ class Trac
     }
 
     /**
-     * pass 'lifetime' to the function to get values for last 24 hours only
+     * pass 'lifetime' to the function to get values for lifetime
      */
     function get_unique_visits ($val = null) {
         global $sql, $session_user;
@@ -82,7 +82,7 @@ class Trac
     }
 
     /**
-     * pass 'lifetime' to the function to get values for last 24 hours only
+     * pass 'lifetime' to the function to get values for lifetime
      */
     function get_page_visits ($val = null) {
         global $sql;
@@ -95,6 +95,32 @@ class Trac
         }
 
         return $q[0];
+    }
+
+    /**
+     * pass 'lifetime' to the function to get values for lifetime
+     */
+    function get_avg_time_per_page ($val = null) {
+        global $sql;
+
+        if ($val == 'lifetime') {
+            $q = $sql->executeSQL("SELECT
+            visit->>'$.pageOn' as page,
+            sum(visit->>'$.time_spent') as time,
+            count(visit->>'$.pageOn') as visit_count
+            from trac
+            group by visit->>'$.pageOn'");
+        } else {
+            $q = $sql->executeSQL("SELECT
+            visit->>'$.pageOn' as page,
+            sum(visit->>'$.time_spent') as time,
+            count(visit->>'$.pageOn') as visit_count
+            from trac
+            group by visit->>'$.pageOn'
+            where created_on >= unix_timestamp(now() - interval 1 day)");
+        }
+
+        return $q;
     }
 }
 ?>
