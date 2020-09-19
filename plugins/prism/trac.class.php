@@ -35,5 +35,36 @@ class Trac
 		else
 			return 0;
 	}
+
+	function get_visit ($val) {
+		global $sql, $session_user;
+		$or=array();
+		$q=$sql->executeSQL("SELECT * FROM `trac` WHERE `id`='$val'");
+		if ($q[0]['id']) {
+			$or=json_decode($q[0]['content'], true);
+			$or['id']=$q[0]['id'];
+			$or['updated_on']=$q[0]['updated_on'];
+			$or['created_on']=$q[0]['created_on'];
+			return $or;
+		}
+		else
+			return 0;
+	}
+
+	function get_visit_meta ($val, $meta_key) {
+		global $sql;
+
+		if ($meta_key=='id' || $meta_key=='updated_on' || $meta_key=='created_on')
+			$qry="`".$meta_key."`";
+		else
+			$qry="`content`->>'$.".$meta_key."' `".$meta_key."`";
+
+		if (is_numeric($val))
+			$q=$sql->executeSQL("SELECT ".$qry." FROM `trac` WHERE `id`='$val'");
+		else
+			$q=$sql->executeSQL("SELECT ".$qry." FROM `trac` WHERE `content`->'$.slug'='".$val['slug']."' && `content`->'$.type'='".$val['type']."'");
+
+		return $q[0][$meta_key];
+	}
 }
 ?>
