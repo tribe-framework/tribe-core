@@ -66,7 +66,11 @@ class Trac
     }
 
     /**
+     * provides unique visits for website
+     *
      * pass 'lifetime' to the function to get values for lifetime
+     *
+     * returns array with 'visit_count'
      */
     function get_unique_visits ($val = null) {
         global $sql, $session_user;
@@ -82,7 +86,11 @@ class Trac
     }
 
     /**
+     * provides total number of website visits
+     *
      * pass 'lifetime' to the function to get values for lifetime
+     *
+     * returns array with 'visit_count'
      */
     function get_page_visits ($val = null) {
         global $sql;
@@ -114,8 +122,8 @@ class Trac
             visit->>'$.pageOn' as page,
             sum(visit->>'$.time_spent')/count(visit->>'$.pageOn') as avg_time
             from trac
-            group by visit->>'$.pageOn'
-            where created_on >= unix_timestamp(now() - interval 1 day)");
+            where created_on >= unix_timestamp(now() - interval 1 day) and visit->>'$.pageOn' is not NULL
+            group by visit->>'$.pageOn'");
         }
 
         return $q;
