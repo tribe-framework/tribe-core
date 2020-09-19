@@ -12,9 +12,11 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
   <div class="card-header">Analytics</div>
   <div class="card-body">
     <p class="card-text">
-<?php
-print_r($trac->get_visit(1));
-?>
+	<?php
+	include_once(ABSOLUTE_PATH.'/plugins/prism/trac.class.php');
+	$trac = new Trac();
+	print_r($trac->get_visit(1));
+	?>
     </p>
   </div>
 </div>
