@@ -11,7 +11,11 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 <div class="card my-2">
   <div class="card-header">Analytics</div>
   <div class="card-body">
-    <p class="card-text">Porro quisquam et aliquid quas assumenda sunt culpa. Laudantium eum ex aut accusantium consequuntur dolor sed. Inventore quam quod est ut fugiat cumque beatae. Suscipit eaque non autem dignissimos voluptatibus quo et. Commodi aliquam est aut incidunt voluptatem et.</p>
+    <p class="card-text">
+<?php
+print_r($trac->get_visit(1));
+?>
+    </p>
   </div>
 </div>
 <div class="card my-2">
