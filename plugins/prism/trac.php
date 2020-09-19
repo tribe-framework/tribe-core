@@ -11,7 +11,7 @@ $trac = new Trac();
 
 unset($_SERVER['SERVER_SIGNATURE']);
 
-$prism_visit_id=$_POST['prism_visit_id'];
+$prism_visit_id=($_POST['prism_visit_id']??'');
 
 if (!$prism_visit_id) {
 	$prism_visit_id = $trac->push_visit(array_merge($_SERVER, $_POST));
