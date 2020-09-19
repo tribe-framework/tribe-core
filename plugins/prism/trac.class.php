@@ -106,7 +106,11 @@ class Trac
     }
 
     /**
+     * provides average time per page
+     *
      * pass 'lifetime' to the function to get values for lifetime
+     *
+     * returns array with 'page' & 'avg_time'
      */
     function get_avg_time_per_page ($val = null) {
         global $sql;
@@ -116,6 +120,7 @@ class Trac
             visit->>'$.pageOn' as page,
             sum(visit->>'$.time_spent')/count(visit->>'$.pageOn') as avg_time
             from trac
+            where visit->>'$.pageOn' is not NULL
             group by visit->>'$.pageOn'");
         } else {
             $q = $sql->executeSQL("SELECT
@@ -140,14 +145,15 @@ class Trac
             visit->>'$.HTTP_COOKIE' as page,
             sum(visit->>'$.time_spent')/count(visit->>'$.HTTP_COOKIE') as avg_time
             from trac
+            where visit->>'$.time_spent' is not NULL
             group by visit->>'$.HTTP_COOKIE'");
         } else {
             $q = $sql->executeSQL("SELECT
             visit->>'$.HTTP_COOKIE' as page,
             sum(visit->>'$.time_spent')/count(visit->>'$.HTTP_COOKIE') as avg_time
             from trac
-            group by visit->>'$.HTTP_COOKIE'
-            where created_on >= unix_timestamp(now() - interval 1 day)");
+            where created_on >= unix_timestamp(now() - interval 1 day) and visit->>'$.time_spent' is not NULL
+            group by visit->>'$.HTTP_COOKIE'");
         }
 
         return $q;
