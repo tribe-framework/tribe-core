@@ -27,3 +27,10 @@
 .dataTables_length {float:left; margin-left:20px; margin-top:10px; margin-bottom: 10px;}
 
 .multi_drop {height: 400px; overflow-y: scroll;}
+
+.stat-table {}
+
+.stat-row {
+	display: flex;
+	justify-content: space-between;
+}
