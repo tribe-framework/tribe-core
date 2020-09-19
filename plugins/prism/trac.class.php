@@ -65,6 +65,9 @@ class Trac
         return $q[0][$meta_key];
     }
 
+    /**
+     * pass 'limit' to the function to get values for last 24 hours only
+     */
     function get_unique_visits ($val = null) {
         global $sql, $session_user;
 
