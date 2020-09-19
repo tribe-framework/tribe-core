@@ -66,12 +66,12 @@ class Trac
     }
 
     /**
-     * pass 'limit' to the function to get values for last 24 hours only
+     * pass 'lifetime' to the function to get values for last 24 hours only
      */
     function get_unique_visits ($val = null) {
         global $sql, $session_user;
 
-        if ($val != 'limit') {
+        if ($val == 'lifetime') {
             $q = $sql->executeSQL("SELECT count(distinct visit->>'$.HTTP_COOKIE') as visit_count from trac");
         } else {
             $q = $sql->executeSQL("SELECT count(distinct visit->>'$.HTTP_COOKIE') as visit_count
@@ -82,12 +82,12 @@ class Trac
     }
 
     /**
-     * pass 'limit' to the function to get values for last 24 hours only
+     * pass 'lifetime' to the function to get values for last 24 hours only
      */
     function get_page_visits ($val = null) {
         global $sql;
 
-        if ($val != 'limit') {
+        if ($val == 'lifetime') {
             $q = $sql->executeSQL("SELECT count(visit->>'$.HTTP_COOKIE') as visit_count from trac");
         } else {
             $q = $sql->executeSQL("SELECT count(visit->>'$.HTTP_COOKIE') as visit_count
