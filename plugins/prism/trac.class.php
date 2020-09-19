@@ -80,5 +80,21 @@ class Trac
 
         return $q[0];
     }
+
+    /**
+     * pass 'limit' to the function to get values for last 24 hours only
+     */
+    function get_page_visits ($val = null) {
+        global $sql;
+
+        if ($val != 'limit') {
+            $q = $sql->executeSQL("SELECT count(visit->>'$.HTTP_COOKIE') as visit_count from trac");
+        } else {
+            $q = $sql->executeSQL("SELECT count(visit->>'$.HTTP_COOKIE') as visit_count
+            from trac where created_on >= unix_timestamp(now() - interval 1 day)");
+        }
+
+        return $q[0];
+    }
 }
 ?>
