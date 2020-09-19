@@ -106,17 +106,39 @@ class Trac
         if ($val == 'lifetime') {
             $q = $sql->executeSQL("SELECT
             visit->>'$.pageOn' as page,
-            sum(visit->>'$.time_spent') as time,
-            count(visit->>'$.pageOn') as visit_count
+            sum(visit->>'$.time_spent')/count(visit->>'$.pageOn') as avg_time
             from trac
             group by visit->>'$.pageOn'");
         } else {
             $q = $sql->executeSQL("SELECT
             visit->>'$.pageOn' as page,
-            sum(visit->>'$.time_spent') as time,
-            count(visit->>'$.pageOn') as visit_count
+            sum(visit->>'$.time_spent')/count(visit->>'$.pageOn') as avg_time
             from trac
             group by visit->>'$.pageOn'
+            where created_on >= unix_timestamp(now() - interval 1 day)");
+        }
+
+        return $q;
+    }
+
+    /**
+     * pass 'lifetime' to the function to get values for lifetime
+     */
+    function get_avg_time_per_visit ($val = null) {
+        global $sql;
+
+        if ($val == 'lifetime') {
+            $q = $sql->executeSQL("SELECT
+            visit->>'$.HTTP_COOKIE' as page,
+            sum(visit->>'$.time_spent')/count(visit->>'$.HTTP_COOKIE') as avg_time
+            from trac
+            group by visit->>'$.HTTP_COOKIE'");
+        } else {
+            $q = $sql->executeSQL("SELECT
+            visit->>'$.HTTP_COOKIE' as page,
+            sum(visit->>'$.time_spent')/count(visit->>'$.HTTP_COOKIE') as avg_time
+            from trac
+            group by visit->>'$.HTTP_COOKIE'
             where created_on >= unix_timestamp(now() - interval 1 day)");
         }
 
