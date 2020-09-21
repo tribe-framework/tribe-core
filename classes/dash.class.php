@@ -523,8 +523,9 @@ class dash {
 		}
 
 		//for visitors and anybody else
-		else 
+		else {
 			ob_start(); header('Location: /');
+		}
 	}
 
 	function get_uploader_path () {
