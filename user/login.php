@@ -6,13 +6,11 @@ if ($_POST['email'] && $_POST['password']) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
-		var_dump($user);
 		$dash->after_login($user['role_slug']);
 	}
 }
 else if ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
-	echo 'here';
 	$dash->after_login($user['role_slug']);
 }
 
