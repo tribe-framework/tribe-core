@@ -1,7 +1,6 @@
 <?php
 include_once ('../init.php');
 if ($_GET['action']=='exit') {session_destroy(); header('Location: '.BASE_URL.'/user/login');}
-include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email'] && $_POST['password']) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
@@ -16,6 +15,8 @@ else if ($_SESSION['user']['id']) {
 	echo 'here';
 	$dash->after_login($user['role_slug']);
 }
+
+include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-login.php')):
 	include_once (THEME_PATH.'/user-login.php');
