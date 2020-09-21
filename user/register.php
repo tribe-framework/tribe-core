@@ -1,7 +1,7 @@
 <?php
 include_once ('../init.php');
-include_once (ABSOLUTE_PATH.'/user/header.php');
 
+$error_op='';
 if ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
 	$dash->after_login($user['role_slug']);
@@ -18,12 +18,16 @@ else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['c
 	$dash->after_login($user['role_slug']);
 }
 else if ($_POST) {
-	echo '<div class="alert alert-danger">Form not submitted. Please try again.</div>';
+	$error_op='<div class="alert alert-danger">Form not submitted. Please try again.</div>';
 }
+
+include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-register.php')):
 	include_once (THEME_PATH.'/user-register.php');
 else: ?>
+
+<?php echo ($error_op??''); ?>
 
 <form class="form-user" method="post" action="/user/register"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Register</h4>

@@ -1,6 +1,6 @@
 <?php
 include_once ('../init.php');
-if ($_GET['action']=='exit') {session_destroy(); header('Location: '.BASE_URL.'/user/login');}
+if ($_GET['action']=='exit') {session_destroy(); ob_start(); header('Location: '.BASE_URL.'/user/login');}
 
 if ($_POST['email'] && $_POST['password']) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
