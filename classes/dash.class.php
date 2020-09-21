@@ -510,7 +510,7 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=1;
-			header('Location: /admin');
+			ob_start(); header('Location: /admin');
 		}
 
 		//for members
@@ -519,12 +519,12 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=0;
-			header('Location: /user');
+			ob_start(); header('Location: /user');
 		}
 
 		//for visitors and anybody else
 		else 
-			header('Location: /');
+			ob_start(); header('Location: /');
 	}
 
 	function get_uploader_path () {
