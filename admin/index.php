@@ -14,6 +14,8 @@ include_once 'header.php';
                     include_once ABSOLUTE_PATH.'/plugins/prism/trac.class.php';
                     $trac = new Trac();
                 ?>
+
+                <!-- 24 hour stats -->
                 <div class='stat-table'>
                     <h5 class="border-bottom">Stats for last 24 hours</h5>
                     <div class="pl-4 pr-4 pt-2 pb-2">
@@ -42,13 +44,19 @@ include_once 'header.php';
                                 </div>
                                 <?php
                                     $vdat = $trac->get_avg_time_per_page();
-                                    foreach($vdat as $vd):
+                                    if (!$vdat):
+                                ?>
+                                    <p class="text-white bg-dark text-center">No data available</p>
+                                <?php
+                                    else:
+                                        foreach($vdat as $vd):
                                 ?>
                                     <div class='stat-row p-1 border-bottom border-light'>
                                         <span><?= $vd['page'] ?></span>
                                         <span><?= $vd['avg_time'] ?>s</span>
                                     </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -61,18 +69,25 @@ include_once 'header.php';
                                 </div>
                                 <?php
                                     $vdat = $trac->get_avg_time_per_visit();
-                                    foreach ($vdat as $k => $vd):
+                                    if(!$vdat):
+                                ?>
+                                    <p class="text-white bg-dark text-center">No data available</p>
+                                <?php
+                                    else:
+                                        foreach ($vdat as $k => $vd):
                                 ?>
                                     <div class='stat-row p-1 border-bottom border-light'>
                                         <span><?= $k+1 ?></span>
                                         <span><?=$vd['avg_time']?>s</span>
                                     </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- life time stats -->
                 <div class='stat-table'>
                     <h5 class="border-bottom">Stats for lifetime</h5>
                     <div class="pl-4 pr-4 pt-2 pb-2">
@@ -101,13 +116,19 @@ include_once 'header.php';
                                 </div>
                                 <?php
                                     $vdat = $trac->get_avg_time_per_page('lifetime');
-                                    foreach($vdat as $vd):
+                                    if (!$vdat):
+                                ?>
+                                    <p class="text-white bg-dark text-center">No data available</p>
+                                <?php
+                                    else:
+                                        foreach($vdat as $vd):
                                 ?>
                                     <div class='stat-row p-1 border-bottom border-light'>
                                         <span><?= $vd['page'] ?></span>
                                         <span><?= $vd['avg_time'] ?>s</span>
                                     </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -120,13 +141,19 @@ include_once 'header.php';
                                 </div>
                                 <?php
                                     $vdat = $trac->get_avg_time_per_visit('lifetime');
-                                    foreach ($vdat as $k => $vd):
+                                    if(!$vdat):
+                                ?>
+                                    <p class="text-white bg-dark text-center">No data available</p>
+                                <?php
+                                    else:
+                                        foreach ($vdat as $k => $vd):
                                 ?>
                                     <div class='stat-row p-1 border-bottom border-light'>
                                         <span><?= $k+1 ?></span>
                                         <span><?=$vd['avg_time']?>s</span>
                                     </div>
-                                <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
