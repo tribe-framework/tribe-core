@@ -17,9 +17,15 @@ function send_email ($mailr=array()) {
 
 function send_email_to_json_list ($filepath, $mailr=array()) {
 	$emails=json_decode(file_get_contents($filepath), true);
-	foreach ($emails as $email) {
-		$mailr['to_email']=$email;
-		send_email($mailr);
+    $i=0;
+	foreach ($emails as $email_row) {
+        if (!$i)
+            $fields=explode(',', '{'.implode('},{', array_keys($email_row)).'}');
+        $mail_arr=$mailr;
+		$mail_arr['to_email']=$email_row['email'];
+        $mail_arr['body_html']=str_replace($fields, $email_row, $mailr['body_html']);
+		send_email($mail_arr);
+        $i++;
 	}
 }
 
