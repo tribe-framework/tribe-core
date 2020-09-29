@@ -23,7 +23,10 @@ function send_email_to_json_list ($filepath, $mailr=array()) {
             $fields=explode(',', '{'.implode('},{', array_keys($email_row)).'}');
         $mail_arr=$mailr;
 		$mail_arr['to_email']=$email_row['email'];
-        $mail_arr['body_html']=str_replace($fields, $email_row, $mailr['body_html']);
+        if ($fields['link'])
+            $mail_arr['body_html']=str_replace($fields, $email_row, $mailr['body_html']);
+        else
+            $mail_arr['body_html']=$mailr['link_html'].$mailr['body_html'];
 		send_email($mail_arr);
         $i++;
 	}
