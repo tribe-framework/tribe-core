@@ -499,7 +499,7 @@ class dash {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
 
-	function after_login ($roleslug) { 
+	function after_login ($roleslug, $redirect_url='') { 
 		global $types, $_SESSION, $user;
 
 		$user['role']=$types['user']['roles'][$roleslug]['role'];
@@ -510,7 +510,7 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=1;
-			ob_start(); header('Location: /admin');
+			ob_start(); header('Location: '.($redirect_url??'/admin'));
 		}
 
 		//for members
@@ -519,12 +519,12 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=0;
-			ob_start(); header('Location: /user');
+			ob_start(); header('Location: '.($redirect_url??'/user'));
 		}
 
 		//for visitors and anybody else
 		else {
-			ob_start(); header('Location: /');
+			ob_start(); header('Location: '.($redirect_url??'/'));
 		}
 	}
 

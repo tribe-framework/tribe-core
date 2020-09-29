@@ -4,7 +4,7 @@ include_once ('../init.php');
 $error_op='';
 if ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
-	$dash->after_login($user['role_slug']);
+	$dash->after_login($user['role_slug'], ($_POST['redirect_url']??''));
 }
 else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
 	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
@@ -15,7 +15,7 @@ else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['c
 		$user_id=$dash->push_content($_POST);
 		$user=$dash->get_content($user_id);
 	}
-	$dash->after_login($user['role_slug']);
+	$dash->after_login($user['role_slug'], ($_POST['redirect_url']??''));
 }
 else if ($_POST) {
 	$error_op='<div class="alert alert-danger">Form not submitted. Please try again.</div>';
