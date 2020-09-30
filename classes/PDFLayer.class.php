@@ -27,8 +27,8 @@ class PDFLayer {
     }
 
     /**
-     * @param string
-     * @return string
+     * @param string/array
+     * @return string/false
      *
      * this function accepts a web-url and then returns a link that can be used
      * to download the pdf
