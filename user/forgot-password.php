@@ -3,7 +3,8 @@ include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email']) {
-	print_r($dash->get_content($dash->get_ids(array('email'=>$_POST['email']))[0]['id']));
+	var_dump($dash->get_ids(array('email'=>$_POST['email']), '=', '&&')[0]);
+	print_r($dash->get_content($dash->get_ids(array('email'=>$_POST['email']), '=', '&&')[0]['id']));
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')):
