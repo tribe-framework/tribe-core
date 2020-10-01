@@ -9,7 +9,7 @@ if (file_exists(THEME_PATH.'/config/vars.php')) {
 }
 
 // browser debugging
-if (isset(ENV) && (ENV == 'dev')) {
+if (defined('ENV') && (ENV == 'dev')) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
