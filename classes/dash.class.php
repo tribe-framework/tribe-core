@@ -510,7 +510,7 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=1;
-			header('Location: '.(isset($redirect_url)?trim($redirect_url):'/admin'));
+			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/admin'));
 		}
 
 		//for members
@@ -519,12 +519,12 @@ class dash {
 			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=0;
-			header('Location: '.(isset($redirect_url)?trim($redirect_url):'/user'));
+			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/user'));
 		}
 
 		//for visitors and anybody else
 		else {
-			header('Location: '.(isset($redirect_url)?trim($redirect_url):'/'));
+			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/'));
 		}
 	}
 
