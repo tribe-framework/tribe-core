@@ -1,13 +1,9 @@
 <?php
 include_once('config/vars.php');
-include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
-$sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
-include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
+$sql = new MySQL();
 $dash = new dash();
 $types=$dash::get_types(THEME_PATH.'/config/types.json');
-?>
-<?php header('Content-type: application/xml; charset=utf-8'); ?>
-<?php
+header('Content-type: application/xml; charset=utf-8');
 $or=array();
 $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
 
