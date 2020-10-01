@@ -1,7 +1,7 @@
 <?php
-$mailer = new SendGrid();
+$mailer = new CoreSendGrid();
 
-class SendGrid {
+class CoreSendGrid {
 
     function send_email ($mailr=array(), $show_errors=0) {
       if (isset($mailr['to_email']) && defined('ABSOLUTE_PATH') && defined('CONTACT_EMAIL') && defined('WEBSITE_NAME') && defined('SENDGRID_API_KEY')) {
