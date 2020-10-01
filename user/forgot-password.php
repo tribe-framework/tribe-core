@@ -3,7 +3,7 @@ include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email']) {
-	print_r($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.email' = '".trim($_POST['email'])."' ORDER BY `id` DESC LIMIT 1"))[0]['id']));
+	print_r($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.email' = '".trim($_POST['email'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')):
