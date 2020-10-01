@@ -1,7 +1,9 @@
 <?php
 $sendgrid = new SendGrid();
+
 class SendGrid {
-    function send_email ($mailr=array()) {
+
+    function send_email ($mailr=array(), $show_errors=0) {
       if ($mailr['to_email'] && define(ABSOLUTE_PATH) && define(CONTACT_EMAIL) && define(WEBSITE_NAME) && define(SENDGRID_API_KEY)) {
         require_once ABSOLUTE_PATH.'/plugins/sendgrid/sendgrid-php.php';
         $email = new \SendGrid\Mail\Mail(); 
@@ -12,7 +14,18 @@ class SendGrid {
     	    $email->addContent("text/plain", $mailr['body_text']);
         $email->addContent("text/html", $mailr['body_html']);
         $sendgrid = new \SendGrid(SENDGRID_API_KEY);
-        $response = $sendgrid->send($email);
+        if ($show_errors) {
+            try {
+                $response = $sendgrid->send($email);
+                print $response->statusCode() . "\n";
+                print_r($response->headers());
+                print $response->body() . "\n";
+            } catch (Exception $e) {
+                echo 'Caught exception: '. $e->getMessage() ."\n";
+            }
+        }
+        else
+            $response = $sendgrid->send($email);
       }
     }
 
@@ -32,5 +45,6 @@ class SendGrid {
             $i++;
     	}
     }
+    
 }
 ?>
