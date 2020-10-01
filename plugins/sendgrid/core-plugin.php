@@ -1,5 +1,5 @@
 <?php
-$sendgrid = new SendGrid();
+$mailer = new SendGrid();
 
 class SendGrid {
 

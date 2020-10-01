@@ -11,7 +11,7 @@ if ($_POST['email']) {
 	$mailr['to_name']='';
 	$mailr['subject']='Reset your password for '.BARE_URL;
 	$mailr['body_text']=$mailr['body_html']='Password reset email test.';
-	$sendgrid->send_email($mailr, 1);
+	$mailer->send_email($mailr, 1);
 }
 
 if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')):
