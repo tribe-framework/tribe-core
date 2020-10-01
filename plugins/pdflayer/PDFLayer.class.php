@@ -2,8 +2,8 @@
 include_once __DIR__.'/../../init.php';
 
 class PDFLayer {
-    private function downloadPdf ($url, $upload) {
-        $filename      = uniqid() . '.pdf';
+    private function downloadPdf ($url, $upload, $prefix='') {
+        $filename      = ($prefix?$prefix.'-':'') . time() . '-' .uniqid() . '.pdf';
         $full_path     = $upload['upload_dir'] . '/' . $filename;
         $cmd = "wget 'http://api.pdflayer.com/api/convert?access_key=" . PDFLayerKey . "&document_url=" . $url . "&page_size=A4' -O " . $full_path;
 
