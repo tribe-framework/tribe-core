@@ -1,5 +1,5 @@
 <?php
-include_once('config/vars.php');
+include_once('init.php');
 include_once(ABSOLUTE_PATH.'/includes/mysql.class.php');
 $sql = new MySQL(DB_NAME, DB_USER, DB_PASS, DB_HOST);
 include_once(ABSOLUTE_PATH.'/includes/dash.class.php');
