@@ -3,7 +3,7 @@ include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
 if ($_POST['email']) {
-	var_dump($dash->get_ids(array('type'=>'user', 'email'=>$_POST['email']), '=', '&&'));
+	var_dump($dash->get_ids(array('type'=>'user', 'email'=>trim($_POST['email'])), '=', '&&', 'id', 'DESC', 5, 1));
 	print_r($dash->get_content($dash->get_ids(array('email'=>$_POST['email']), '=', '&&')[0]['id']));
 }
 
