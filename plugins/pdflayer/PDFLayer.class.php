@@ -12,10 +12,10 @@ class PDFLayer {
         return $filename;
     }
 
-    private function mergePdf ($files, $upload) {
+    private function mergePdf ($files, $upload, $prefix='') {
         if (gettype($files) != 'array') return false; // terminate if $files not array
 
-        $filename = uniqid() . '.pdf';
+        $filename = ($prefix?$prefix.'-':'') . time() . '-' .uniqid() . '.pdf';
         $files = implode(' ', $files);
         $out_file = $upload['upload_dir'] . '/' .$filename;
         $cmd = 'pdfunite ' . $files . ' ' . $out_file;
@@ -33,7 +33,7 @@ class PDFLayer {
      * this function accepts a web-url and then returns a link that can be used
      * to download the pdf
      */
-    public function convert_to_pdf ($url) {
+    public function convert_to_pdf ($url, $prefix='') {
         global $dash;
 
         $upload = $dash->get_uploader_path();
@@ -44,15 +44,15 @@ class PDFLayer {
                 $pdfArray = [];
 
                 foreach ($url as $u) {
-                    $f_name = $this->downloadPdf($u, $upload);
+                    $f_name = $this->downloadPdf($u, $upload, $prefix);
                     array_push($pdfArray, $upload['upload_dir']. '/' .$f_name);
                 }
 
-                $filename = $this->mergePdf($pdfArray, $upload);
+                $filename = $this->mergePdf($pdfArray, $upload, $prefix);
                 break;
 
             case 'string':
-                $filename = $this->downloadPdf($url, $upload);
+                $filename = $this->downloadPdf($url, $upload, $prefix);
                 break;
 
             default:
