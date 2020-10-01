@@ -4,9 +4,7 @@ $sendgrid = new SendGrid();
 class SendGrid {
 
     function send_email ($mailr=array(), $show_errors=0) {
-        echo 'wwwww'.WEBSITE_NAME.CONTACT_EMAIL.SENDGRID_API_KEY;
-      if (isset($mailr['to_email']) && defined(ABSOLUTE_PATH) && defined(CONTACT_EMAIL) && defined(WEBSITE_NAME) && defined(SENDGRID_API_KEY)) {
-        echo 'vvvv';
+      if (isset($mailr['to_email']) && defined('ABSOLUTE_PATH') && defined('CONTACT_EMAIL') && defined('WEBSITE_NAME') && defined('SENDGRID_API_KEY')) {
         require_once ABSOLUTE_PATH.'/plugins/sendgrid/sendgrid-php.php';
         $email = new \SendGrid\Mail\Mail(); 
         $email->setFrom(CONTACT_EMAIL, WEBSITE_NAME);
