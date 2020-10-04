@@ -9,7 +9,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
-print_r($session_user);
+print_r(array_intersect(array_keys($session_user), array_keys($types)));
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>
