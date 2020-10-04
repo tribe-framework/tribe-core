@@ -93,7 +93,7 @@ function is_access_allowed ($id, $user_restricted_to_input_modules=array()) {
           $allowed_access=1;
           break;
       	}
-      	else (in_array($dash->get_content_meta($id, $value), $session_user[$value])) {
+      	elseif (in_array($dash->get_content_meta($id, $value), $session_user[$value])) {
           $allowed_access=1;
           break;
       	}
