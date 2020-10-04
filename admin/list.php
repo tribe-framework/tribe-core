@@ -10,7 +10,7 @@ if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
 $user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
-print_r($user_restricted_to_input_modules);
+print_r($session_user);
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>
