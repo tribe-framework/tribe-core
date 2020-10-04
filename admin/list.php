@@ -10,6 +10,7 @@ if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
 $user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
+print_r($user_restricted_to_input_modules);
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>
@@ -41,13 +42,14 @@ $user_restricted_to_input_modules=array_intersect(array_keys($session_user), arr
     $ids = $dash->get_all_ids($type);
   foreach ($ids as $arr) {
     //$post = $dash::get_content($arr['id']);
+
+    if (!is_access_allowed($arr['id'], $user_restricted_to_input_modules))
+      continue;
+    
     $post = array();
     $post['id']=$arr['id'];
     $post['type']=$type;
     $post['slug']=$dash->get_content_meta($post['id'], 'slug');
-
-    if (!is_access_allowed($user_restricted_to_input_modules))
-      continue;
 
     $tr_echo='<tr><th scope="row">'.$post['id'].'</th>';
     $donotlist=0;
