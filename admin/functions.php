@@ -88,10 +88,11 @@ function is_access_allowed ($id, $user_restricted_to_input_modules=array()) {
 	//if user has even on field allowing access to edit post, they will be given access to the post
     $allowed_access=0;
     if (count($user_restricted_to_input_modules)) {
-    	echo 'entered';
+    	echo 'entered ';
       foreach ($user_restricted_to_input_modules as $key => $value) {
-      	echo 'in_loop '.$id.$value;
+      	echo 'in_loop '.$id.' '.$value.' ';
         if ($session_user[$value]==$dash->get_content_meta($id, $value)) {
+        	echo 'here <br>';
           $allowed_access=1;
           break;
         }
