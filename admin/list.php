@@ -10,7 +10,6 @@ if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
 $user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
-print_r($session_user);
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>
@@ -45,7 +44,7 @@ print_r($session_user);
 
     if (!is_access_allowed($arr['id'], $user_restricted_to_input_modules))
       continue;
-    
+
     $post = array();
     $post['id']=$arr['id'];
     $post['type']=$type;
