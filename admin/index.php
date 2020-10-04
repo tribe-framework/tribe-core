@@ -11,6 +11,7 @@ include_once 'header.php';
         <div class="card-header">Analytics</div>
             <div class="card-body">
                 <?php
+                if (isset($types['webapp']['display_analytics']) && $types['webapp']['display_analytics']) {
                     include_once ABSOLUTE_PATH.'/plugins/prism/trac.class.php';
                     $trac = new Trac();
                 ?>
@@ -158,6 +159,9 @@ include_once 'header.php';
                         </div>
                     </div>
                 </div>
+                <?php } else { ?>
+                    <p class="card-text">Eos et ut voluptas ad. Vero quis nihil quis impedit omnis ut. Quod non nesciunt illum qui in quidem repellendus libero. Odio molestiae voluptate neque vero architecto esse sunt quae. Quod molestiae est ut tenetur autem esse voluptas itaque. Et similique sunt ipsa libero numquam blanditiis.</p>
+                <?php } ?>
             </div>
         </div>
 
