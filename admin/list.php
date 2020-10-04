@@ -9,7 +9,7 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
-print_r(array_intersect(array_keys($session_user), array_keys($types)));
+$user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
 ?>
 
 <?php echo get_admin_menu('list', $type, $role['slug']); ?>
@@ -36,16 +36,19 @@ print_r(array_intersect(array_keys($session_user), array_keys($types)));
   <tbody>
   <?php
   if ($type=='user')
-    $ids = $dash::get_all_ids(array('type'=>$type, 'role_slug'=>$_GET['role']));
+    $ids = $dash->get_all_ids(array('type'=>$type, 'role_slug'=>$_GET['role']));
   else
-    $ids = $dash::get_all_ids($type);
+    $ids = $dash->get_all_ids($type);
   foreach ($ids as $arr) {
     //$post = $dash::get_content($arr['id']);
     $post = array();
     $post['id']=$arr['id'];
     $post['type']=$type;
     $post['slug']=$dash->get_content_meta($post['id'], 'slug');
-    
+
+    if (!is_access_allowed($user_restricted_to_input_modules))
+      continue;
+
     $tr_echo='<tr><th scope="row">'.$post['id'].'</th>';
     $donotlist=0;
     foreach ($types[$type]['modules'] as $module) {

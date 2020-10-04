@@ -81,4 +81,23 @@ function list_types($type='') {
 	}
 	return $list_types;
 }
+
+function is_access_allowed ($user_restricted_to_input_modules=array()) {
+	global $session_user, $dash;
+	
+	//if user has even on field allowing access to edit post, they will be given access to the post
+    $allowed_access=0;
+    if (count($user_restricted_to_input_modules)) {
+      foreach ($user_restricted_to_input_modules as $key => $value) {
+        if ($session_user[$value]==$dash->get_content_meta($post['id'], $value)) {
+          $allowed_access=1;
+          break;
+        }
+      }
+    }
+    else
+      $allowed_access=1;
+
+  	return $allowed_access;
+}
 ?>
