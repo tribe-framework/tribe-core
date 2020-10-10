@@ -41,7 +41,7 @@ class CoreSendGrid {
                 $mail_arr['body_html']=str_replace($fields, $email_row, $mailr['body_html']);
             else
                 $mail_arr['body_html']=$mailr['link_html'].$mailr['body_html'];
-    		send_email($mail_arr);
+    		$this->send_email($mail_arr);
             $i++;
     	}
     }
