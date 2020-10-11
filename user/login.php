@@ -2,8 +2,11 @@
 include_once ('../init.php');
 if ($_GET['action']=='exit') {session_destroy(); ob_start(); header('Location: '.BASE_URL.'/user/login');}
 
-if ($_POST['email'] && $_POST['password']) {
-	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+if (($_POST['email'] || $_POST['mobile']) && $_POST['password']) {
+	if ($_POST['email'])
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+	else if ($_POST['mobile'])
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.mobile'='".$_POST['mobile']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
 		$dash->after_login($user['role_slug'], (isset($_POST['redirect_url'])?$_POST['redirect_url']:''));

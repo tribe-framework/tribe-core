@@ -6,8 +6,12 @@ if ($_SESSION['user']['id']) {
 	$user=$dash->get_content($_SESSION['user']['id']);
 	$dash->after_login($user['role_slug'], (isset($_POST['redirect_url'])?$_POST['redirect_url']:''));
 }
-else if ($_POST['email'] && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
-	$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+else if (($_POST['email'] || $_POST['mobile']) && $_POST['password'] && ($_POST['password']==$_POST['confirm_password'])) {
+	if ($_POST['email'])
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.email'='".$_POST['email']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+	elseif ($_POST['mobile'])
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.mobile'='".$_POST['mobile']."' && `content`->'$.password'='".md5($_POST['password'])."' && `content`->'$.type'='user'");
+	
 	if ($q[0]['id']) {
 		$user=$dash->get_content($q[0]['id']);
 	}

@@ -507,7 +507,6 @@ class dash {
 		//for admin and crew (staff)
 		if ($types['user']['roles'][$roleslug]['role']=='admin' || $types['user']['roles'][$roleslug]['role']=='crew') {
 			$_SESSION['user_id']=$user['user_id'];
-			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=1;
 			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/admin'));
@@ -516,7 +515,6 @@ class dash {
 		//for members
 		else if ($types['user']['roles'][$roleslug]['role']=='member') {
 			$_SESSION['user_id']=$user['user_id'];
-			$_SESSION['email']=$user['email'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=0;
 			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/user'));
