@@ -3,6 +3,11 @@
 ## minimum requirements
 apache, php7, mysql8 (LAMP server) on any operating system
 
+## quick install
+```
+read -p "Website Domain: " websitedomain; read -p "IP Address: " ipv4address; read -p "MySQL Root Username: " mysqluser; read -p "MySQL Root Password: " mysqlpass; read -p "MySQL Website Username: " mysqlwebsiteuser; read -p "MySQL website Password: " mysqlwebsitepass; sudo git clone https://github.com/wil-ldf-ire/core-server.git /var/www/html/$websitedomain; sudo sed -i "s/xyz.com/$websitedomain/g" /var/www/html/$websitedomain/config/website.sh; sudo sed -i "s/ipv4_address/$ipv4address/g" /var/www/html/$websitedomain/config/website.sh; sudo sed -i "s/mysql_root_user/$mysqluser/g" /var/www/html/$websitedomain/config/website.sh; sudo sed -i "s/mysql_root_pass/$mysqlpass/g" /var/www/html/$websitedomain/config/website.sh; sudo sed -i "s/xyz_com/$mysqlwebsiteuser/g" /var/www/html/$websitedomain/config/website.sh; sudo sed -i "s/xyz_pass/$mysqlwebsitepass/g" /var/www/html/$websitedomain/config/website.sh; sudo bash /var/www/html/$websitedomain/config/website.sh; sudo rm /var/www/html/$websitedomain/config/website.sh;
+```
+
 ## install instructions
 1. use config/install.sql for mysql database structure
 2. include database details, folder path, website url in /config/vars.php
