@@ -10,9 +10,9 @@
                             }
                         }
                         else {
-                            $options=$dash::get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
+                            $options=$dash->get_all_ids($module_input_slug_lang, $types[$module_input_slug_lang]['primary_module'], 'ASC');
                             foreach ($options as $opt) {
-                                $option=$dash::get_content($opt['id']);
+                                $option=$dash->get_content($opt['id']);
                                 $titler=$dash->get_type_title_data($option);
                                 $title_slug=$titler['slug'];
                                 echo '<option value="'.$option['slug'].'" '.(($post[$module_input_slug_lang]==$option['slug'])?'selected="selected"':'').'>'.$option[$title_slug].'</option>';

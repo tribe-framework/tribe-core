@@ -14,7 +14,7 @@ if (($type ?? '')=='search'):
 	include_once (THEME_PATH.'/search.php');
 elseif (isset($type) && isset($slug)):
 	$typedata=$types[$type];
-	$postdata=$dash::get_content(array('type'=>$type, 'slug'=>$slug));
+	$postdata=$dash->get_content(array('type'=>$type, 'slug'=>$slug));
 
 	if ($postdata) {
 		$postdata_modified=$postdata;
@@ -81,7 +81,7 @@ elseif (isset($type)):
 	$typedata=$types[$type];
 
 	if ($typedata) {
-		$postids=$dash::get_all_ids($type);
+		$postids=$dash->get_all_ids($type);
 
 		if (!($meta_title=($types[$type]['meta_title']??null))) {
 			if (!($meta_title=($types['webapp']['headmeta_title']??null)))

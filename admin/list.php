@@ -40,7 +40,7 @@ $user_restricted_to_input_modules=array_intersect(array_keys($session_user), arr
   else
     $ids = $dash->get_all_ids($type);
   foreach ($ids as $arr) {
-    //$post = $dash::get_content($arr['id']);
+    //$post = $dash->get_content($arr['id']);
 
     if (!is_access_allowed($arr['id'], $user_restricted_to_input_modules))
       continue;

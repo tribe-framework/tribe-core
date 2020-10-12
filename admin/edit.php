@@ -5,7 +5,7 @@
     $role = NULL;
 
     if (isset($_GET['id'])) {
-        $post = $dash::get_content($_GET['id']);
+        $post = $dash->get_content($_GET['id']);
     }
 
     if (
@@ -24,7 +24,7 @@
         if (( isset($_GET['id']) && $post['type'] == $type ) || !isset($_GET['id'])):
             //for testing resticted min and max ids for archive format changes
             if (isset($_GET['id']) && !($pid = $_GET['id']))
-                $pid=$dash::get_next_id();
+                $pid=$dash->get_next_id();
 ?>
 
         <link rel="stylesheet" type="text/css" href="/plugins/typeout/typeout.css">
