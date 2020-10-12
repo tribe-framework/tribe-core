@@ -1,4 +1,4 @@
-<VirtualHost *:80>
+<VirtualHost *:8080>
 	ServerAdmin tech@wildfire.world
 	ServerName xyz-domain-var
 	ServerAlias www.xyz-domain-var
@@ -7,24 +7,6 @@
 	CustomLog ${APACHE_LOG_DIR}/access.log combined
 	<Directory /var/www/html/xyz-domain-var/>
 		Options Indexes FollowSymLinks
-		Options +ExecCGI
-		AllowOverride all
-		Require all granted
-		AddHandler cgi-script .py
-	</Directory>
-</VirtualHost>
-<VirtualHost *:443>
-	ServerName xyz-domain-var
-	ServerAlias www.xyz-domain-var
-	ServerAdmin tech@wildfire.world
-	DocumentRoot /var/www/html/xyz-domain-var
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
-	<Directory /var/www/html/xyz-domain-var/>
-		Options Indexes FollowSymLinks
-		Options +ExecCGI
-		AllowOverride all
-		Require all granted
-		AddHandler cgi-script .py
+		AllowOverride All
 	</Directory>
 </VirtualHost>
