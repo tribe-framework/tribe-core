@@ -1,11 +1,11 @@
 sudo chown ubuntu:ubuntu /var/www/html/xyz.com -R;
 sudo chown www-data:www-data /var/www/html/xyz.com/uploads -R;
 sudo cp /var/www/html/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
-sudo cp /var/www/html/xyz.com/nginx.conf /etc/nginx/sites-available/xyz.com;
+sudo cp /var/www/html/xyz.com/config/nginx.conf /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/nginx/sites-available/xyz.com;
 sudo ln -s /etc/nginx/sites-available/xyz.com /etc/nginx/sites-enabled/xyz.com;
-sudo cp /var/www/html/xyz.com/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
+sudo cp /var/www/html/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf;
 a2ensite xyz.com;
 sudo systemctl reload nginx;
