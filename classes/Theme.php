@@ -8,7 +8,9 @@
 	is_ is for a yes/no answer
 */
 
-class theme {  
+namespace Core;
+
+class Theme {  
 
 	public static $last_error = null; //array of error messages
 	public static $last_info = null; //array of info messages

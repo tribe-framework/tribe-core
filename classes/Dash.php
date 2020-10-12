@@ -8,7 +8,9 @@
 	is_ is for a yes/no answer
 */
 
-class dash {
+namespace Core;
+
+class Dash {
 
 	public static $last_error = null; //array of error messages
 	public static $last_info = null; //array of info messages
