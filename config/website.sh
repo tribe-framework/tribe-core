@@ -1,3 +1,30 @@
-//change xyz.com and xyz_com and xyz_pass and mysql_root_user and mysql_root_pass
-
-sudo git clone https://github.com/wil-ldf-ire/core.git /var/www/html/xyz.com; sudo chown ubuntu:ubuntu /var/www/html/xyz.com -R; sudo chown www-data:www-data /var/www/html/xyz.com/uploads -R; sudo cp /var/www/html/xyz.com/config/apache2.conf.sample /etc/apache2/sites-available/xyz.com.conf; sudo sed -i 's/xyz-domain-var/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf; sudo a2ensite xyz.com.conf; sudo certbot --apache -d xyz.com -d www.xyz.com; sudo service apache2 restart; sudo cp /var/www/html/xyz.com/themes/wildfire-2020 /var/www/html/xyz.com/themes/xyz.com -R; sudo chown ubuntu:ubuntu /var/www/html/xyz.com/themes/xyz.com -R; sudo cp /var/www/html/xyz.com/config/vars.php.sample /var/www/html/xyz.com/config/vars.php; sudo sed -i 's/xyz-domain-var/xyz.com/g' /var/www/html/xyz.com/config/vars.php; sudo sed -i 's/xyz-db-name-var/xyz_com/g' /var/www/html/xyz.com/config/vars.php; sudo sed -i 's/xyz-db-pass-var/xyz_pass/g' /var/www/html/xyz.com/config/vars.php; echo "CREATE USER 'xyz_com'@'localhost' IDENTIFIED WITH mysql_native_password BY 'xyz_pass'; FLUSH PRIVILEGES;" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost; echo "CREATE DATABASE xyz_com CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost; echo "GRANT ALL PRIVILEGES on xyz_com.* to 'xyz_com'@'localhost';" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost; sudo mysql -uxyz_com -pxyz_pass xyz_com < /var/www/html/xyz.com/config/install.sql; sudo bash config/composer.sh; php composer.phar install; php composer.phar dump-autoload;
+sudo git clone https://github.com/wil-ldf-ire/core.git /var/www/html/xyz.com;
+sudo chown ubuntu:ubuntu /var/www/html/xyz.com -R;
+sudo chown www-data:www-data /var/www/html/xyz.com/uploads -R;
+sudo cp /var/www/html/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
+sudo cp /var/www/html/xyz.com/nginx.conf /etc/nginx/sites-available/xyz.com;
+sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/xyz.com;
+sudo sed -i 's/your_server_domain/xyz.com/g' /etc/nginx/sites-available/xyz.com;
+sudo ln -s /etc/nginx/sites-available/xyz.com /etc/nginx/sites-enabled/xyz.com;
+sudo cp /var/www/html/xyz.com/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
+sudo sed -i 's/your_server_domain/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf;
+a2ensite xyz.com;
+sudo systemctl reload nginx;
+sudo service apache2 start;
+sudo snap install --classic certbot;
+sudo certbot --agree-tos --no-eff-email --email tech@wildfire.world --nginx -d xyz.com -d www.xyz.com;;
+sudo service apache2 restart;
+sudo cp /var/www/html/xyz.com/themes/wildfire-2020 /var/www/html/xyz.com/themes/xyz.com -R;
+sudo chown ubuntu:ubuntu /var/www/html/xyz.com/themes/xyz.com -R;
+sudo cp /var/www/html/xyz.com/config/vars.php.sample /var/www/html/xyz.com/config/vars.php;
+sudo sed -i 's/xyz-domain-var/xyz.com/g' /var/www/html/xyz.com/config/vars.php;
+sudo sed -i 's/xyz-db-name-var/xyz_com/g' /var/www/html/xyz.com/config/vars.php;
+sudo sed -i 's/xyz-db-pass-var/xyz_pass/g' /var/www/html/xyz.com/config/vars.php;
+echo "CREATE USER 'xyz_com'@'localhost' IDENTIFIED WITH mysql_native_password BY 'xyz_pass'; FLUSH PRIVILEGES;" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost;
+echo "CREATE DATABASE xyz_com CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost;
+echo "GRANT ALL PRIVILEGES on xyz_com.* to 'xyz_com'@'localhost';" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost;
+sudo mysql -uxyz_com -pxyz_pass xyz_com < /var/www/html/xyz.com/config/install.sql;
+cd /var/www/html/xyz.com;
+sudo bash config/composer.sh;
+php composer.phar install;
+php composer.phar dump-autoload;
