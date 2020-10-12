@@ -10,8 +10,7 @@ sudo sed -i 's/your_server_domain/xyz.com/g' /etc/apache2/sites-available/xyz.co
 a2ensite xyz.com;
 sudo systemctl reload nginx;
 sudo service apache2 start;
-sudo snap install --classic certbot;
-sudo certbot --agree-tos --no-eff-email --email tech@wildfire.world --nginx -d xyz.com -d www.xyz.com;;
+sudo certbot --agree-tos --no-eff-email --email tech@wildfire.world --nginx -d xyz.com -d www.xyz.com;
 sudo service apache2 restart;
 sudo cp /var/www/html/xyz.com/themes/wildfire-2020 /var/www/html/xyz.com/themes/xyz.com -R;
 sudo chown ubuntu:ubuntu /var/www/html/xyz.com/themes/xyz.com -R;
