@@ -3,6 +3,7 @@ session_save_path('/tmp');
 session_start();
 
 include_once 'config/vars.php';
+require __DIR__ . '/vendor/autoload.php';
 
 if (file_exists(THEME_PATH.'/config/vars.php')) {
     include_once(THEME_PATH.'/config/vars.php');
@@ -24,7 +25,7 @@ $session_user = $_SESSION['user'] ?? NULL;
 
 include_once(ABSOLUTE_PATH.'/admin/functions.php');
 
-$sql = new MySQL();
+$sql = new DB\MySQL();
 
 $userless_install=0;
 $q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
@@ -33,8 +34,8 @@ if (!$q[0]['id']) {
     $userless_install=1;
 }
 
-$dash = new dash();
-$theme = new theme();
+$dash = new Core\Dash();
+$theme = new Core\Theme();
 
 include_once(THEME_PATH.'/functions.php');
 
