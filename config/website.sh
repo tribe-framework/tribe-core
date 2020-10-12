@@ -1,4 +1,5 @@
-sudo git clone https://github.com/wil-ldf-ire/core.git /var/www/html/xyz.com;
+cd /var/www/html/xyz.com;
+sudo git pull origin develop/1.0.0;
 sudo chown ubuntu:ubuntu /var/www/html/xyz.com -R;
 sudo chown www-data:www-data /var/www/html/xyz.com/uploads -R;
 sudo cp /var/www/html/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
@@ -24,7 +25,6 @@ echo "CREATE USER 'xyz_com'@'localhost' IDENTIFIED WITH mysql_native_password BY
 echo "CREATE DATABASE xyz_com CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost;
 echo "GRANT ALL PRIVILEGES on xyz_com.* to 'xyz_com'@'localhost';" | mysql -umysql_root_user -pmysql_root_pass -hlocalhost;
 sudo mysql -uxyz_com -pxyz_pass xyz_com < /var/www/html/xyz.com/config/install.sql;
-cd /var/www/html/xyz.com;
 sudo bash config/composer.sh;
 php composer.phar install;
 php composer.phar dump-autoload;
