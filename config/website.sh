@@ -1,5 +1,3 @@
-cd /var/www/html/xyz.com;
-sudo git pull origin develop/1.0.0;
 sudo chown ubuntu:ubuntu /var/www/html/xyz.com -R;
 sudo chown www-data:www-data /var/www/html/xyz.com/uploads -R;
 sudo cp /var/www/html/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
