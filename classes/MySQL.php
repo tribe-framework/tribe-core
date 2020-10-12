@@ -1,4 +1,5 @@
 <?php
+namespace DB;
 class MySQL {
     var $lastError;         // Holds the last error
     var $lastQuery;         // Holds the last query
