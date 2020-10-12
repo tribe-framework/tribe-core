@@ -3,6 +3,6 @@
         "monolog/monolog": "1.0.*"
     },
     "autoload": {
-        "psr-4": {"DB\\": "php/classes/", "Core\\": "php/classes/"}
+        "psr-4": {"DB\\": "classes/", "Core\\": "classes/"}
     }
 }
