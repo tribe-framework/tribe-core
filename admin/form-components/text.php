@@ -24,7 +24,7 @@
                 </div>
                 <input
                     type="text"
-                    name="<?= $module_input_slug_lang.($module_input_type=='multi_text'?'[]':''); ?>"
+                    name="<?= $module_input_slug_lang.($module_input_type=='multi-text'?'[]':''); ?>"
                     class="form-control border-top-0 border-left-0 border-right-0 rounded-0 m-0"
                     placeholder="<?= $module_input_placeholder ?
                         $module_input_placeholder :
@@ -32,7 +32,7 @@
                     ?>"
                     value="<?= $type_name_value; ?>"
                 >
-                <?php if ($module_input_type == 'multi_text'): ?>
+                <?php if ($module_input_type == 'multi-text'): ?>
                     <div
                         class="input-group-append multi_add_btn"
                         data-group-class="text-group"
@@ -52,7 +52,7 @@
             <?php endif; ?>
 
             <?php
-            if ($module_input_primary && $module_input_type!='multi_text' && !$slug_displayed):
+            if ($module_input_primary && $module_input_type!='multi-text' && !$slug_displayed):
                 $slug_displayed=1;
             ?>
                 <div class="input-group">
