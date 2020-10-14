@@ -42,7 +42,7 @@ $user_restricted_to_input_modules=array_intersect(array_keys($session_user), arr
   foreach ($ids as $arr) {
     //$post = $dash->get_content($arr['id']);
 
-    if (!is_access_allowed($arr['id'], $user_restricted_to_input_modules))
+    if (!$admin->is_access_allowed($arr['id'], $user_restricted_to_input_modules))
       continue;
 
     $post = array();
