@@ -8,7 +8,7 @@ class Admin {
 			$op.='
 			<div class="mb-4"><div class="card-body p-0">
 			<div class="btn-toolbar justify-content-between">
-			  '.list_types().'
+			  '.$this->list_types().'
 			</div>
 			</div></div>';
 		}
