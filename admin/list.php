@@ -12,7 +12,7 @@ if ($_GET['role'])
 $user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
 ?>
 
-<?php echo get_admin_menu('list', $type, $role['slug']); ?>
+<?php echo $admin->get_admin_menu('list', $type, $role['slug']); ?>
 
 <h2 class="mb-4"><?php echo ($type=='user'?$role['title'].'&nbsp;<small><span class="fas fa-angle-double-right"></span></small>&nbsp;':'').'List of '.$types[$type]['plural']; ?></h2>
 

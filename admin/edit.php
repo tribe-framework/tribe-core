@@ -40,7 +40,7 @@
 
         <form method="post" class="edit_form" action="/admin/json" autocomplete="off">
             <?=
-                get_admin_menu(
+                $admin->get_admin_menu(
                     $types[$type]['disallow_editing'] ?
                         'view' :
                         'edit', $type, $role['slug'] ?? '', $_GET['id'] ?? ''
@@ -79,7 +79,7 @@
             <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
             <input type="hidden" name="slug" value="<?php echo $post['slug']; ?>">
 
-            <?php if (count($types[$type]['modules'])>3) { echo get_admin_menu(($types[$type]['disallow_editing']?'view':'edit'), $type, $role['slug'], $_GET['id']); } ?>
+            <?php if (count($types[$type]['modules'])>3) { echo $admin->get_admin_menu(($types[$type]['disallow_editing']?'view':'edit'), $type, $role['slug'], $_GET['id']); } ?>
             <p>&nbsp;</p>
         </form>
 

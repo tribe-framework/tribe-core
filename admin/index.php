@@ -3,7 +3,7 @@ include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/admin/header.php');
 ?>
 
-<?php echo get_admin_menu('dash'); ?>
+<?php echo $admin->get_admin_menu('dash'); ?>
 
 <div class="card-group m-0">
 <div class="card my-2">
