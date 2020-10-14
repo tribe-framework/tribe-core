@@ -24,3 +24,7 @@ sudo mysql -umysql_w_user -pmysql_w_pass mysql_w_user < /var/www/html/xyz.com/co
 sudo bash config/composer.sh;
 php composer.phar install;
 php composer.phar dump-autoload;
+sudo rm /var/www/html/$websitedomain/config/*.sh;
+sudo rm /var/www/html/$websitedomain/config/*.conf;
+sudo rm /var/www/html/$websitedomain/config/*.sample;
+sudo rm /var/www/html/$websitedomain/config/*.sql;
