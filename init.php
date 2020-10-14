@@ -36,6 +36,7 @@ if (!$q[0]['id']) {
 
 $dash = new Core\Dash();
 $theme = new Core\Theme();
+$admin = new Core\Admin();
 
 include_once(THEME_PATH.'/functions.php');
 
