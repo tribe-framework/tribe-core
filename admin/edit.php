@@ -38,7 +38,7 @@
         </div>
 
 
-        <form method="post" class="edit_form col-12" action="/admin/json" autocomplete="off">
+        <form method="post" class="edit_form" action="/admin/json" autocomplete="off">
             <?=
                 get_admin_menu(
                     $types[$type]['disallow_editing'] ?
