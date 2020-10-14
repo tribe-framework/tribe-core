@@ -11,7 +11,7 @@ sudo systemctl reload nginx;
 sudo service apache2 start;
 sudo certbot --agree-tos --no-eff-email --email tech@wildfire.world --nginx -d xyz.com -d www.xyz.com;
 sudo service apache2 restart;
-sudo cp /var/www/html/xyz.com/themes/wildfire-2020 /var/www/html/xyz.com/themes/xyz.com -R;
+sudo git clone https://github.com/wil-ldf-ire/core-theme.git /var/www/html/xyz.com/themes/xyz.com;
 sudo chown ubuntu:ubuntu /var/www/html/xyz.com/themes/xyz.com -R;
 sudo cp /var/www/html/xyz.com/config/vars.php.sample /var/www/html/xyz.com/config/vars.php;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' /var/www/html/xyz.com/config/vars.php;
