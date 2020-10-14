@@ -1,3 +1,4 @@
+	</div>
 	<footer class="pt-4 pt-md-5 bg-white">
 		<hr class="bg-primary" style="background-image: none;">
 		<div class="container my-5">
