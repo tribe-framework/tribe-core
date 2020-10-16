@@ -23,8 +23,6 @@ else {
 
 $session_user = $_SESSION['user'] ?? NULL;
 
-include_once(ABSOLUTE_PATH.'/admin/functions.php');
-
 $sql = new DB\MySQL();
 
 $userless_install=0;
