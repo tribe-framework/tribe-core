@@ -36,7 +36,7 @@ class twitter {
 
 	function save_stream ($post) {
 		//clear up all filters
-		if (!is_null($filters=$this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', 'GET')['data'])) {
+		if ($filters=$this->curl_api('https://api.twitter.com/labs/1/tweets/stream/filter/rules', 'GET')['data']) {
 			foreach ($filters as $data) {
 				$this->delete_filter($data['value']);
 			}
