@@ -1,3 +1,4 @@
+installpath1=$(echo "install_path" | sed 's/\//\\\//g');
 sudo chown ubuntu:ubuntu install_path/xyz.com -R;
 sudo chown www-data:www-data install_path/xyz.com/uploads -R;
 sudo cp install_path/xyz.com/config/nginx.conf /etc/nginx/sites-available/xyz.com;
