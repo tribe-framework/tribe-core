@@ -2,7 +2,7 @@
 session_save_path('/tmp');
 session_start();
 
-include_once 'config/vars.php';
+include_once __DIR__ . '/config/vars.php';
 require __DIR__ . '/vendor/autoload.php';
 
 if (file_exists(THEME_PATH.'/config/vars.php')) {
