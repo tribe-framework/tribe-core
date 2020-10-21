@@ -63,7 +63,7 @@
                         <input type="checkbox" class="custom-control-input" name="slug_update" id="slug_update" value="1">
                         <label class="custom-control-label" for="slug_update">
                             Update the URL slug based on title (will change the link)
-                            <span id="title-slug" class="text-muted ml-4"><em><?= '/'.$post['slug'] ?>.'</em></span>
+                            <span id="title-slug" class="text-muted ml-4"><em><?= '/'.$post['slug'] ?></em></span>
                         </label>
                     </div>
                 </div>
