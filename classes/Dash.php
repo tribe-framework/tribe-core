@@ -239,7 +239,7 @@ class Dash {
 		else {
 			$role_slug='';
 			if ($session_user['role']=='admin') {
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
+				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
 			}
 			else {
 				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":""));
@@ -274,7 +274,7 @@ class Dash {
 		else {
 			$role_slug='';
 			if ($session_user['role']=='admin') {
-				$statement="SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+				$statement="SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
 				$q=$sql->executeSQL($statement);
 			}
 			else {
