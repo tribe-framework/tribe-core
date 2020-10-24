@@ -249,7 +249,7 @@ class Dash {
 		return $sql->records;
 	}
 
-	public static function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='') {
+	public static function get_all_ids ($type, $priority_field='id', $priority_order='DESC', $limit='', $debug_show_sql_statement=0) {
 		global $sql, $session_user;
 
 		if ($priority_field=='id')
@@ -265,7 +265,8 @@ class Dash {
 			else {
 				$role_slug=$type['role_slug'];
 				$type=$type['type'];
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+				$statement="SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+				$q=$sql->executeSQL($statement);
 			}
 		}
 
@@ -273,12 +274,17 @@ class Dash {
 		else {
 			$role_slug='';
 			if ($session_user['role']=='admin') {
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+				$statement="SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'!='draft' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+				$q=$sql->executeSQL($statement);
 			}
 			else {
-				$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:""));
+				$statement="SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='".$session_user['user_id']."') && `content`->'$.type'='$type' ".($role_slug?"&& `content`->'$.role_slug'='$role_slug'":"")." ORDER BY ".$priority.($limit?" LIMIT ".$limit:"");
+				$q=$sql->executeSQL($statement);
 			}
 		}
+
+		if ($debug_show_sql_statement)
+			echo $statement;
 
 		return $q;
 	}
