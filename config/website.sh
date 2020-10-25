@@ -31,3 +31,13 @@ sudo rm install_path/xyz.com/config/*.sh;
 sudo rm install_path/xyz.com/config/*.conf;
 sudo rm install_path/xyz.com/config/*.sample;
 sudo rm install_path/xyz.com/config/*.sql;
+sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/README.md;
+sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/quasar.conf.js;
+sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/package.json;
+cd install_path/xyz.com/themes/xyz.com/quasar;
+sudo yarn;
+cd install_path/xyz.com;
+#sudo quasar build -m ssr;
+#make sure pm2 process is named according to domain name (below)
+#pm2 start install_path/xyz.com/themes/xyz.com/dist/ssr/index.js --name xyz.com;
+#add pm2 to linux reboot - https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04
