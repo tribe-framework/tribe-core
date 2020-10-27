@@ -33,6 +33,7 @@ sudo rm install_path/xyz.com/config/*.sample;
 sudo rm install_path/xyz.com/config/*.sql;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/README.md;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/quasar.conf.js;
+sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/quasar/quasar.conf.js;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/package.json;
 cd install_path/xyz.com/themes/xyz.com/quasar;
 sudo yarn;
