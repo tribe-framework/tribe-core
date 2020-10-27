@@ -4,6 +4,7 @@ sudo chown www-data:www-data install_path/xyz.com/uploads -R;
 sudo cp install_path/xyz.com/config/nginx.conf /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/nginx/sites-available/xyz.com;
+sudo sed -i 's/xyz-port-var/xyz_port/g' /etc/nginx/sites-available/xyz.com;
 sudo ln -s /etc/nginx/sites-available/xyz.com /etc/nginx/sites-enabled/xyz.com;
 sudo cp install_path/xyz.com/config/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf;
