@@ -1,0 +1,12 @@
+installpath="/var/www/html";
+read -p "Website Domain: " websitedomain;
+read -p "MySQL Root Username: " mysqluser;
+read -p "MySQL Root Password: " mysqlpass;
+read -p "MySQL Website Username: " mysqlwuser;
+sudo rm $installpath/$websitedomain -R;
+sudo rm /etc/nginx/sites-available/$websitedomain;
+sudo rm /etc/nginx/sites-enabled/$websitedomain;
+sudo rm /etc/apache2/sites-enabled/$websitedomain.conf;
+sudo rm /etc/apache2/sites-available/$websitedomain.conf;
+echo "DROP DATABASE $mysqlwuser" | mysql -u$mysqluser -p$mysqlpass -hlocalhost;
+echo "DROP USER $mysqlwuser" | mysql -u$mysqluser -p$mysqlpass -hlocalhost;
