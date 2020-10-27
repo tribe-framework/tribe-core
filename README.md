@@ -5,7 +5,7 @@ apache, php7, mysql8 (LAMP server) on any operating system
 
 ## quick install
 ```
-installpath="/var/www/html"; installpath1=$(echo "$installpath" | sed 's/\//\\\//g'); read -p "Website Domain: " websitedomain; read -p "IP Address: " ipv4address; read -p "Localhost Port (leave blank if not using NodeJS): " localport; read -p "MySQL Root Username: " mysqluser; read -p "MySQL Root Password: " mysqlpass; read -p "MySQL Website Username: " mysqlwuser; read -p "MySQL Website Password: " mysqlwpass; sudo git clone https://github.com/wil-ldf-ire/core.git $installpath/$websitedomain; cd $installpath/$websitedomain; sudo git pull origin develop/1.1.0; sudo sed -i "s/xyz.com/$websitedomain/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/xyz_port/$localport/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/ipv4_address/$ipv4address/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/mysql_root_user/$mysqluser/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/mysql_root_pass/$mysqlpass/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/install_path/$installpath1/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/mysql_w_user/$mysqlwuser/g" $installpath/$websitedomain/config/website.sh; sudo sed -i "s/mysql_w_pass/$mysqlwpass/g" $installpath/$websitedomain/config/website.sh; sudo bash $installpath/$websitedomain/config/website.sh;
+sudo bash /path/to/config/install.sh
 ```
 
 ## install instructions
@@ -17,6 +17,11 @@ installpath="/var/www/html"; installpath1=$(echo "$installpath" | sed 's/\//\\\/
 
 ## upgrade instructions
 git pull https://github.com/wildfire-dev/core.git
+
+## uninstall instructions
+```
+sudo bash /path/to/config/uninstall.sh
+```
 
 ### note
 if you're not using git to update - config, uploads and themes folders need not be updated with new versions of wildfire template, unless otherwise mentioned
