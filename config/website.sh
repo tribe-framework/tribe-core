@@ -17,7 +17,7 @@ sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d xyz.com -
 sudo service apache2 restart;
 sudo git clone https://github.com/wil-ldf-ire/core-theme.git install_path/xyz.com/themes/xyz.com;
 sudo touch -c install_path/xyz.com/themes/xyz.com/config/vars.php;
-echo -e "//ENV as DEV for getting all error messages; \ndefine('ENV', 'LIVE'); \ndate_default_timezone_set('Asia/Kolkata'); \ndefine('UPLOAD_FILE_TYPES', '/\.(zip|png|jpe?g|gif|pdf|doc|docx|xls|xlsx|mov|mp4|vtt)$/i'); \ndefine('CONTACT_EMAIL', ''); \ndefine('WEBSITE_NAME', ''); \ndefine('CONTACT_NAME', ''); \ndefine('S3_BKUP_HOST_BASE', 's3.wasabisys.com'); \ndefine('S3_BKUP_HOST_BUCKET', '%(bucket)s.s3.wasabisys.com'); \ndefine('S3_BKUP_ACCESS_KEY', ''); \ndefine('S3_BKUP_SECRET_KEY', ''); \ndefine('S3_BKUP_FOLDER_NAME', BARE_URL); \n" >> install_path/xyz.com/themes/xyz.com/config/vars.php;
+echo -e "<?php //ENV as DEV for getting all error messages; \ndefine('ENV', 'LIVE'); \ndate_default_timezone_set('Asia/Kolkata'); \ndefine('UPLOAD_FILE_TYPES', '/\.(zip|png|jpe?g|gif|pdf|doc|docx|xls|xlsx|mov|mp4|vtt)$/i'); \ndefine('CONTACT_EMAIL', ''); \ndefine('WEBSITE_NAME', ''); \ndefine('CONTACT_NAME', ''); \ndefine('S3_BKUP_HOST_BASE', 's3.wasabisys.com'); \ndefine('S3_BKUP_HOST_BUCKET', '%(bucket)s.s3.wasabisys.com'); \ndefine('S3_BKUP_ACCESS_KEY', ''); \ndefine('S3_BKUP_SECRET_KEY', ''); \ndefine('S3_BKUP_FOLDER_NAME', BARE_URL); \n?>" >> install_path/xyz.com/themes/xyz.com/config/vars.php;
 sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
 sudo cp install_path/xyz.com/config/vars.php.sample install_path/xyz.com/config/vars.php;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/config/vars.php;
