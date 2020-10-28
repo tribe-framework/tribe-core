@@ -1,4 +1,7 @@
 installpath1=$(echo "install_path" | sed 's/\//\\\//g');
+
+#--------CORE CHANGES BEGIN---------#
+
 sudo chown ubuntu:ubuntu install_path/xyz.com -R;
 sudo chown www-data:www-data install_path/xyz.com/uploads -R;
 
@@ -44,10 +47,6 @@ sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d app.xyz.c
 
 sudo service apache2 restart;
 
-sudo git clone https://github.com/wil-ldf-ire/core-theme.git install_path/xyz.com/themes/xyz.com;
-sudo touch -c install_path/xyz.com/themes/xyz.com/config/vars.php;
-echo -e "<?php //ENV as DEV for getting all error messages; \ndefine('ENV', 'LIVE'); \ndate_default_timezone_set('Asia/Kolkata'); \ndefine('UPLOAD_FILE_TYPES', '/\.(zip|png|jpe?g|gif|pdf|doc|docx|xls|xlsx|mov|mp4|vtt)$/i'); \ndefine('CONTACT_EMAIL', ''); \ndefine('WEBSITE_NAME', ''); \ndefine('CONTACT_NAME', ''); \ndefine('S3_BKUP_HOST_BASE', 's3.wasabisys.com'); \ndefine('S3_BKUP_HOST_BUCKET', '%(bucket)s.s3.wasabisys.com'); \ndefine('S3_BKUP_ACCESS_KEY', ''); \ndefine('S3_BKUP_SECRET_KEY', ''); \ndefine('S3_BKUP_FOLDER_NAME', BARE_URL); \n?>" >> install_path/xyz.com/themes/xyz.com/config/vars.php;
-sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
 sudo cp install_path/xyz.com/config/vars.php.sample install_path/xyz.com/config/vars.php;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/config/vars.php;
 sudo sed -i 's/xyz-db-name-var/mysql_w_user/g' install_path/xyz.com/config/vars.php;
@@ -77,13 +76,44 @@ sudo /sbin/swapon /var/swap.1;
 
 sudo service nginx restart;
 
+#--------CORE CHANGES END---------#
+
+#--------THEME CHANGES BEGIN---------#
+
+if [ -z "$gitrepourl" ]
+then
+	sudo git clone https://github.com/wil-ldf-ire/core-theme.git install_path/xyz.com/themes/xyz.com;
+else
+	sudo git clone $gitrepourl install_path/xyz.com/themes/xyz.com;
+fi
+
+sudo touch -c install_path/xyz.com/themes/xyz.com/config/vars.php;
+echo -e "<?php //ENV as DEV for getting all error messages; \ndefine('ENV', 'LIVE'); \ndate_default_timezone_set('Asia/Kolkata'); \ndefine('UPLOAD_FILE_TYPES', '/\.(zip|png|jpe?g|gif|pdf|doc|docx|xls|xlsx|mov|mp4|vtt)$/i'); \ndefine('CONTACT_EMAIL', ''); \ndefine('WEBSITE_NAME', ''); \ndefine('CONTACT_NAME', ''); \ndefine('S3_BKUP_HOST_BASE', 's3.wasabisys.com'); \ndefine('S3_BKUP_HOST_BUCKET', '%(bucket)s.s3.wasabisys.com'); \ndefine('S3_BKUP_ACCESS_KEY', ''); \ndefine('S3_BKUP_SECRET_KEY', ''); \ndefine('S3_BKUP_FOLDER_NAME', BARE_URL); \n?>" >> install_path/xyz.com/themes/xyz.com/config/vars.php;
+sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
+
+#--------THEME CHANGES END---------#
+
+#--------QUASAR APP COMMAND REFS BEGIN---------#
+
 #cd install_path/xyz.com/themes/xyz.com;
 #sudo quasar create app;
 #cd app;
-#sudo quasar build;
-#pm2 --name app.xyz.com start "sudo quasar serve -p xyz_port -H localhost"
-#cd install_path/xyz.com;
+#sudo fuser -k xyz_port/tcp
+#sudo quasar build -p xyz_port &
+#cd dist/spa
+#sudo quasar serve -p xyz_port &;
+#cd install_path/xyz.com/themes/xyz.com;
 
+#DO NOT UPDATE GIT (BELOW) IF NO REPOSITORY URL WAS GIVEN
+#sudo git add app; sudo git commit -a; sudo git push origin master;
+
+#sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
+
+#--------QUASAR APP COMMAND REFS END---------#
+
+#--------CAN BE USED---------#
+#git reset --hard origin/master;
+#pm2 --name app.xyz.com start "#sudo quasar serve -p xyz_port"
 #sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/README.md;
 #sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
 #sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
