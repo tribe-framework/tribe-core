@@ -3,7 +3,7 @@ sudo chown ubuntu:ubuntu install_path/xyz.com -R;
 sudo chown www-data:www-data install_path/xyz.com/uploads -R;
 
 sudo cp install_path/xyz.com/config/nginx.conf /etc/nginx/sites-available/xyz.com;
-sudo cp install_path/xyz.com/config/app.nginx.conf /etc/nginx/sites-available/app.xyz.com;
+sudo cp install_path/xyz.com/config/nginx.app.conf /etc/nginx/sites-available/app.xyz.com;
 
 sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/app.xyz.com;
