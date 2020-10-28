@@ -71,22 +71,21 @@ sudo rm install_path/xyz.com/config/composer.sh;
 sudo rm install_path/xyz.com/config/*.conf;
 sudo rm install_path/xyz.com/config/*.sample;
 
-sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/README.md;
-sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
-sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
-sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/package.json;
-
-cd install_path/xyz.com/themes/xyz.com/app;
 sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024;
 sudo /sbin/mkswap /var/swap.1;
 sudo /sbin/swapon /var/swap.1;
 
-sudo npm install;
-sudo yarn;
-sudo quasar build -m ssr -H localhost -p xyz_port;
-pm2 --name xyz.com start install_path/xyz.com/themes/xyz.com/app/dist/ssr/index.js;
+cd install_path/xyz.com/themes/xyz.com;
+sudo quasar create app;
+cd app;
+sudo quasar build;
+pm2 --name app.xyz.com start "sudo quasar serve -p xyz_port -H localhost"
 cd install_path/xyz.com;
 
 sudo service nginx restart;
 
+#sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/README.md;
+#sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
+#sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
+#sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/package.json;
 #add pm2 to linux reboot - https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04
