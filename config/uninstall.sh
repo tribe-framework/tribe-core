@@ -1,3 +1,4 @@
+cd /var/www/html;
 installpath="/var/www/html";
 read -p "Website Domain: " websitedomain;
 read -p "MySQL Root Username: " mysqluser;

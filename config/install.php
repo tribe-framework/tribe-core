@@ -1,5 +1,5 @@
 <?php
-include_once '../init.php';
+include_once 'xyz-install-path/init.php';
 
 //create first user
 $usr=array();
