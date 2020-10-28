@@ -70,14 +70,18 @@ sudo rm install_path/xyz.com/config/website.sh;
 sudo rm install_path/xyz.com/config/composer.sh;
 sudo rm install_path/xyz.com/config/*.conf;
 sudo rm install_path/xyz.com/config/*.sample;
-sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/app/README.md;
-sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
+
+sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/README.md;
+sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
 sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/app/quasar.conf.js;
-sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/app/package.json;
+sudo sed -i 's/xyz-domain-var/app.xyz.com/g' install_path/xyz.com/themes/xyz.com/app/package.json;
+
 cd install_path/xyz.com/themes/xyz.com/app;
 sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024;
 sudo /sbin/mkswap /var/swap.1;
 sudo /sbin/swapon /var/swap.1;
+
+sudo npm install;
 sudo yarn;
 sudo quasar build -m ssr -H localhost -p xyz_port;
 pm2 --name xyz.com start install_path/xyz.com/themes/xyz.com/app/dist/ssr/index.js;

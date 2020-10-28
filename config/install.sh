@@ -1,13 +1,13 @@
 installpath="/var/www/html";
 installpath1=$(echo "$installpath" | sed 's/\//\\\//g');
 read -p "Website Domain: " websitedomain;
-read -p "IP Address: " ipv4address;
-read -p "Localhost Port (leave blank if not using NodeJS): " localport;
 read -p "MySQL Root Username: " mysqluser;
 read -p "MySQL Root Password: " mysqlpass;
 read -p "Website Database Name: " mysqlwuser;
 read -p "Website Admin Email: " adminemail;
 read -p "Website Password: " mysqlwpass;
+read -p "IP Address: " ipv4address;
+read -p "Localhost Port (leave blank if not using NodeJS): " localport;
 sudo git clone https://github.com/wil-ldf-ire/core.git $installpath/$websitedomain;
 cd $installpath/$websitedomain;
 sudo git pull origin develop/1.1.0;
