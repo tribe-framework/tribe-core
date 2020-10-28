@@ -15,6 +15,8 @@ sudo service apache2 start;
 sudo certbot --agree-tos --no-eff-email --email tech@wildfire.world --nginx -d xyz.com -d www.xyz.com;
 sudo service apache2 restart;
 sudo git clone https://github.com/wil-ldf-ire/core-theme.git install_path/xyz.com/themes/xyz.com;
+sudo touch -c install_path/xyz.com/themes/xyz.com/config/vars.php;
+echo -e "//ENV as DEV for getting all error messages; \n define('ENV', 'LIVE'); \n date_default_timezone_set('Asia/Kolkata'); \n define('UPLOAD_FILE_TYPES', '/\.(zip|png|jpe?g|gif|pdf|doc|docx|xls|xlsx|mov|mp4|vtt)$/i'); \n define('CONTACT_EMAIL', ''); \n define('WEBSITE_NAME', ''); \n define('CONTACT_NAME', ''); \n define('S3_BKUP_HOST_BASE', 's3.wasabisys.com'); \n define('S3_BKUP_HOST_BUCKET', '%(bucket)s.s3.wasabisys.com'); \n define('S3_BKUP_ACCESS_KEY', ''); \n define('S3_BKUP_SECRET_KEY', ''); \n define('S3_BKUP_FOLDER_NAME', BARE_URL); \n'" >> install_path/xyz.com/themes/xyz.com/config/vars.php;
 sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
 sudo cp install_path/xyz.com/config/vars.php.sample install_path/xyz.com/config/vars.php;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/config/vars.php;
