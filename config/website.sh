@@ -46,6 +46,9 @@ sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/qua
 sudo sed -i 's/xyz-port-var/xyz_port/g' install_path/xyz.com/themes/xyz.com/quasar/quasar.conf.js;
 sudo sed -i 's/xyz-domain-var/xyz.com/g' install_path/xyz.com/themes/xyz.com/quasar/package.json;
 cd install_path/xyz.com/themes/xyz.com/quasar;
+sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024;
+sudo /sbin/mkswap /var/swap.1;
+sudo /sbin/swapon /var/swap.1;
 sudo yarn;
 cd install_path/xyz.com;
 #sudo quasar build -m ssr;
