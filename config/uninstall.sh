@@ -9,4 +9,4 @@ sudo rm /etc/nginx/sites-enabled/$websitedomain;
 sudo rm /etc/apache2/sites-enabled/$websitedomain.conf;
 sudo rm /etc/apache2/sites-available/$websitedomain.conf;
 echo "DROP DATABASE $mysqlwuser" | mysql -u$mysqluser -p$mysqlpass -hlocalhost;
-echo "DROP USER $mysqlwuser" | mysql -u$mysqluser -p$mysqlpass -hlocalhost;
+echo "DROP USER $mysqlwuser@localhost" | mysql -u$mysqluser -p$mysqlpass -hlocalhost;
