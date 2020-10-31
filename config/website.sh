@@ -96,12 +96,13 @@ sudo chown ubuntu:ubuntu install_path/xyz.com/themes/xyz.com -R;
 #--------QUASAR APP COMMAND REFS BEGIN---------#
 
 #cd install_path/xyz.com/themes/xyz.com;
-#sudo quasar create app;
-#cd app;
-#sudo fuser -k xyz_port/tcp
-#sudo quasar build -p xyz_port &
-#cd dist/spa
-#sudo quasar serve -p xyz_port &;
+#sudo yarn create nuxt-app app
+#cd app
+#yarn add bootstrap
+#sudo yarn build
+#sudo fuser -k 8086/tcp
+#sudo yarn start --port 8086
+#sudo yarn dev --port 8086
 #cd install_path/xyz.com/themes/xyz.com;
 
 #DO NOT UPDATE GIT (BELOW) IF NO REPOSITORY URL WAS GIVEN
