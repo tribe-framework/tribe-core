@@ -89,8 +89,8 @@ elseif (isset($type)):
 		$postids=$dash->get_all_ids($type);
 
 		if ($json_api) {
-			$postdata['post_ids']=$postids;
-			echo json_encode($postdata);
+			$typedata['post_ids']=$postids;
+			echo json_encode($typedata);
 		}
 		else {
 
