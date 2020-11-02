@@ -14,15 +14,15 @@ if (($type ?? '')=='search'):
 	include_once (THEME_PATH.'/search.php');
 elseif (isset($type) && isset($slug)):
 	$typedata=$types[$type];
-	$postdata=$dash->get_content(array('type'=>$type, 'slug'=>$slug));
 
 	if ($postdata) {
-		$postdata_modified=$postdata;
-
 		if ($json_api) {
 			echo json_encode($dash->get_content($slug));
 		}
 		else {
+			$postdata=$dash->get_content(array('type'=>$type, 'slug'=>$slug));
+			$postdata_modified=$postdata;
+
 			$headmeta_title=$types[$type]['headmeta_title'];
 			$headmeta_description=$types[$type]['headmeta_description'];
 			$headmeta_image_url=$types[$type]['headmeta_image_url'];
