@@ -62,7 +62,7 @@ if (isset($_GET['ext'])) { //for theme
         if ($ext[0]=='api') {
             $type=$dash->do_unslugify($ext[1]);
             if (count($ext)>2)
-                $slug=$dash->do_unslugify($ext[2]);
+                $slug=$dash->do_unslugify($ext[1]);
         }
         else
             $slug=$dash->do_unslugify($ext[1]);

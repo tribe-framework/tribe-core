@@ -20,7 +20,7 @@ elseif (isset($type) && isset($slug)):
 		$postdata_modified=$postdata;
 
 		if ($json_api) {
-			echo json_encode($postdata);
+			echo json_encode($dash->get_content($slug));
 		}
 		else {
 			$headmeta_title=$types[$type]['headmeta_title'];
