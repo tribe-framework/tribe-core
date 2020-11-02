@@ -48,12 +48,26 @@ if (isset($_GET['ext'])) { //for theme
     $ext=explode('/', $_GET['ext']);
 
     if (count($ext)) {
-        $type=$dash->do_unslugify($ext[0]);
+        if ($ext[0]=='api') {
+            $json_api=1;
+            header('Content-Type: application/json');
+        }
+        else {
+            $json_api=0;
+            $type=$dash->do_unslugify($ext[0]);
+        }
     }
 
     if (count($ext)>1) {
-        $slug=$dash->do_unslugify($ext[1]);
+        if ($ext[0]=='api') {
+            $type=$dash->do_unslugify($ext[1]);
+            if (count($ext)>2)
+                $slug=$dash->do_unslugify($ext[2]);
+        }
+        else
+            $slug=$dash->do_unslugify($ext[1]);
     }
+
 } elseif (isset($_GET['type'])) { //for dashboard
     $type=$dash->do_unslugify($_GET['type']);
 }
