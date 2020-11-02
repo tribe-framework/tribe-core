@@ -3,7 +3,7 @@ session_start();
 
 include_once('../../config/vars.php');
 
-include_once(ABSOLUTE_PATH.'/classes/MySQL.class.php');
+include_once(ABSOLUTE_PATH.'/classes/MySQL.php');
 $sql = new MySQL();
 
 include_once('trac.class.php');
