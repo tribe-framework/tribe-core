@@ -96,7 +96,7 @@ class Admin {
 	          $allowed_access=1;
 	          break;
 	      	}
-	      	elseif (in_array($dash->get_content_meta($id, $value), $session_user[$value])) {
+	      	elseif (in_array($dash->get_content_meta($id, $value), $session_user[$value]) || ($session_user[$value] && $dash->get_content_meta($id, $value)==$session_user[$value])) {
 	          $allowed_access=1;
 	          break;
 	      	}
