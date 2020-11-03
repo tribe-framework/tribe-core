@@ -9,7 +9,8 @@ include_once (ABSOLUTE_PATH.'/admin/header.php');
 if ($_GET['role'])
   $role = $types['user']['roles'][$_GET[role]];
 
-$user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
+if (isset($types['user']['roles_restricted_within_matching_modules']) && $types['user']['roles_restricted_within_matching_modules'])
+  $user_restricted_to_input_modules=array_intersect(array_keys($session_user), array_keys($types));
 ?>
 
 <?php echo $admin->get_admin_menu('list', $type, $role['slug']); ?>
@@ -42,8 +43,8 @@ $user_restricted_to_input_modules=array_intersect(array_keys($session_user), arr
   foreach ($ids as $arr) {
     //$post = $dash->get_content($arr['id']);
 
-    if (!$admin->is_access_allowed($arr['id'], $user_restricted_to_input_modules))
-      continue;
+    if (isset($types['user']['roles_restricted_within_matching_modules']) && $types['user']['roles_restricted_within_matching_modules'] && !$admin->is_access_allowed($arr['id'], $user_restricted_to_input_modules))
+        continue;
 
     $post = array();
     $post['id']=$arr['id'];
