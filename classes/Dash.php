@@ -16,6 +16,7 @@ class Dash {
 	public static $last_info = null; //array of info messages
 	public static $last_data = null; //array of data to be sent for display
 	public static $last_redirect = null; //redirection url
+	public $statusCode = null; // to set server response code
 
 	function __construct () {
 
@@ -507,11 +508,11 @@ class Dash {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
 
-	function after_login ($roleslug, $redirect_url='') { 
+	function after_login ($roleslug, $redirect_url='') {
 		global $types, $_SESSION, $user;
 
 		$user['role']=$types['user']['roles'][$roleslug]['role'];
-		
+
 		//for admin and crew (staff)
 		if ($types['user']['roles'][$roleslug]['role']=='admin' || $types['user']['roles'][$roleslug]['role']=='crew') {
 			$_SESSION['user_id']=$user['user_id'];
@@ -539,6 +540,38 @@ class Dash {
 		if (!is_dir(ABSOLUTE_PATH.'/'.$folder_path))
 			mkdir(ABSOLUTE_PATH.'/'.$folder_path, 0755, true);
 		return array('upload_dir'=>ABSOLUTE_PATH.'/'.$folder_path, 'upload_url'=>BASE_URL.'/'.$folder_path);
+	}
+
+	/**
+	 * sends a json response setting appropriate json header
+	 * @param array
+	 * @optional $data[resCode] to specifiy server response code
+	 */
+	function json ($data) {
+		header('Content-Type: application/json');
+
+		if (isset($this->statusCode)) {
+			http_response_code($this->statusCode);
+		}
+
+		echo json_encode($data);
+		die();
+	}
+
+	/**
+	 * checks method type on a server request
+	 * @return boolean
+	 */
+	function method ($method) {
+		return $_SERVER['REQUEST_METHOD'] == strtoupper($method);
+	}
+
+	/**
+	 * set server response code
+	 */
+	function status ($code) {
+		$this->statusCode = $code;
+		return $this;
 	}
 }
 ?>
