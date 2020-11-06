@@ -6,3 +6,4 @@ sftp-config.json
 /themes/*
 /plugins/bootstrap/sass/.sass-cache*
 /vendor/
+.vscode
