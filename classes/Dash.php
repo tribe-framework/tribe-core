@@ -62,8 +62,9 @@ class Dash {
 
 	function do_delete ($post=array()) {
 		global $sql;
+		$role_slug=$this->get_content_meta($post['id'], 'role_slug');
 		$q=$sql->executeSQL("DELETE FROM `data` WHERE `id`='".$post['id']."'");
-		dash::$last_redirect='/admin/list?type='.$post['type'];
+		dash::$last_redirect='/admin/list?type='.$post['type'].($role_slug?'&role='.$role_slug:'');
 		return 1;
 	}
 
