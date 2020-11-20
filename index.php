@@ -64,14 +64,13 @@ elseif (isset($type) && isset($slug)):
 		//single-ID for specific post, or a single-type template for all posts in that type (single-type is different from archive-type)
 		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
-		else if (file_exists(THEME_PATH.'/single-'.$type.'.php'))
+		elseif (file_exists(THEME_PATH.'/single-'.$type.'.php'))
 			include_once (THEME_PATH.'/single-'.$type.'.php');
-		else if (file_exists(THEME_PATH.'/single.php'))
+		elseif (file_exists(THEME_PATH.'/single.php'))
 			include_once (THEME_PATH.'/single.php');
 		else
 			include_once (THEME_PATH.'/index.php');
-	}
-	else {
+	} else {
 		if ($type=='user')
 			include_once (ABSOLUTE_PATH.'/user/404.php');
 		else
