@@ -1,5 +1,9 @@
 {
     "autoload": {
-        "psr-4": {"DB\\": "classes/", "Core\\": "classes/"}
+        "psr-4": {
+            "DB\\": "classes/",
+            "Core\\": "classes/",
+            "Wildfire\\": "classes/Wildfire/"
+        }
     }
 }
