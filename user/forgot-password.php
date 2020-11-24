@@ -23,7 +23,7 @@ else if ($_GET['code'] || ($_POST['password_reset_code'] && (!trim($_POST['passw
 
 <form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;New Password</h4>
-	<?php if ($_POST && $_POST['password']!=$_POST['confirm_password'])	echo '<div class="form-user alert alert-warning">Password mismatch or empty.</div>'; ?>
+	<?php if ($_POST && $_POST['password']!=$_POST['confirm_password'])	echo '<div class="form-user alert alert-danger">Password mismatch or empty.</div>'; ?>
 
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" id="inputEmail" class="form-control my-1" value="<?= $usr['email']; ?>" placeholder="Email address" disabled>
