@@ -19,7 +19,7 @@ if ($_POST['email'] && !$_POST['password']) {
 }
 
 else if ($_GET['code'] || ($_POST['code'] && $_POST['password']!=$_POST['cpassword'])) {
-	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['email']?$_POST['email']:$_GET['email'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']); ?>
+	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['code']??$_GET['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']); ?>
 
 <form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;New Password</h4>
