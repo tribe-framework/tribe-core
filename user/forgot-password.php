@@ -4,7 +4,7 @@ include_once (ABSOLUTE_PATH.'/user/header.php');
 ?>
 
 <div class="col-12 col-md-9 col-lg-6 mx-auto">
-	
+
 <?php
 if ($_POST['email'] && !$_POST['password']) {
 	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.email' = '".trim($_POST['email'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
@@ -41,8 +41,6 @@ else if ($_GET['code'] || ($_POST['password_reset_code'] && (!trim($_POST['passw
 	<input type="hidden" name="email" value="<?= $usr['email']; ?>">
 	<input type="hidden" name="password_reset_code" value="<?= $usr['password_reset_code']; ?>">
 	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Save new password</button>
-	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
-	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')).' '.BARE_URL; ?></p>
 </form>
 
 <?php }
@@ -66,8 +64,6 @@ else { ?>
 	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required>
 
 	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Forgot password</button>
-	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
-	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')).' '.BARE_URL; ?></p>
 </form>
 
 <?php } ?>
