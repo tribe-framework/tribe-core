@@ -1,7 +1,11 @@
 <?php
 include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
+?>
 
+<div class="col-12 col-md-9 col-lg-6 mx-auto">
+	
+<?php
 if ($_POST['email'] && !$_POST['password']) {
 	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.email' = '".trim($_POST['email'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
 
@@ -67,5 +71,7 @@ else { ?>
 </form>
 
 <?php } ?>
+
+</div>
 
 <?php include_once (ABSOLUTE_PATH.'/user/footer.php'); ?>
