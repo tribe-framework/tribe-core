@@ -18,15 +18,24 @@ if ($_POST['email'] && !$_POST['password']) {
 	echo '<div class="my-5 mx-auto alert alert-success">An email has been sent to you with link to reset password. Please check your email inbox and spam folder.</div>';
 }
 
-else if ($_GET['code'] || ($_POST['code'] && $_POST['password']!=$_POST['cpassword'])) {
-	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['code']??$_GET['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']); ?>
+else if ($_GET['code'] || ($_POST['password_reset_code'] && $_POST['password']!=$_POST['cpassword'])) {
+	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['password_reset_code']??$_GET['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']); ?>
 
 <form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;New Password</h4>
 	<?php if ($_POST && $_POST['password']!=$_POST['cpassword'])	echo '<div class="form-user alert alert-warning">Password mismatch.</div>'; ?>
+
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" id="inputEmail" class="form-control my-1" value="<?= $usr['email']; ?>" placeholder="Email address" disabled>
 
+	<label for="inputPassword" class="sr-only">Password</label>
+	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
+
+	<label for="inputConfirmPassword" class="sr-only">Confirm Password</label>
+	<input type="password" name="confirm_password" id="inputConfirmPassword" class="form-control my-1" placeholder="Confirm Password" required>
+
+	<input type="hidden" name="email" value="<?= $usr['email']; ?>">
+	<input type="hidden" name="password_reset_code" value="<?= $usr['password_reset_code']; ?>">
 	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Save new password</button>
 	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
 	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')).' '.BARE_URL; ?></p>
