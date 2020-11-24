@@ -2,25 +2,48 @@
 include_once ('../init.php');
 include_once (ABSOLUTE_PATH.'/user/header.php');
 
-if ($_POST['email']) {
+if ($_POST['email'] && !$_POST['password']) {
 	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.email' = '".trim($_POST['email'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
 
 	include_once(ABSOLUTE_PATH.'/plugins/sendgrid/core-plugin.php');
 	$mailr=array();
+	$code=uniqid().time();
+	$dash->push_content_meta('password_reset_code', $code);
 	$mailr['to_email']=$_POST['email'];
 	$mailr['to_name']='';
 	$mailr['subject']='Reset your password for '.BARE_URL;
-	$mailr['body_text']=$mailr['body_html']='Password reset email test.';
+	$mailr['body_text']=$mailr['body_html']='Please reset your password using the following link:<br>'.BASE_URL.'/user/forgot-password?code='.$code;
 	$mailer->send_email($mailr, 1);
 }
 
-if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')):
+else if ($_GET['code'] || ($_POST['code'] && $_POST['password']!=$_POST['cpassword'])) {
+	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);?>
+
+<form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
+	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;New Password</h4>
+	<?php if ($_POST && $_POST['password']!=$_POST['cpassword'])	echo '<div class="form-user alert alert-warning">Password mismatch.</div>'; ?>
+	<label for="inputEmail" class="sr-only">Email address</label>
+	<input type="email" id="inputEmail" class="form-control my-1" value="<?= $usr['email']; ?>" placeholder="Email address" disabled>
+
+	<button type="submit" class="btn btn-sm btn-primary btn-block my-1">Save new password</button>
+	<p class="text-muted small my-5"><?php echo '<a href="'.BASE_URL.'"><span class="fas fa-angle-double-left"></span>&nbsp;'.$menus['main']['logo']['name'].'</a>'; ?></p>
+	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')).' '.BARE_URL; ?></p>
+</form>
+
+<?php }
+
+else if (trim($_POST['password']) && $_POST['password']==$_POST['confirm_password']) {
+
+}
+
+else if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')) {
 	include_once (THEME_PATH.'/user-forgot-password.php');
-else: ?>
+}
+
+else { ?>
 
 <form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Forgot Password</h4>
-	<?php if ($_POST && $_POST['password']!=$_POST['cpassword'])	echo '<div class="form-user alert alert-warning">Password mismatch.</div>'; ?>
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required>
 
@@ -29,6 +52,6 @@ else: ?>
 	<p class="text-muted small my-5">&copy; <?php echo (date('Y')=='2020'?date('Y'):'2020 - '.date('Y')).' '.BARE_URL; ?></p>
 </form>
 
-<?php endif; ?>
+<?php } ?>
 
 <?php include_once (ABSOLUTE_PATH.'/user/footer.php'); ?>
