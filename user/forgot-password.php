@@ -47,7 +47,7 @@ else if (trim($_POST['password']) && $_POST['password']==$_POST['confirm_passwor
 	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".$_POST['password_reset_code']."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
 	$dash->push_content_meta($usr['id'], 'password', md5($_POST['password']));
 	$dash->push_content_meta($usr['id'], 'password_reset_code');
-	echo '<div class="my-5 mx-auto alert alert-success">Your password has been reset successfully.<br><a href="/user/login" class="btn btn-primary">Login now</a></div>';
+	echo '<div class="my-5 alert alert-success">Your password has been reset successfully.</div><div><a href="/user/login" class="btn btn-primary">Login now</a></div>';
 }
 
 else if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')) {
