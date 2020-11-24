@@ -18,12 +18,12 @@ if ($_POST['email'] && !$_POST['password']) {
 	echo '<div class="my-5 mx-auto alert alert-success">An email has been sent to you with link to reset password. Please check your email inbox and spam folder.</div>';
 }
 
-else if ($_GET['code'] || ($_POST['password_reset_code'] && $_POST['password']!=$_POST['cpassword'])) {
+else if ($_GET['code'] || ($_POST['password_reset_code'] && (!trim($_POST['password']) || !trim($_POST['confirm_password']) || ($_POST['password']!=$_POST['confirm_password'])))) {
 	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['password_reset_code']??$_GET['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']); ?>
 
 <form class="form-user" method="post" action="/user/forgot-password"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;New Password</h4>
-	<?php if ($_POST && $_POST['password']!=$_POST['cpassword'])	echo '<div class="form-user alert alert-warning">Password mismatch.</div>'; ?>
+	<?php if ($_POST && $_POST['password']!=$_POST['confirm_password'])	echo '<div class="form-user alert alert-warning">Password mismatch or empty.</div>'; ?>
 
 	<label for="inputEmail" class="sr-only">Email address</label>
 	<input type="email" id="inputEmail" class="form-control my-1" value="<?= $usr['email']; ?>" placeholder="Email address" disabled>
@@ -44,7 +44,10 @@ else if ($_GET['code'] || ($_POST['password_reset_code'] && $_POST['password']!=
 <?php }
 
 else if (trim($_POST['password']) && $_POST['password']==$_POST['confirm_password']) {
-
+	$usr=$dash->get_content($sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type' = 'user' && `content`->'$.password_reset_code' = '".trim($_POST['password_reset_code']??$_GET['code'])."' ORDER BY `id` DESC LIMIT 1")[0]['id']);
+	$dash->push_content_meta($usr['id'], 'password', md5($_POST['password']));
+	$dash->push_content_meta($usr['id'], 'password_reset_code');
+	echo '<div class="my-5 mx-auto alert alert-success">Your password has been reset successfully.<br><a href="/user/login" class="btn btn-primary">Login now</a></div>';
 }
 
 else if (($types['webapp']['user_theme']??false) && file_exists(THEME_PATH.'/user-forgot-password.php')) {
