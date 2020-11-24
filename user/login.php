@@ -25,8 +25,9 @@ else: ?>
 
 <form class="form-user" method="post" action="/user/login"><h2><?php echo $menus['main']['logo']['name']; ?></h2>
 	<h4 class="my-3 font-weight-normal"><span class="fas fa-lock"></span>&nbsp;Sign in</h4>
+	<?= ($_POST?'<div class="alert alert-danger">Wrong credentials. Please try again.</div>':''); ?>
 	<label for="inputEmail" class="sr-only">Email address</label>
-	<input type="email" name="email" id="inputEmail" class="form-control my-1" placeholder="Email address" required autofocus>
+	<input type="email" name="email" id="inputEmail" class="form-control my-1" value="<?= $_POST['email']; ?>" placeholder="Email address" required autofocus>
 	<label for="inputPassword" class="sr-only">Password</label>
 	<input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Password" required>
 	<div class="checkbox my-1 small"><label><input type="checkbox" class="my-0" value="remember-me"> Remember me</label></div>
