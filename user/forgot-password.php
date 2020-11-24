@@ -8,14 +8,14 @@ if ($_POST['email'] && !$_POST['password']) {
 	include_once(ABSOLUTE_PATH.'/plugins/sendgrid/core-plugin.php');
 	$mailr=array();
 	$code=uniqid().time();
-	$dash->push_content_meta('password_reset_code', $code);
+	$dash->push_content_meta($usr['id'], 'password_reset_code', $code);
 	$mailr['to_email']=$_POST['email'];
 	$mailr['to_name']='';
 	$mailr['subject']='Reset your password for '.BARE_URL;
 	$mailr['body_text']=$mailr['body_html']='Please reset your password using the following link:<br>'.BASE_URL.'/user/forgot-password?code='.$code;
-	$mailer->send_email($mailr, 1);
+	$mailer->send_email($mailr);
 
-	echo '<div class="my-5 mx-auto alert alert-danger">An email has been sent to you with link to reset password. Please check your email inbox and spam folder.</div>';
+	echo '<div class="my-5 mx-auto alert alert-success">An email has been sent to you with link to reset password. Please check your email inbox and spam folder.</div>';
 }
 
 else if ($_GET['code'] || ($_POST['code'] && $_POST['password']!=$_POST['cpassword'])) {
