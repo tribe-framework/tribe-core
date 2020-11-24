@@ -14,6 +14,8 @@ if ($_POST['email'] && !$_POST['password']) {
 	$mailr['subject']='Reset your password for '.BARE_URL;
 	$mailr['body_text']=$mailr['body_html']='Please reset your password using the following link:<br>'.BASE_URL.'/user/forgot-password?code='.$code;
 	$mailer->send_email($mailr, 1);
+
+	echo '<div class="my-5 mx-auto alert alert-danger">An email has been sent to you with link to reset password. Please check your email inbox and spam folder.</div>';
 }
 
 else if ($_GET['code'] || ($_POST['code'] && $_POST['password']!=$_POST['cpassword'])) {
