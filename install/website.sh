@@ -6,45 +6,39 @@ sudo chown ubuntu:ubuntu install_path/xyz.com -R;
 sudo chown www-data:www-data install_path/xyz.com/uploads -R;
 
 sudo cp install_path/xyz.com/install/nginx.conf /etc/nginx/sites-available/xyz.com;
-sudo cp install_path/xyz.com/install/nginx.app.conf /etc/nginx/sites-available/app.xyz.com;
-
 sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/xyz.com;
-sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/app.xyz.com;
-
 sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/nginx/sites-available/xyz.com;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/nginx/sites-available/xyz.com;
-sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/nginx/sites-available/app.xyz.com;
-sudo sed -i 's/your_server_domain/app.xyz.com/g' /etc/nginx/sites-available/app.xyz.com;
-
 sudo sed -i 's/xyz-port-var/xyz_port/g' /etc/nginx/sites-available/xyz.com;
-sudo sed -i 's/xyz-port-var/xyz_port/g' /etc/nginx/sites-available/app.xyz.com;
-
 sudo ln -s /etc/nginx/sites-available/xyz.com /etc/nginx/sites-enabled/xyz.com;
-sudo ln -s /etc/nginx/sites-available/app.xyz.com /etc/nginx/sites-enabled/app.xyz.com;
-
 sudo cp install_path/xyz.com/install/apache2.conf /etc/apache2/sites-available/xyz.com.conf;
-sudo cp install_path/xyz.com/install/apache2.conf /etc/apache2/sites-available/app.xyz.com.conf;
-
 sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf;
 sudo sed -i 's/your_server_domain/xyz.com/g' /etc/apache2/sites-available/xyz.com.conf;
-sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/apache2/sites-available/app.xyz.com.conf;
-sudo sed -i 's/your_server_domain/app.xyz.com/g' /etc/apache2/sites-available/app.xyz.com.conf;
-
 sudo sed -i 's/your_server_email/admin_email/g' /etc/apache2/sites-available/xyz.com.conf;
-sudo sed -i 's/your_server_email/admin_email/g' /etc/apache2/sites-available/app.xyz.com.conf;
-
 sudo sed -i "s/your_server_path/$installpath1/g" /etc/apache2/sites-available/xyz.com.conf;
-sudo sed -i "s/your_server_path/$installpath1/g" /etc/apache2/sites-available/app.xyz.com.conf;
-
 a2ensite xyz.com;
-a2ensite app.xyz.com;
+sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d xyz.com -d www.xyz.com;
+
+if [ -z "$localport" ]
+then
+	sudo cp install_path/xyz.com/install/nginx.app.conf /etc/nginx/sites-available/app.xyz.com;
+	sudo sed -i 's/your_server_ip/ipv4_address/g' /etc/nginx/sites-available/app.xyz.com;
+	sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/nginx/sites-available/app.xyz.com;
+	sudo sed -i 's/your_server_domain/app.xyz.com/g' /etc/nginx/sites-available/app.xyz.com;
+	sudo sed -i 's/xyz-port-var/xyz_port/g' /etc/nginx/sites-available/app.xyz.com;
+	sudo ln -s /etc/nginx/sites-available/app.xyz.com /etc/nginx/sites-enabled/app.xyz.com;
+	sudo cp install_path/xyz.com/install/apache2.conf /etc/apache2/sites-available/app.xyz.com.conf;
+	sudo sed -i 's/your_server_base_dir/xyz.com/g' /etc/apache2/sites-available/app.xyz.com.conf;
+	sudo sed -i 's/your_server_domain/app.xyz.com/g' /etc/apache2/sites-available/app.xyz.com.conf;
+	sudo sed -i 's/your_server_email/admin_email/g' /etc/apache2/sites-available/app.xyz.com.conf;
+	sudo sed -i "s/your_server_path/$installpath1/g" /etc/apache2/sites-available/app.xyz.com.conf;
+	a2ensite app.xyz.com;
+	sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d app.xyz.com -d www.app.xyz.com;
+else
+	
+fi
 
 sudo systemctl reload nginx;
-sudo service apache2 start;
-
-sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d xyz.com -d www.xyz.com;
-sudo certbot --agree-tos --no-eff-email --email admin_email --nginx -d app.xyz.com -d www.app.xyz.com;
-
 sudo service apache2 restart;
 
 sudo cp install_path/xyz.com/config/vars.php.sample install_path/xyz.com/config/vars.php;
