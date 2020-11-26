@@ -58,10 +58,7 @@ sudo bash install/composer.sh;
 php composer.phar install;
 php composer.phar dump-autoload;
 sudo php install_path/xyz.com/install/install.php;
-sudo rm install_path/xyz.com/install/install.*;
-sudo rm install_path/xyz.com/install/website.sh;
-sudo rm install_path/xyz.com/install/composer.sh;
-sudo rm install_path/xyz.com/install/*.conf;
+sudo rm install_path/xyz.com/install -R;
 sudo rm install_path/xyz.com/config/*.sample;
 
 sudo /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024;
