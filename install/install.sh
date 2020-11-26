@@ -11,7 +11,7 @@ read -p "Localhost Port (leave blank if not using NodeJS): " localport;
 read -p "GitHub Repository WebURL (leave blank for new repo): " gitrepourl;
 sudo git clone https://github.com/wil-ldf-ire/core.git $installpath/$websitedomain;
 cd $installpath/$websitedomain;
-sudo git pull origin develop/1.1.0;
+sudo git pull origin develop/1.2.0;
 sudo sed -i "s/xyz.com/$websitedomain/g" $installpath/$websitedomain/install/website.sh;
 sudo sed -i "s/xyz_port/$localport/g" $installpath/$websitedomain/install/website.sh;
 sudo sed -i "s/ipv4_address/$ipv4address/g" $installpath/$websitedomain/install/website.sh;
