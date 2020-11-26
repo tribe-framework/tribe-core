@@ -5,7 +5,7 @@ apache, php7, mysql8 (LAMP server) on any operating system
 
 ## quick install
 ```
-sudo wget https://raw.githubusercontent.com/wil-ldf-ire/core/develop/1.1.0/config/install.sh; sudo bash ./install.sh; sudo rm ./install.sh;
+sudo wget https://raw.githubusercontent.com/wil-ldf-ire/core/develop/1.2.0/install/install.sh; sudo bash ./install.sh; sudo rm ./install.sh;
 ```
 
 ## install instructions
