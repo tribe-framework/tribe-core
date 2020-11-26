@@ -1,9 +1,16 @@
 {
-    "autoload": {
-        "psr-4": {
-            "DB\\": "classes/",
-            "Core\\": "classes/",
-            "Wildfire\\": "classes/Wildfire/"
-        }
+	"repositories": [
+        { "type": "vcs", "url": "https://github.com/wil-ldf-ire/core.git" },
+        { "type": "vcs", "url": "https://github.com/wil-ldf-ire/core-user.git" },
+        { "type": "vcs", "url": "https://github.com/wil-ldf-ire/core-admin.git" },
+        { "type": "vcs", "url": "https://github.com/wil-ldf-ire/core-theme.git" }
+    ],
+    "require": {
+    	"php" : "^7.4",
+        "vlucas/phpdotenv": "^5.2",
+        "wildfire/core": "dev-develop/1.2",
+        "wildfire/core-user": "^0.1",
+        "wildfire/core-admin": "^0.1",
+        "wildfire/core-theme": "^0.1"
     }
 }

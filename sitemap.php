@@ -1,8 +1,8 @@
 <?php
 include_once('config/vars.php');
-$sql = new MySQL();
-$dash = new dash();
-$types=$dash->get_types(THEME_PATH.'/config/types.json');
+$sql = new Wildfire\Core\MySQL();
+$dash = new Wildfire\Core\Dash();
+$types=$dash->get_types(ABSOLUTE_PATH.'/config/types.json');
 header('Content-type: application/xml; charset=utf-8');
 $or=array();
 $xml = new SimpleXMLElement('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
