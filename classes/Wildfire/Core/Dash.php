@@ -19,6 +19,17 @@ class Dash {
 	public $statusCode = null; // to set server response code
 
 	function __construct () {
+		global $sql;
+		$q=$sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
+		if (!$q[0]['id']) {
+			$usr=array();
+			$usr['type']='user';
+			$usr['role_slug']='admin';
+			$usr['email']='your_server_email';
+			$usr['password']='xyz-db-pass-var';
+			$usr['user_id']=$this->get_unique_user_id();
+			$this->push_content($usr);
+		}
 
 	}
 
