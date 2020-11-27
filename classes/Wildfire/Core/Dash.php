@@ -585,5 +585,9 @@ class Dash {
 		$this->statusCode = $code;
 		return $this;
 	}
+
+	function get_dir_url () {
+        return str_replace(ABSOLUTE_PATH, BASE_URL, getcwd());
+	}	
 }
 ?>
