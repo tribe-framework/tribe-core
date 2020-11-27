@@ -25,8 +25,8 @@ class Dash {
 			$usr=array();
 			$usr['type']='user';
 			$usr['role_slug']='admin';
-			$usr['email']='your_server_email';
-			$usr['password']='xyz-db-pass-var';
+			$usr['email']=$_ENV['CONTACT_EMAIL'];
+			$usr['password']=$_ENV['DB_PASS'];
 			$usr['user_id']=$this->get_unique_user_id();
 			$this->push_content($usr);
 		}
