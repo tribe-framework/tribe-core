@@ -28,6 +28,8 @@ $admin = new Wildfire\Core\Admin();
 
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
+$_GET['ext']=str_replace('vendor/wildfire/auth', 'user', $_GET['ext']);
+
 if (isset($_GET['ext'])) { //for theme
     $ext=explode('/', $_GET['ext']);
 

@@ -14,6 +14,10 @@ if (($type ?? '')=='search'):
 	}
 
 	include_once (THEME_PATH.'/search.php');
+
+elseif (($type ?? '')=='user'):
+	include_once (ABSOLUTE_PATH.'/vendor/wildfire/auth/init.php');
+
 elseif (isset($type) && isset($slug)):
 	$typedata=$types[$type];
 	$postdata=$dash->get_content(array('type'=>$type, 'slug'=>$slug));
