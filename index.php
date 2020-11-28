@@ -68,7 +68,9 @@ elseif (isset($type) && isset($slug)):
 		}
 
 		//single-ID for specific post, or a single-type template for all posts in that type (single-type is different from archive-type)
-		if (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
+		if (file_exists(THEME_PATH.'/'.$type.'-'.$slug.'.php'))
+			include_once (THEME_PATH.'/'.$type.'-'.$slug.'.php');
+		elseif (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
 			include_once (THEME_PATH.'/single-'.$postdata['id'].'.php');
 		elseif (file_exists(THEME_PATH.'/single-'.$type.'.php'))
 			include_once (THEME_PATH.'/single-'.$type.'.php');
@@ -79,6 +81,7 @@ elseif (isset($type) && isset($slug)):
 	} else {
 		include_once (THEME_PATH.'/404.php');
 	}
+
 elseif (isset($type)):
 	$typedata=$types[$type];
 
@@ -101,7 +104,9 @@ elseif (isset($type)):
 		}
 
 		//archive-type is template for how the type is listed, not to be confused with single-type
-		if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
+		if (file_exists(THEME_PATH.'/'.$type.'.php'))
+			include_once (THEME_PATH.'/'.$type.'.php');
+		elseif (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
 			include_once (THEME_PATH.'/archive-'.$type.'.php');
 		else if (file_exists(THEME_PATH.'/archive.php'))
 			include_once (THEME_PATH.'/archive.php');
@@ -110,12 +115,14 @@ elseif (isset($type)):
 	}
 	else
 		include_once (THEME_PATH.'/404.php');
+
 else:
 	$meta_title=($types['webapp']['headmeta_title']??'');
 	$meta_description=($types['webapp']['headmeta_description']??'');
 	$meta_image_url=($types['webapp']['headmeta_image_url']??'');
 
 	include_once (THEME_PATH.'/index.php');
+
 endif;
 
 ?>
