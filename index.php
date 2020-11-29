@@ -82,7 +82,7 @@ elseif (isset($type) && isset($slug)):
 		include_once (THEME_PATH.'/404.php');
 	}
 
-elseif (isset($type)):
+elseif ($type ?? false):
 	$typedata=$types[$type];
 
 	if ($typedata) {
