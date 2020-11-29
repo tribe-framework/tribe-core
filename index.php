@@ -100,7 +100,7 @@ elseif (isset($type)):
 		//archive-type is template for how the type is listed, not to be confused with single-type
 		if (file_exists(THEME_PATH.'/archive-'.$type.'.php'))
 			include_once (THEME_PATH.'/archive-'.$type.'.php');
-		else if (file_exists(THEME_PATH.'/archive.php'))
+		elseif (file_exists(THEME_PATH.'/archive.php'))
 			include_once (THEME_PATH.'/archive.php');
 		else
 			include_once (THEME_PATH.'/index.php');
