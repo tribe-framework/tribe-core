@@ -62,9 +62,8 @@ class Dash {
 
 	function do_delete ($post=array()) {
 		global $sql;
-		$role_slug=$this->get_content_meta($post['id'], 'role_slug');
 		$q=$sql->executeSQL("DELETE FROM `data` WHERE `id`='".$post['id']."'");
-		dash::$last_redirect='/admin/list?type='.$post['type'].($role_slug?'&role='.$role_slug:'');
+		dash::$last_redirect='/admin/list?type='.$post['type'];
 		return 1;
 	}
 
@@ -523,11 +522,13 @@ class Dash {
 		}
 
 		//for members
-		else if ($types['user']['roles'][$roleslug]['role']=='member') {
+		elseif ($types['user']['roles'][$roleslug]['role']=='member') {
 			$_SESSION['user_id']=$user['user_id'];
 			$_SESSION['user']=$user;
 			$_SESSION['wildfire_dashboard_access']=0;
-			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/user'));
+			ob_start();
+			$r_url = trim($redirect_url).'?id='.session_id();
+			header('Location: '.(trim($r_url) ?? '/user'));
 		}
 
 		//for visitors and anybody else
