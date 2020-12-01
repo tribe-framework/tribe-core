@@ -28,9 +28,8 @@ $admin = new Wildfire\Core\Admin();
 
 isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
 
-$_GET['ext']=str_replace('vendor/wildfire/auth', 'user', ($_GET['ext']??''));
-
-if (isset($_GET['ext'])) { //for theme
+if (($_GET['ext']??false)) { //for theme
+    $_GET['ext']=str_replace('vendor/wildfire/auth', 'user', ($_GET['ext']??''));
     $ext=explode('/', $_GET['ext']);
 
     if (count($ext)) {
@@ -40,7 +39,7 @@ if (isset($_GET['ext'])) { //for theme
     if (count($ext)>1) {
         $slug=$dash->do_unslugify($ext[1]);
     }
-} elseif (isset($_GET['type'])) { //for dashboard
+} elseif (($_GET['type']??false)) { //for dashboard
     $type=$dash->do_unslugify($_GET['type']);
 }
 
