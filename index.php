@@ -67,7 +67,15 @@ elseif (isset($type) && isset($slug)):
 			}
 		}
 
-		//single-ID for specific post, or a single-type template for all posts in that type (single-type is different from archive-type)
+		/**
+		 * single-ID for specific post, or a single-type template for all posts
+		 * in that type (single-type is different from archive-type)
+		 *
+		 * single-id pages are also accessible under theme/pages/$type/$slug
+		 * for url: /type/slug
+		 */
+		if (file_exists(THEME_PATH.'/pages/'.$type.'/'.$slug.'.php'))
+			include_once THEME_PATH.'/pages/'.$type.'/'.$slug.'.php';
 		if (file_exists(THEME_PATH.'/'.$type.'-'.$slug.'.php'))
 			include_once (THEME_PATH.'/'.$type.'-'.$slug.'.php');
 		elseif (file_exists(THEME_PATH.'/single-'.$postdata['id'].'.php'))
