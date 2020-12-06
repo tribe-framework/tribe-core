@@ -520,6 +520,13 @@ class Dash {
 		return BASE_URL.'/uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
 	}
 
+	function get_uploader_path () {
+		$folder_path='uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
+		if (!is_dir(ABSOLUTE_PATH.'/'.$folder_path))
+			mkdir(ABSOLUTE_PATH.'/'.$folder_path, 0755, true);
+		return array('upload_dir'=>ABSOLUTE_PATH.'/'.$folder_path, 'upload_url'=>BASE_URL.'/'.$folder_path);
+	}
+
 	function after_login ($roleslug, $redirect_url='') {
 		global $types, $_SESSION, $user;
 
@@ -545,13 +552,6 @@ class Dash {
 		else {
 			ob_start(); header('Location: '.(trim($redirect_url)?trim($redirect_url):'/'));
 		}
-	}
-
-	function get_uploader_path () {
-		$folder_path='uploads/'.date('Y').'/'.date('m-F').'/'.date('d-D');
-		if (!is_dir(ABSOLUTE_PATH.'/'.$folder_path))
-			mkdir(ABSOLUTE_PATH.'/'.$folder_path, 0755, true);
-		return array('upload_dir'=>ABSOLUTE_PATH.'/'.$folder_path, 'upload_url'=>BASE_URL.'/'.$folder_path);
 	}
 
 	/**
