@@ -588,6 +588,24 @@ class Dash {
 
 	function get_dir_url () {
         return str_replace(ABSOLUTE_PATH, BASE_URL, getcwd());
-	}	
+	}
+
+	function do_upload_file_from_url ($url) {
+		if ($url??false) {
+			
+			$path=$this->get_uploader_path();
+
+			$file_name=time().'-'.basename($url);
+			$wf_uploads_path=$path['upload_dir'].'/'.$file_name;
+			$wf_uploads_url=$path['upload_url'].'/'.$file_name;
+			
+			if (copy($url, $wf_uploads_path))
+				return $wf_uploads_url;
+			else
+				return false;
+		}
+		else
+			return false;
+	}
 }
 ?>
