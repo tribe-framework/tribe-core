@@ -1,6 +1,8 @@
 {
     "name": "wildfire/core",
     "autoload": {
-        "psr-4": {"Wildfire\\": "classes/Wildfire/"}
+        "psr-4": {
+            "Wildfire\\": "src/"
+        }
     }
 }
