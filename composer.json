@@ -1,5 +1,6 @@
 {
     "name": "wildfire/core",
+    "description": "Offers classes for various functions of Wildfire's core",
     "autoload": {
         "psr-4": {
             "Wildfire\\": "src/"
