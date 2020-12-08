@@ -48,11 +48,7 @@ class Theme
 					<ul class="' . $css_classes['ul'] . '">';
             if (isset($items['menu'])) {
                 foreach ($items['menu'] as $item) {
-                    if (
-						$item['admin_access_only'] ?? false &&
-						!$userless_install &&
-						$types['user']['roles'][$_SESSION['user']['role_slug']]['role'] != 'admin'
-					) {
+                    if ($item['admin_access_only'] && !$userless_install && $types['user']['roles'][$_SESSION[user][role_slug]]['role'] != 'admin') {
                         continue;
                     }
 
