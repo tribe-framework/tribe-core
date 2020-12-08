@@ -2,26 +2,29 @@
 
 namespace Wildfire\Core;
 
-class MySQL {
-    var $lastError;         // Holds the last error
-    var $lastQuery;         // Holds the last query
-    var $result;            // Holds the MySQL query result
-    var $records;           // Holds the total number of records returned
-    var $affected;          // Holds the total number of records affected
-    var $arrayedResult;     // Holds an array of the result
+class MySQL
+{
+    public $lastError; // Holds the last error
+    public $lastQuery; // Holds the last query
+    public $result; // Holds the MySQL query result
+    public $records; // Holds the total number of records returned
+    public $affected; // Holds the total number of records affected
+    public $arrayedResult; // Holds an array of the result
 
-    var $hostname;          // MySQL Hostname
-    var $username;          // MySQL Username
-    var $password;          // MySQL Password
-    var $database;          // MySQL Database
+    public $hostname; // MySQL Hostname
+    public $username; // MySQL Username
+    public $password; // MySQL Password
+    public $database; // MySQL Database
 
-    var $databaseLink;      // Database Connection Link
+    public $databaseLink; // Database Connection Link
 
-    function __construct () {
+    public function __construct()
+    {
         $this->Connect();
     }
 
-    private function Connect () {
+    private function Connect()
+    {
         $this->CloseConnection();
 
         $this->database = DB_NAME;
@@ -42,72 +45,84 @@ class MySQL {
         return true;
     }
 
-    public function lastInsertID () {
+    public function lastInsertID()
+    {
         return mysqli_insert_id($this->databaseLink);
     }
 
-    public function closeConnection () {
-        if($this->databaseLink){
+    public function closeConnection()
+    {
+        if ($this->databaseLink) {
             mysqli_close($this->databaseLink);
         }
     }
 
-    public function executeSQL ($query) {
+    public function executeSQL($query)
+    {
         $this->lastQuery = $query;
-        if($this->result = mysqli_query($this->databaseLink, $query)){
+        if ($this->result = mysqli_query($this->databaseLink, $query)) {
             if (gettype($this->result) === 'object') {
-                $this->records  = @mysqli_num_rows($this->result);
+                $this->records = @mysqli_num_rows($this->result);
                 $this->affected = @mysqli_affected_rows($this->databaseLink);
             } else {
-               $this->records  = 0;
-               $this->affected = 0;
+                $this->records = 0;
+                $this->affected = 0;
             }
 
-            if($this->records > 0){
+            if ($this->records > 0) {
                 $this->arrayResults();
-                if ($this->records==1)
+                if ($this->records == 1) {
                     return array($this->unstrip_array($this->arrayedResult));
-                else
+                } else {
                     return $this->unstrip_array($this->arrayedResult);
-            }else{
+                }
+
+            } else {
                 return 0;
             }
 
-        }else{
+        } else {
             $this->lastError = mysqli_error($this->databaseLink);
             return false;
         }
     }
 
-    public function unstrip_array ($variable) {
+    public function unstrip_array($variable)
+    {
         if (is_string($variable)) {
-            if (json_decode($variable) === NULL)
+            if (json_decode($variable) === null) {
                 return stripslashes($variable);
-            else
+            } else {
                 return $variable;
+            }
+
         }
-        if (is_array($variable))
-            foreach($variable as $i=>$value)
-                $variable[$i] = $this->unstrip_array($value) ;
+        if (is_array($variable)) {
+            foreach ($variable as $i => $value) {
+                $variable[$i] = $this->unstrip_array($value);
+            }
+        }
+
         return $variable;
     }
 
-    public function arrayResults () {
+    public function arrayResults()
+    {
 
-        if($this->records == 1){
+        if ($this->records == 1) {
             return $this->arrayResult();
         }
 
         $this->arrayedResult = array();
-        while ($data = mysqli_fetch_assoc($this->result)){
+        while ($data = mysqli_fetch_assoc($this->result)) {
             $this->arrayedResult[] = $data;
         }
         return $this->arrayedResult;
     }
 
-    public function arrayResult () {
-        $this->arrayedResult = mysqli_fetch_assoc($this->result) or die (mysqli_error($this->databaseLink));
+    public function arrayResult()
+    {
+        $this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
         return $this->arrayedResult;
     }
 }
-?>

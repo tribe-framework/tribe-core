@@ -3,7 +3,7 @@
 //session and vars
 session_save_path('/tmp');
 session_start();
-$session_user = $_SESSION['user'] ?? NULL;
+$session_user = $_SESSION['user'] ?? null;
 
 // browser debugging
 if (defined('ENV') && (ENV == 'dev')) {
@@ -20,27 +20,25 @@ if (defined('ENV') && (ENV == 'dev')) {
 $sql = new Wildfire\Core\MySQL();
 $dash = new Wildfire\Core\Dash();
 
-$types=$dash->get_types(ABSOLUTE_PATH.'/config/types.json');
-$menus=json_decode(file_get_contents(ABSOLUTE_PATH.'/config/menus.json'), true);
+$types = $dash->get_types(ABSOLUTE_PATH . '/config/types.json');
+$menus = json_decode(file_get_contents(ABSOLUTE_PATH . '/config/menus.json'), true);
 
 $theme = new Wildfire\Core\Theme();
 $admin = new Wildfire\Core\Admin();
 
-isset($types['webapp']['lang'])?:$types['webapp']['lang']='en';
+isset($types['webapp']['lang']) ?: $types['webapp']['lang'] = 'en';
 
-if (($_GET['ext']??false)) { //for theme
-    $_GET['ext']=str_replace('vendor/wildfire/auth', 'user', ($_GET['ext']??''));
-    $ext=explode('/', $_GET['ext']);
+if (($_GET['ext'] ?? false)) { //for theme
+    $_GET['ext'] = str_replace('vendor/wildfire/auth', 'user', ($_GET['ext'] ?? ''));
+    $ext = explode('/', $_GET['ext']);
 
     if (count($ext)) {
-        $type=$dash->do_unslugify($ext[0]);
+        $type = $dash->do_unslugify($ext[0]);
     }
 
-    if (count($ext)>1) {
-        $slug=$dash->do_unslugify($ext[1]);
+    if (count($ext) > 1) {
+        $slug = $dash->do_unslugify($ext[1]);
     }
-} elseif (($_GET['type']??false)) { //for dashboard
-    $type=$dash->do_unslugify($_GET['type']);
+} elseif (($_GET['type'] ?? false)) { //for dashboard
+    $type = $dash->do_unslugify($_GET['type']);
 }
-
-?>
