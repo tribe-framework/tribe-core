@@ -10,7 +10,10 @@ is_ is for a yes/no answer
 
 namespace Wildfire\Core;
 
-class Dash
+use Wildfire\Core\Kernel;
+use Wildfire\Core\MySQL;
+
+class Dash extends Kernel
 {
 
     public static $last_error = null; //array of error messages
@@ -21,7 +24,7 @@ class Dash
 
     public function __construct()
     {
-        global $sql;
+        $sql = new MySQL();
         $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
         if (!$q[0]['id']) {
             $usr = array();
@@ -75,14 +78,14 @@ class Dash
 
     public function get_next_id()
     {
-        global $sql;
+        $sql = new MySQL();
         $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 1");
         return ($q[0]['id'] + 1);
     }
 
     public function do_delete($post = array())
     {
-        global $sql;
+        $sql = new MySQL();
         $role_slug = $this->get_content_meta($post['id'], 'role_slug');
         $q = $sql->executeSQL("DELETE FROM `data` WHERE `id`='" . $post['id'] . "'");
         dash::$last_redirect = '/admin/list?type=' . $post['type'] . ($role_slug ? '&role=' . $role_slug : '');
@@ -91,13 +94,14 @@ class Dash
 
     public function get_ids_by_search_query($query)
     {
-        global $sql;
+        $sql = new MySQL();
         return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%" . strtolower(urldecode($query)) . "%' && `content`->'$.content_privacy'='public' GROUP BY `id` LIMIT 25");
     }
 
     public function push_content($post)
     {
-        global $sql, $types;
+        $sql = new MySQL();
+        $types = $this->types;
         $updated_on = time();
         $posttype = $post['type'];
 
@@ -178,7 +182,7 @@ class Dash
 
     public function get_content_meta($val, $meta_key)
     {
-        global $sql;
+        $sql = new MySQL();
 
         if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
             $qry = "`" . $meta_key . "`";
@@ -197,7 +201,7 @@ class Dash
 
     public function push_content_meta($id, $meta_key, $meta_value = '')
     {
-        global $sql;
+        $sql = new MySQL();
         if ($id && $meta_key) {
             if (!trim($meta_value)) {
                 //to delete a key, leave it empty
@@ -214,7 +218,8 @@ class Dash
 
     public function get_content($val)
     {
-        global $sql, $session_user;
+        $sql = new MySQL();
+        $session_user = self::$session_user;
         $or = array();
         if (is_numeric($val)) {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
@@ -267,7 +272,8 @@ class Dash
     public static function get_all_ids_count($type)
     {
 
-        global $sql, $session_user;
+        $sql = new MySQL();
+        $session_user = self::$session_user;
 
         //user
         if (is_array($type)) {
@@ -296,7 +302,8 @@ class Dash
 
     public static function get_all_ids($type, $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
     {
-        global $sql, $session_user;
+        $sql = new MySQL();
+        $session_user = self::$session_user;
 
         if ($priority_field == 'id') {
             $priority = "`" . $priority_field . "` " . $priority_order;
@@ -338,7 +345,7 @@ class Dash
 
     public function get_ids($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
     {
-        global $sql;
+        $sql = new MySQL();
         if ($priority_field == 'id') {
             $priority = "`" . $priority_field . "` " . $priority_order;
         } else {
@@ -377,7 +384,7 @@ class Dash
 
     public function get_date_ids($publishing_date)
     {
-        global $sql;
+        $sql = new MySQL();
         return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.publishing_date'='$publishing_date'");
     }
 
@@ -443,7 +450,8 @@ class Dash
 
     public function get_type_title_data($post)
     {
-        global $sql, $types;
+        $sql = new MySQL();
+        $types = self::$types;
         $posttype = $post['type'];
 
         if (!($post_id = $post['id'])) {
@@ -469,7 +477,7 @@ class Dash
 
     public function push_wp_posts($type = 'story', $meta_vars = array(), $max_records = 0, $overwrite = 0)
     {
-        global $sql;
+        $sql = new MySQL();
         $i = 0;
 
         $q = $sql->executeSQL("SELECT * FROM `wp_posts` WHERE `post_status` LIKE 'publish' AND (`post_type` LIKE 'page' OR `post_type` LIKE 'post') ORDER BY `ID` ASC");
@@ -546,7 +554,7 @@ class Dash
 
     public function get_unique_user_id()
     {
-        global $sql;
+        $sql = new MySQL();
         $bytes = strtoupper(bin2hex(random_bytes(3)));
 
         $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.user_id'='$bytes' && `content`->'$.type'='user'");
@@ -589,7 +597,8 @@ class Dash
 
     public function after_login($roleslug, $redirect_url = '')
     {
-        global $types, $_SESSION, $user;
+        global $_SESSION, $user;
+        $types = self::$types;
 
         $user['role'] = $types['user']['roles'][$roleslug]['role'];
 
@@ -678,5 +687,10 @@ class Dash
             return false;
         }
 
+    }
+
+    public function getTypes()
+    {
+        return self::$types;
     }
 }
