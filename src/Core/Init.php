@@ -87,6 +87,10 @@ class Init {
 			return $this->loadSearch();
 		}
 
+		if (($type ?? '') == 'sitemap.xml') {
+			$this->loadSitemap();
+		}
+
 		if (
 			(isset($type) && isset($slug)) ||
 			$type == 'user'
@@ -103,6 +107,17 @@ class Init {
 
 	private function loadScss() {
 		$file_path = THEME_PATH . '/assets/scss/init.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			return true;
+		}
+
+		$this->errorNotFound();
+	}
+
+	private function loadSitemap() {
+		$file_path = ABSOLUTE_PATH . '/vendor/wildfire/sitemap/index.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
