@@ -18,7 +18,7 @@ class Theme {
 	public static $last_redirect = null; //redirection url
 
 	public function __construct() {
-		$this->dash = new Wildfire\Core\Dash();
+		$this->dash = new Dash();
 	}
 
 	public function get_navbar_menu($slug = '', $css_classes = array('navbar' => 'navbar-expand-md navbar-light bg-light', 'ul' => 'navbar-nav ml-auto mr-0', 'li' => 'nav-item', 'a' => 'nav-link', 'toggler' => 'navbar-toggler'), $hamburger_bars = '<span class="navbar-toggler-icon"></span>') {

@@ -247,7 +247,9 @@ class Dash extends Init {
 	}
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1) {
-		global $types, $sql;
+		$sql = new MySQL();
+		$types = self::$types;
+
 		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `content`->'$.type'='$column_key' && `content`->'$.slug'='$slug'");
 		if ($with_link) {
 			return '<a href="' . BASE_URL . '/' . $column_key . '/' . $slug . '">' . json_decode($q[0]['title']) . '</a>';
@@ -313,7 +315,7 @@ class Dash extends Init {
 		//content
 		else {
 			$role_slug = '';
-			if ($session_user['role'] == 'admin') {
+			if (($session_user['role'] ?? false) == 'admin') {
 				$statement = "SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 				$q = $sql->executeSQL($statement);
 			} else {
@@ -382,13 +384,13 @@ class Dash extends Init {
 	}
 
 	public static function get_types($json_path) {
-		global $session_user, $userless_install;
+		$session_user = self::$session_user;
 
 		$types = json_decode(file_get_contents($json_path), true);
 		foreach ($types as $key => $type) {
 			if (($type['type'] ?? '') == 'content') {
 				if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
-					if ($session_user['role'] == 'admin' || $userless_install) {
+					if ($session_user['role'] == 'admin') {
 						$content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
