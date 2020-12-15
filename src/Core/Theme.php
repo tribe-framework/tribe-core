@@ -74,15 +74,17 @@ class Theme {
 
 						$op .= '<li class="' . ($css_classes['li'] ?? '') . ' dropdown"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '
 									</a><div class="dropdown-menu ' . ($css_classes['dropdown'] ?? '') . ' ' . ($item['dropdown_class'] ?? '') . '">';
-						foreach ($subitems as $key => $opt) {
-							if ($is_user_role_menu) {
-								$subitem = $opt;
-								$subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
-							} else {
-								$subitem = $this->dash->get_content($opt['id']);
-								$subitem['href'] = '/' . $item['submenu'] . '/' . $subitem['slug'];
+						if (isset($subitems)) {
+							foreach ($subitems as $key => $opt) {
+								if ($is_user_role_menu) {
+									$subitem = $opt;
+									$subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
+								} else {
+									$subitem = $this->dash->get_content($opt['id']);
+									$subitem['href'] = '/' . $item['submenu'] . '/' . $subitem['slug'];
+								}
+								$op .= '<a class="dropdown-item" href="' . ($subitem['href'] ?? '') . '">' . ($subitem['title'] ?? '') . '</a>';
 							}
-							$op .= '<a class="dropdown-item" href="' . ($subitem['href'] ?? '') . '">' . ($subitem['title'] ?? '') . '</a>';
 						}
 						$op .= '</div></li>';
 					} else {
