@@ -79,8 +79,8 @@ class Init {
 		}
 		unset($theme_functions);
 
-		if ($type == 'sass') {
-			$this->loadSass();
+		if ($type == 'scss') {
+			$this->loadScss();
 		}
 
 		if (($type ?? '') == 'search') {
@@ -101,8 +101,8 @@ class Init {
 		return $this->loadIndex();
 	}
 
-	private function loadSass() {
-		$file_path = THEME_PATH . '/assets/sass.php';
+	private function loadScss() {
+		$file_path = THEME_PATH . '/assets/scss/init.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
