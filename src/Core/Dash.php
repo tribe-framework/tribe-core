@@ -319,7 +319,14 @@ class Dash extends Init {
 				$statement = "SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 				$q = $sql->executeSQL($statement);
 			} else {
-				$statement = "SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='" . $session_user['user_id'] . "') && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+				$statement = "SELECT `id` FROM `data` WHERE (
+				(
+				`content`->'$.content_privacy'='public'
+				" . (isset($session_user['user_id']) ? " OR `content`->'$.user_id'='" . $session_user['user_id'] . "'" : '') . "
+				)
+				&& `content`->'$.type'='$type'"
+					. ($role_slug ? " && `content`->'$.role_slug'='$role_slug'" : "")
+					. " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 				$q = $sql->executeSQL($statement);
 			}
 		}
@@ -390,7 +397,7 @@ class Dash extends Init {
 		foreach ($types as $key => $type) {
 			if (($type['type'] ?? '') == 'content') {
 				if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
-					if ($session_user['role'] == 'admin') {
+					if (($session_user['role'] ?? false) == 'admin') {
 						$content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",

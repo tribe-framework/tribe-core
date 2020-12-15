@@ -48,7 +48,7 @@ class Theme {
 					<ul class="' . $css_classes['ul'] . '">';
 			if (isset($items['menu'])) {
 				foreach ($items['menu'] as $item) {
-					if ($item['admin_access_only'] && $types['user']['roles'][$session_user[role_slug]]['role'] != 'admin') {
+					if (($item['admin_access_only'] ?? false) && $types['user']['roles'][$session_user[role_slug]]['role'] != 'admin') {
 						continue;
 					}
 
@@ -63,13 +63,13 @@ class Theme {
 						}
 						$op .= '</div></li>';
 					} else if (isset($item['submenu'])) {
-						$submenu = $item['submenu'];
+						$submenu = ($item['submenu'] ?? false);
 						$is_user_role_menu = 0;
 						if (is_array(($types[$submenu]['roles'] ?? ''))) {
 							$subitems = $types[$submenu]['roles'];
 							$is_user_role_menu = 1;
 						} else {
-							$subitems = $this->dash::get_all_ids(($item['submenu'] ?? ''), ($types[$submenu]['priority_field'] ?? ''), ($types[$submenu]['priority_order'] ?? ''));
+							$subitems = $this->dash->get_all_ids(($item['submenu'] ?? ''), ($types[$submenu]['priority_field'] ?? ''), ($types[$submenu]['priority_order'] ?? ''));
 						}
 
 						$op .= '<li class="' . ($css_classes['li'] ?? '') . ' dropdown"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '
@@ -79,7 +79,7 @@ class Theme {
 								$subitem = $opt;
 								$subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
 							} else {
-								$subitem = $this->dash::get_content($opt['id']);
+								$subitem = $this->dash->get_content($opt['id']);
 								$subitem['href'] = '/' . $item['submenu'] . '/' . $subitem['slug'];
 							}
 							$op .= '<a class="dropdown-item" href="' . ($subitem['href'] ?? '') . '">' . ($subitem['title'] ?? '') . '</a>';
@@ -184,11 +184,11 @@ class Theme {
 						$op .= '</div></li>';
 					} else if (isset($item['submenu'])) {
 						$submenu = $item['submenu'];
-						$subitems = $this->dash::get_all_ids($item['submenu'], ($types[$submenu]['priority_field'] ?? ''), ($types[$submenu]['priority_order'] ?? ''));
+						$subitems = $this->dash->get_all_ids($item['submenu'], ($types[$submenu]['priority_field'] ?? ''), ($types[$submenu]['priority_order'] ?? ''));
 						$op .= '<li class="dropdown ' . ($css_classes['li'] ?? '') . '"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '
 								</a><div class="dropdown-menu ' . ($css_classes['dropdown'] ?? '') . ' ' . ($item['dropdown_class'] ?? '') . '">';
 						foreach ($subitems as $opt) {
-							$subitem = $this->dash::get_content($opt['id']);
+							$subitem = $this->dash->get_content($opt['id']);
 							$op .= '<a class="dropdown-item" href="/' . $item['submenu'] . '/' . $subitem['slug'] . '">' . ($subitem['title'] ?? '') . '</a>';
 						}
 						$op .= '</div></li>';
