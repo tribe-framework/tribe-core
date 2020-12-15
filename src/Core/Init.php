@@ -79,7 +79,7 @@ class Init {
 		}
 		unset($theme_functions);
 
-		if (($type ?? '') == 'scss') {
+		if (($slug ?? '') == 'scss') {
 			$this->loadScss();
 		}
 
