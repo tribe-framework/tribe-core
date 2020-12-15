@@ -73,13 +73,13 @@ class Init {
 		/**
 		 * load theme functions if it exists
 		 */
-		$theme_functions = THEME_PATH . '/functions.php';
+		$theme_functions = THEME_PATH . '/includes/functions.php';
 		if (file_exists($theme_functions)) {
 			include_once $theme_functions;
 		}
 		unset($theme_functions);
 
-		if ($type == 'scss') {
+		if (($type ?? '') == 'scss') {
 			$this->loadScss();
 		}
 
