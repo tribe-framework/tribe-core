@@ -63,7 +63,7 @@ class Theme {
 						}
 						$op .= '</div></li>';
 					} else if (isset($item['submenu'])) {
-						$submenu = ($item['submenu'] ?? false);
+						$submenu = $item['submenu'];
 						$is_user_role_menu = 0;
 						if (is_array(($types[$submenu]['roles'] ?? ''))) {
 							$subitems = $types[$submenu]['roles'];
@@ -74,7 +74,7 @@ class Theme {
 
 						$op .= '<li class="' . ($css_classes['li'] ?? '') . ' dropdown"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '
 									</a><div class="dropdown-menu ' . ($css_classes['dropdown'] ?? '') . ' ' . ($item['dropdown_class'] ?? '') . '">';
-						if (isset($subitems)) {
+						if (is_array($subitems)) {
 							foreach ($subitems as $key => $opt) {
 								if ($is_user_role_menu) {
 									$subitem = $opt;
