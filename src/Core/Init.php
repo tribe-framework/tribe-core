@@ -147,6 +147,9 @@ class Init {
 			$slug = 'index';
 		}
 
+		define('ADMIN_PATH', ABSOLUTE_PATH . '/vendor/wildfire/' . $type);
+		define('ADMIN_URL', BASE_URL . '/vendor/wildfire/' . $type);
+
 		// load the search file from theme
 		$admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
 		if (!file_exists($admin_file)) {
@@ -169,6 +172,9 @@ class Init {
 		if (!$slug) {
 			$slug = 'index';
 		}
+
+		define('AUTH_PATH', ABSOLUTE_PATH . '/vendor/wildfire/' . $type);
+		define('AUTH_URL', BASE_URL . '/vendor/wildfire/' . $type);
 
 		// load the search file from theme
 		$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
