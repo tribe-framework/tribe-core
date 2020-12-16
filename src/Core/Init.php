@@ -144,7 +144,7 @@ class Init {
 		}
 
 		// load the search file from theme
-		$admin_file = ABSOLUTE_PATH . '/' . $type . '/' . $slug . '.php';
+		$admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
 		if (!file_exists($admin_file)) {
 			die('The file does not exist.');
 		}
