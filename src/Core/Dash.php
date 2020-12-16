@@ -663,24 +663,4 @@ class Dash extends Init {
 		}
 
 	}
-
-	public function getTypes() {
-		return self::$types;
-	}
-
-	public function getMenus() {
-		return self::$menus;
-	}
-
-	public function getType() {
-		return self::$type;
-	}
-
-	public function getSlug() {
-		return self::$slug;
-	}
-
-	public function getSessionUser() {
-		return self::$session_user;
-	}
 }

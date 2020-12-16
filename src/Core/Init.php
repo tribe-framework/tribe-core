@@ -79,8 +79,12 @@ class Init {
 		}
 		unset($theme_functions);
 
-		if (($slug ?? '') == 'scss') {
+		if (($type ?? '') == 'scss') {
 			$this->loadScss();
+		}
+
+		if (($type ?? '') == 'admin') {
+			$this->loadAdmin();
 		}
 
 		if (($type ?? '') == 'search') {
@@ -125,6 +129,29 @@ class Init {
 		}
 
 		$this->errorNotFound();
+	}
+
+	/**
+	 * @name loadAdmin
+	 * @desc loads admin file for admin requests
+	 */
+	private function loadAdmin() {
+		$type = self::$type;
+		$slug = self::$slug;
+
+		if (!$slug) {
+			$slug = 'index';
+		}
+
+		// load the search file from theme
+		$admin_file = ABSOLUTE_PATH . '/' . $type . '/' . $slug . '.php';
+		if (!file_exists($admin_file)) {
+			die('The file does not exist.');
+		}
+
+		include_once $admin_file;
+		unset($admin_file);
+		return true;
 	}
 
 	/**
@@ -463,5 +490,25 @@ class Init {
 		} else {
 			die('Resource not available on server');
 		}
+	}
+
+	public function getTypes() {
+		return self::$types;
+	}
+
+	public function getMenus() {
+		return self::$menus;
+	}
+
+	public function getType() {
+		return self::$type;
+	}
+
+	public function getSlug() {
+		return self::$slug;
+	}
+
+	public function getSessionUser() {
+		return self::$session_user;
 	}
 }
