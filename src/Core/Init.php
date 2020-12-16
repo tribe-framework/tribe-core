@@ -42,7 +42,7 @@ class Init {
 
 		// for theme
 		if ($uri ?? false) {
-			$uri = str_replace('auth', 'user', $uri);
+			$uri = str_replace('/user/', '/auth/', $uri);
 
 			if (preg_match('/^\//', $uri)) {
 				$uri = substr($uri, 1);
@@ -85,6 +85,10 @@ class Init {
 
 		if (($type ?? '') == 'admin') {
 			$this->loadAdmin();
+		}
+
+		if (($type ?? '') == 'auth') {
+			$this->loadAuth();
 		}
 
 		if (($type ?? '') == 'search') {
@@ -151,6 +155,29 @@ class Init {
 
 		include_once $admin_file;
 		unset($admin_file);
+		return true;
+	}
+
+	/**
+	 * @name loadAuth
+	 * @desc loads auth file for auth requests
+	 */
+	private function loadAuth() {
+		$type = self::$type;
+		$slug = self::$slug;
+
+		if (!$slug) {
+			$slug = 'index';
+		}
+
+		// load the search file from theme
+		$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
+		if (!file_exists($auth_file)) {
+			die('The file does not exist.');
+		}
+
+		include_once $auth_file;
+		unset($auth_file);
 		return true;
 	}
 
