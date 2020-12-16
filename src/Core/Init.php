@@ -207,33 +207,6 @@ class Init {
 	}
 
 	/**
-	 * @name loadAuth
-	 * @desc loads auth/init that handles logic for user auth
-	 */
-	private function loadAuth() {
-		$type = self::$type;
-		$slug = self::$slug;
-
-		if (!$slug) {
-			$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/init.php';
-
-			if (!file_exists($auth_file)) {
-				die('"wildfire\auth" is missing');
-			}
-		} else {
-			$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/' . $slug . '.php';
-
-			if (!file_exists($auth_file)) {
-				$this->errorNotFound();
-			}
-		}
-
-		include_once $auth_file;
-		unset($auth_file);
-		return true;
-	}
-
-	/**
 	 * @name loadTypeSlugFile
 	 * @desc loads files by parsing type & slug in URL
 	 */
