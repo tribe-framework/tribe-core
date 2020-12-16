@@ -76,11 +76,9 @@ class MySQL
                 } else {
                     return $this->unstrip_array($this->arrayedResult);
                 }
-
             } else {
                 return 0;
             }
-
         } else {
             $this->lastError = mysqli_error($this->databaseLink);
             return false;
@@ -95,7 +93,6 @@ class MySQL
             } else {
                 return $variable;
             }
-
         }
         if (is_array($variable)) {
             foreach ($variable as $i => $value) {
@@ -108,7 +105,6 @@ class MySQL
 
     public function arrayResults()
     {
-
         if ($this->records == 1) {
             return $this->arrayResult();
         }
