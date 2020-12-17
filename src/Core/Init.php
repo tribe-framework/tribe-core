@@ -80,15 +80,15 @@ class Init {
 		unset($theme_functions);
 
 		if (($type ?? '') == 'scss') {
-			$this->loadScss();
+			return $this->loadScss();
 		}
 
 		if (($type ?? '') == 'admin') {
-			$this->loadAdmin();
+			return $this->loadAdmin();
 		}
 
 		if (($type ?? '') == 'auth') {
-			$this->loadAuth();
+			return $this->loadAuth();
 		}
 
 		if (($type ?? '') == 'search') {
@@ -96,7 +96,7 @@ class Init {
 		}
 
 		if (($type ?? '') == 'sitemap.xml') {
-			$this->loadSitemap();
+			return $this->loadSitemap();
 		}
 
 		if (
