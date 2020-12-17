@@ -59,14 +59,16 @@ class Init {
 		} elseif ($_GET['type'] ?? false) {
 			// for dashboard
 			self::$type = $dash->do_unslugify($_GET['type']);
-		}
+        }
+
+        $this->init();
 	}
 
 	/**
 	 * @name init
 	 * @desc to initialise this class
 	 */
-	public function init() {
+	private function init() {
 		$type = self::$type;
 		$slug = self::$slug;
 
