@@ -62,13 +62,15 @@ class Init
             // for dashboard
             self::$type = $dash->do_unslugify($_GET['type']);
         }
+
+        $this->init();
     }
 
     /**
      * @name init
      * @desc to initialise this class
      */
-    public function init()
+    private function init()
     {
         $type = self::$type;
         $slug = self::$slug;
@@ -83,15 +85,15 @@ class Init
         unset($theme_functions);
 
         if (($type ?? '') == 'scss') {
-            $this->loadScss();
+            return $this->loadScss();
         }
 
         if (($type ?? '') == 'admin') {
-            $this->loadAdmin();
+            return $this->loadAdmin();
         }
 
         if (($type ?? '') == 'auth') {
-            $this->loadAuth();
+            return $this->loadAuth();
         }
 
         if (($type ?? '') == 'search') {
@@ -99,7 +101,7 @@ class Init
         }
 
         if (($type ?? '') == 'sitemap.xml') {
-            $this->loadSitemap();
+            return $this->loadSitemap();
         }
 
         if (
@@ -159,7 +161,7 @@ class Init
         // load the search file from theme
         $admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
         if (!file_exists($admin_file)) {
-            die('The file does not exist.');
+            return $this->errorNotFound();
         }
 
         include_once $admin_file;
@@ -300,7 +302,7 @@ class Init
          * inside "/theme/"
          */
 
-        if ($type == 'user') {
+        if ($type === 'user') {
             if (!$slug) {
                 $auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/init.php';
 
