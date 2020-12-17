@@ -40,8 +40,8 @@ class Init {
 			parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
 		);
 
-		if (file_exists($uri . '.php')) {
-			include_once $uri . '.php';
+		if (file_exists(ABSOLUTE_PATH . $uri . '.php')) {
+			include_once ABSOLUTE_PATH . $uri . '.php';
 			return true;
 		}
 
