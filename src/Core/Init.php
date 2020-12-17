@@ -76,6 +76,10 @@ class Init {
 		$theme_functions = THEME_PATH . '/includes/functions.php';
 		if (file_exists($theme_functions)) {
 			include_once $theme_functions;
+		} else {
+			$theme_functions_old = THEME_PATH . '/functions.php';
+			include_once $theme_functions_old;
+			unset($theme_functions_old);
 		}
 		unset($theme_functions);
 
