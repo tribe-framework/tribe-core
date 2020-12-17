@@ -586,9 +586,10 @@ class Dash extends Init
         return array('upload_dir' => ABSOLUTE_PATH . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
     }
 
-    public function after_login($roleslug, $redirect_url = '')
+    public function after_login($user, $redirect_url = '')
     {
-        global $_SESSION, $user;
+        global $_SESSION;
+        $roleslug = $user['role_slug'];
         $types = self::$types;
 
         $user['role'] = $types['user']['roles'][$roleslug]['role'];
