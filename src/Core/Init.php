@@ -40,6 +40,11 @@ class Init {
 			parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
 		);
 
+		if (file_exists($uri . '.php')) {
+			include_once $uri . '.php';
+			return true;
+		}
+
 		// for theme
 		if ($uri ?? false) {
 			$uri = str_replace('/user/', '/auth/', $uri);
@@ -59,9 +64,9 @@ class Init {
 		} elseif ($_GET['type'] ?? false) {
 			// for dashboard
 			self::$type = $dash->do_unslugify($_GET['type']);
-        }
+		}
 
-        $this->init();
+		$this->init();
 	}
 
 	/**
@@ -91,10 +96,6 @@ class Init {
 		}
 		unset($theme_functions);
 
-		if (($type ?? '') == 'scss') {
-			return $this->loadScss();
-		}
-
 		if (($type ?? '') == 'admin') {
 			return $this->loadAdmin();
 		}
@@ -123,17 +124,6 @@ class Init {
 		}
 
 		return $this->loadIndex();
-	}
-
-	private function loadScss() {
-		$file_path = THEME_PATH . '/assets/scss/init.php';
-
-		if (file_exists($file_path)) {
-			include_once $file_path;
-			return true;
-		}
-
-		$this->errorNotFound();
 	}
 
 	private function loadSitemap() {
