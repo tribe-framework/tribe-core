@@ -329,7 +329,7 @@ class Dash extends Init
                 '@limit' => $limit ? " LIMIT $limit" : ""
             ];
 
-            $statement = "SELECT id FROM data
+            $query = "SELECT id FROM data
                 WHERE
                     content->'$.type'='$type'
                     @roleSlug
@@ -337,9 +337,9 @@ class Dash extends Init
                     @limit
             ";
 
-            $statement = strtr($statement, $trans);
+            $query = strtr($query, $trans);
 
-            $q = $sql->executeSQL($statement);
+            $q = $sql->executeSQL($query);
         } else {
             //content
             $role_slug = '';
@@ -350,7 +350,7 @@ class Dash extends Init
             ];
 
             if (($session_user['role'] ?? false) == 'admin') {
-                $statement = "SELECT id FROM data
+                $query = "SELECT id FROM data
                     WHERE
                         content->'$.content_privacy'!='draft'
                         AND
@@ -360,29 +360,31 @@ class Dash extends Init
                         @limit
                 ";
 
-                $statement = strtr($statement, $trans);
+                $query = strtr($query, $trans);
 
-                $q = $sql->executeSQL($statement);
+                $q = $sql->executeSQL($query);
             } else {
                 $trans['@userId'] = isset($session_user['user_id']) ? $session_user['user_id'] : '';
 
-                $statement = "SELECT id FROM data
+                $query = "SELECT id FROM data
                     WHERE
                         content->'$.content_privacy'='public'
+                        AND
+                        content->'$.type'='$type'
                         @userId
                         @roleSlug
                         ORDER BY $priority
                         @limit
                 ";
 
-                $statement = strtr($statement, $trans);
+                $query = strtr($query, $trans);
 
-                $q = $sql->executeSQL($statement);
+                $q = $sql->executeSQL($query);
             }
         }
 
         if ($debug_show_sql_statement) {
-            echo $statement;
+            echo $query;
         }
 
         return $q;
