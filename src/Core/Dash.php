@@ -289,15 +289,29 @@ class Dash extends Init
         return $sql->records;
     }
 
-    public static function get_all_ids($type, $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
-    {
+    /**
+     * @param mixed $type
+     * @param string $priority_field
+     * @param string $priority_order
+     * @param int $limit
+     * @param boolean $debug_show_sql_statement
+     * @return array
+     * @return int status
+     */
+    public function get_all_ids(
+        $type,
+        $priority_field = 'id',
+        $priority_order = 'DESC',
+        $limit = '',
+        $debug_show_sql_statement = 0
+    ){
         $sql = new MySQL();
         $session_user = self::$session_user;
 
         if ($priority_field == 'id') {
-            $priority = "`" . $priority_field . "` " . $priority_order;
+            $priority = "$priority_field $priority_order";
         } else {
-            $priority = "`content`->'$." . $priority_field . "' IS NULL, `content`->'$." . $priority_field . "' " . $priority_order . ", `id` DESC";
+            $priority = "content->'$.$priority_field' IS NULL, content->'$.$priority_field' $priority_order, id DESC";
         }
 
         //user
@@ -305,29 +319,64 @@ class Dash extends Init
             //accessible only to admins
             if ($session_user['role'] != 'admin') {
                 return 0;
-            } else {
-                $role_slug = $type['role_slug'];
-                $type = $type['type'];
-                $statement = "SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
-                $q = $sql->executeSQL($statement);
             }
-        }
 
-        //content
-        else {
+            $role_slug = $type['role_slug'];
+            $type = $type['type'];
+
+            $trans = [
+                '@roleSlug' => $role_slug ? " AND content->'$.role_slug'='$role_slug'" : "",
+                '@limit' => $limit ? " LIMIT $limit" : ""
+            ];
+
+            $statement = "SELECT id FROM data
+                WHERE
+                    content->'$.type'='$type'
+                    @roleSlug
+                    ORDER BY $priority
+                    @limit
+            ";
+
+            $statement = strtr($statement, $trans);
+
+            $q = $sql->executeSQL($statement);
+        } else {
+            //content
             $role_slug = '';
+
+            $trans = [
+                '@roleSlug' => $role_slug ? " AND content->'$.role_slug'='$role_slug'" : "",
+                '@limit' => $limit ? " LIMIT $limit" : ""
+            ];
+
             if (($session_user['role'] ?? false) == 'admin') {
-                $statement = "SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+                $statement = "SELECT id FROM data
+                    WHERE
+                        content->'$.content_privacy'!='draft'
+                        AND
+                        content->'$.type'='$type'
+                        @roleSlug
+                        ORDER BY $priority
+                        @limit
+                ";
+
+                $statement = strtr($statement, $trans);
+
                 $q = $sql->executeSQL($statement);
             } else {
-                $statement = "SELECT `id` FROM `data` WHERE (
-				(
-				`content`->'$.content_privacy'='public'
-				" . (isset($session_user['user_id']) ? " OR `content`->'$.user_id'='" . $session_user['user_id'] . "'" : '') . "
-				)
-				&& `content`->'$.type'='$type'"
-                    . ($role_slug ? " && `content`->'$.role_slug'='$role_slug'" : "")
-                    . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+                $trans['@userId'] = isset($session_user['user_id']) ? $session_user['user_id'] : '';
+
+                $statement = "SELECT id FROM data
+                    WHERE
+                        content->'$.content_privacy'='public'
+                        @userId
+                        @roleSlug
+                        ORDER BY $priority
+                        @limit
+                ";
+
+                $statement = strtr($statement, $trans);
+
                 $q = $sql->executeSQL($statement);
             }
         }
