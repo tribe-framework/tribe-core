@@ -151,11 +151,12 @@ class Init {
 
 		// load the search file from theme
 		$admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
-		if (!file_exists($admin_file)) {
-			die('The file does not exist.');
+		if (file_exists($admin_file)) {
+			include_once $admin_file;
+		} else {
+			include_once THEME_PATH . '/errors/404.php';
 		}
 
-		include_once $admin_file;
 		unset($admin_file);
 		return true;
 	}
@@ -174,11 +175,19 @@ class Init {
 
 		// load the search file from theme
 		$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
-		if (!file_exists($auth_file)) {
-			die('The file does not exist.');
+		if (file_exists($auth_file)) {
+			include_once $auth_file;
+		} else {
+			if (file_exists(THEME_PATH . '/pages/user/' . $slug . '.php')) {
+				include_once THEME_PATH . '/pages/user/' . $slug . '.php';
+			} elseif (file_exists(THEME_PATH . '/pages/user-' . $slug . '.php')) {
+				include_once THEME_PATH . '/pages/user-' . $slug . '.php';
+			} elseif (file_exists(THEME_PATH . '/user-' . $slug . '.php')) {
+				include_once THEME_PATH . '/user-' . $slug . '.php';
+			} else {
+				include_once THEME_PATH . '/errors/404.php';
+			}
 		}
-
-		include_once $auth_file;
 		unset($auth_file);
 		return true;
 	}
