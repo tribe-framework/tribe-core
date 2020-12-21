@@ -326,6 +326,15 @@ class Init {
 			return true;
 		}
 
+		// checking for "/theme/page/single-ID.php"
+		$file_path = THEME_PATH . '/page/single-' . $postdata['id'] . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "/theme/single-ID.php"
 		$file_path = THEME_PATH . '/single-' . $postdata['id'] . '.php';
 
@@ -335,8 +344,26 @@ class Init {
 			return true;
 		}
 
+		// checking for "/theme/page/single-$type.php"
+		$file_path = THEME_PATH . '/page/single-' . $type . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "/theme/single-$type.php"
 		$file_path = THEME_PATH . '/single-' . $type . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
+		// checking for generic "/theme/page/single.php"
+		$file_path = THEME_PATH . '/single.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
@@ -405,11 +432,11 @@ class Init {
 		 * in "/theme" you can have
 		 * archive-$type.php or archive.php
 		 *
-		 * or you can simply host it under "templates/$type" inside "/theme/"
+		 * or you can simply host it under "pages/$type" inside "/theme/"
 		 */
 
-		// checking for "type.php" under "/theme/templates"
-		$file_path = THEME_PATH . '/templates/' . $type . '.php';
+		// checking for "type.php" under "/theme/pages"
+		$file_path = THEME_PATH . '/pages/' . $type . '.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
@@ -426,8 +453,26 @@ class Init {
 			return true;
 		}
 
+		// checking for "archive-$type.php" under "/theme/pages"
+		$file_path = THEME_PATH . '/pages/archive-' . $type . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "archive-$type.php" under "/theme"
 		$file_path = THEME_PATH . '/archive-' . $type . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
+		// checking for "archive.php" under "/theme/pages"
+		$file_path = THEME_PATH . '/pages/archive.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
