@@ -317,6 +317,15 @@ class Init {
 			return true;
 		}
 
+		// checking for "/theme/pages/$type-$slug.php"
+		$file_path = THEME_PATH . '/pages/' . $type . '-' . $slug . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "/theme/$type-$slug.php"
 		$file_path = THEME_PATH . '/' . $type . '-' . $slug . '.php';
 
