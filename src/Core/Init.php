@@ -326,8 +326,8 @@ class Init {
 			return true;
 		}
 
-		// checking for "/theme/page/single-ID.php"
-		$file_path = THEME_PATH . '/page/single-' . $postdata['id'] . '.php';
+		// checking for "/theme/pages/single-ID.php"
+		$file_path = THEME_PATH . '/pages/single-' . $postdata['id'] . '.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
@@ -344,8 +344,8 @@ class Init {
 			return true;
 		}
 
-		// checking for "/theme/page/single-$type.php"
-		$file_path = THEME_PATH . '/page/single-' . $type . '.php';
+		// checking for "/theme/pages/single-$type.php"
+		$file_path = THEME_PATH . '/pages/single-' . $type . '.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
@@ -362,8 +362,8 @@ class Init {
 			return true;
 		}
 
-		// checking for generic "/theme/page/single.php"
-		$file_path = THEME_PATH . '/single.php';
+		// checking for generic "/theme/pages/single.php"
+		$file_path = THEME_PATH . '/pages/single.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
