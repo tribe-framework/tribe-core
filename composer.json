@@ -3,7 +3,7 @@
     "description": "Offers classes for various functions of wildfire core",
     "autoload": {
         "psr-4": {
-            "Wildfire\\": "src/"
+            "Wildfire\\Core\\": "src/"
         }
     }
 }
