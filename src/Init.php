@@ -121,11 +121,11 @@ class Init {
 		}
 
 		if (isset($type) && !isset($slug)) {
-			return $this->loadTypeIndex();
+			return $this->loadTypeIndex($type);
 		}
 
 		if ($type ?? false) {
-			return $this->loadTypeFile($type);
+			return $this->loadTypeFile();
 		}
 
 		return $this->loadIndex();
@@ -558,6 +558,8 @@ class Init {
 	 * loads index.php for a url which has only $type set
 	 */
 	private function loadTypeIndex($type) {
+		$defaultPagesDir = $this->defaultPagesDir;
+
 		if (\file_exists("$defaultPagesDir/$type.php")) {
 			include_once("$defaultPagesDir/$type.php");
 			return true;
