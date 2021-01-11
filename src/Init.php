@@ -4,7 +4,8 @@ namespace Wildfire\Core;
 
 class Init {
 	// properties
-	protected $error404_file = THEME_PATH . '/errors/404.php';
+	protected $error404_file = THEME_PATH.'/errors/404.php';
+	protected $defaultPagesDir = THEME_PATH."/pages";
 	protected static $types;
 	protected static $type;
 	protected static $slug;
@@ -119,8 +120,12 @@ class Init {
 			return $this->loadTypeSlugFile();
 		}
 
+		if (isset($type) && !isset($slug)) {
+			return $this->loadTypeIndex();
+		}
+
 		if ($type ?? false) {
-			return $this->loadTypeFile();
+			return $this->loadTypeFile($type);
 		}
 
 		return $this->loadIndex();
@@ -546,6 +551,19 @@ class Init {
 			return false;
 		} else {
 			die('Resource not available on server');
+		}
+	}
+
+	/**
+	 * loads index.php for a url which has only $type set
+	 */
+	private function loadTypeIndex($type) {
+		if (\file_exists("$defaultPagesDir/$type.php")) {
+			include_once("$defaultPagesDir/$type.php");
+			return true;
+		} elseif (\file_exists("$defaultPagesDir/$type/index.php")) {
+			include_once("$defaultPagesDir/$type/index.php");
+			return true;
 		}
 	}
 
