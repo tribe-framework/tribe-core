@@ -178,15 +178,7 @@ class Init {
 		if (file_exists($auth_file)) {
 			include_once $auth_file;
 		} else {
-			if (file_exists(THEME_PATH . '/pages/user/' . $slug . '.php')) {
-				include_once THEME_PATH . '/pages/user/' . $slug . '.php';
-			} elseif (file_exists(THEME_PATH . '/pages/user-' . $slug . '.php')) {
-				include_once THEME_PATH . '/pages/user-' . $slug . '.php';
-			} elseif (file_exists(THEME_PATH . '/user-' . $slug . '.php')) {
-				include_once THEME_PATH . '/user-' . $slug . '.php';
-			} else {
-				include_once THEME_PATH . '/errors/404.php';
-			}
+			include_once AUTH_PATH . '/404.php';
 		}
 		unset($auth_file);
 		return true;
