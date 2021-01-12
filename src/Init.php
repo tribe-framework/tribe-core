@@ -5,6 +5,7 @@ namespace Wildfire\Core;
 class Init {
 	// properties
 	protected $error404_file = THEME_PATH . '/errors/404.php';
+	protected $defaultPagesDir = THEME_PATH . "/pages";
 	protected static $types;
 	protected static $type;
 	protected static $slug;
@@ -112,10 +113,7 @@ class Init {
 			return $this->loadSitemap();
 		}
 
-		if (
-			(isset($type) && isset($slug)) ||
-			$type == 'user'
-		) {
+		if (isset($type) && isset($slug)) {
 			return $this->loadTypeSlugFile();
 		}
 
@@ -424,6 +422,15 @@ class Init {
 		 *
 		 * or you can simply host it under "pages/$type" inside "/theme/"
 		 */
+
+		// checking for "type/index.php" under "/theme/pages"
+		$file_path = THEME_PATH . '/pages/' . $type . '/index.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
 
 		// checking for "type.php" under "/theme/pages"
 		$file_path = THEME_PATH . '/pages/' . $type . '.php';
