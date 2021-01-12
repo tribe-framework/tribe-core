@@ -450,6 +450,15 @@ class Init {
 		 * or you can simply host it under "pages/$type" inside "/theme/"
 		 */
 
+		// checking for "type/index.php" under "/theme/pages"
+		$file_path = THEME_PATH . '/pages/' . $type . '/index.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "type.php" under "/theme/pages"
 		$file_path = THEME_PATH . '/pages/' . $type . '.php';
 
@@ -551,21 +560,6 @@ class Init {
 			return false;
 		} else {
 			die('Resource not available on server');
-		}
-	}
-
-	/**
-	 * loads index.php for a url which has only $type set
-	 */
-	private function loadTypeIndex($type) {
-		$defaultPagesDir = $this->defaultPagesDir;
-
-		if (\file_exists("$defaultPagesDir/$type.php")) {
-			include_once("$defaultPagesDir/$type.php");
-			return true;
-		} elseif (\file_exists("$defaultPagesDir/$type/index.php")) {
-			include_once("$defaultPagesDir/$type/index.php");
-			return true;
 		}
 	}
 
