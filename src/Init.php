@@ -4,8 +4,8 @@ namespace Wildfire\Core;
 
 class Init {
 	// properties
-	protected $error404_file = THEME_PATH.'/errors/404.php';
-	protected $defaultPagesDir = THEME_PATH."/pages";
+	protected $error404_file = THEME_PATH . '/errors/404.php';
+	protected $defaultPagesDir = THEME_PATH . "/pages";
 	protected static $types;
 	protected static $type;
 	protected static $slug;
@@ -113,15 +113,8 @@ class Init {
 			return $this->loadSitemap();
 		}
 
-		if (
-			(isset($type) && isset($slug)) ||
-			$type == 'user'
-		) {
+		if (isset($type) && isset($slug)) {
 			return $this->loadTypeSlugFile();
-		}
-
-		if (isset($type) && !isset($slug)) {
-			return $this->loadTypeIndex($type);
 		}
 
 		if ($type ?? false) {
@@ -293,26 +286,6 @@ class Init {
 		 * or you can simply host pages under "pages/$slug",
 		 * inside "/theme/"
 		 */
-
-		if ($type == 'user') {
-			if (!$slug) {
-				$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/init.php';
-
-				if (!file_exists($auth_file)) {
-					die('"wildfire\auth" is missing');
-				}
-			} else {
-				$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/' . $slug . '.php';
-
-				if (!file_exists($auth_file)) {
-					$this->errorNotFound();
-				}
-			}
-
-			include_once $auth_file;
-			unset($auth_file);
-			return true;
-		}
 
 		// checking for "/theme/pages/$type/$slug.php"
 		$file_path = THEME_PATH . '/pages/' . $type . '/' . $slug . '.php';
