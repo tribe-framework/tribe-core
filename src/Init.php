@@ -289,26 +289,6 @@ class Init {
 		 * inside "/theme/"
 		 */
 
-		if ($type == 'user') {
-			if (!$slug) {
-				$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/init.php';
-
-				if (!file_exists($auth_file)) {
-					die('"wildfire\auth" is missing');
-				}
-			} else {
-				$auth_file = ABSOLUTE_PATH . '/vendor/wildfire/auth/' . $slug . '.php';
-
-				if (!file_exists($auth_file)) {
-					$this->errorNotFound();
-				}
-			}
-
-			include_once $auth_file;
-			unset($auth_file);
-			return true;
-		}
-
 		// checking for "/theme/pages/$type/$slug.php"
 		$file_path = THEME_PATH . '/pages/' . $type . '/' . $slug . '.php';
 
