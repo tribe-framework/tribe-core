@@ -17,16 +17,7 @@ class Init {
 		session_start();
 		self::$session_user = $_SESSION['user'] ?? null;
 
-		// browser debugging
-		if (defined('ENV') && (ENV == 'dev')) {
-			ini_set('display_errors', 1);
-			ini_set('display_startup_errors', 1);
-			error_reporting(E_ALL);
-		} else {
-			ini_set('display_errors', 0);
-			ini_set('display_startup_errors', 0);
-			error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-		}
+		$this->logErrors();
 
 		$dash = new Dash();
 
@@ -69,6 +60,35 @@ class Init {
 
 		$this->init();
 	}
+
+    private function logErrors() {
+        error_reporting(E_ALL);
+        ini_set("log_errors", 1);
+        ini_set("track_errors", 1);
+
+        /**
+         * log errors locally in project @ /logs/php-error.log
+         */
+        $logsDir = TRIBE_ROOT."/logs";
+
+        if (!file_exists($logsDir)) {
+            mkdir($logsDir);
+        }
+
+        ini_set("error_log", "$logsDir/errors.log");
+        unset($logsDir);
+
+        /**
+         * Toggle printing errors in browser window
+         */
+        if (isset($_ENV['ENV']) && $_ENV['ENV'] === 'dev') {
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+        } else {
+            ini_set('display_errors', 0);
+            ini_set('display_startup_errors', 0);
+        }
+    }
 
 	/**
 	 * @name init
