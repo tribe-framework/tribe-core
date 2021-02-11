@@ -113,6 +113,10 @@ class Init {
 			return $this->loadSitemap();
 		}
 
+		if (($type ?? '') == 'backup') {
+			return $this->loadBackup();
+		}
+
 		if (isset($type) && isset($slug)) {
 			return $this->loadTypeSlugFile();
 		}
@@ -126,6 +130,17 @@ class Init {
 
 	private function loadSitemap() {
 		$file_path = ABSOLUTE_PATH . '/vendor/wildfire/sitemap/index.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			return true;
+		}
+
+		$this->errorNotFound();
+	}
+
+	private function loadBackup() {
+		$file_path = ABSOLUTE_PATH . '/vendor/wildfire/backup/index.php';
 
 		if (file_exists($file_path)) {
 			include_once $file_path;
