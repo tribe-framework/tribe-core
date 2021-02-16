@@ -48,8 +48,6 @@ class Init {
 
 		// for theme
 		if ($uri ?? false) {
-			$uri = str_replace('/user/', '/auth/', $uri);
-
 			if (preg_match('/^\//', $uri)) {
 				$uri = substr($uri, 1);
 			}
@@ -57,6 +55,10 @@ class Init {
 
 			if (count($ext)) {
 				self::$type = $dash->do_unslugify($ext[0]);
+				if (self::$type == 'user') {
+					self::$type = 'auth';
+				}
+
 			}
 
 			if (count($ext) > 1) {
