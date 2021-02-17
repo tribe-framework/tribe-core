@@ -8,6 +8,7 @@ class Init {
 	protected $defaultPagesDir = THEME_PATH . "/pages";
 	protected static $types;
 	protected static $type;
+	protected static $uri;
 	protected static $slug;
 	protected static $menus;
 	protected static $session_user;
@@ -37,21 +38,21 @@ class Init {
 			self::$types['webapp']['lang'] = 'en';
 		}
 
-		$uri = urldecode(
+		self::$uri = urldecode(
 			parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
 		);
 
-		if (file_exists(ABSOLUTE_PATH . $uri . '.php')) {
-			include_once ABSOLUTE_PATH . $uri . '.php';
+		if (file_exists(ABSOLUTE_PATH . self::$uri . '.php')) {
+			include_once ABSOLUTE_PATH . self::$uri . '.php';
 			return true;
 		}
 
 		// for theme
-		if ($uri ?? false) {
-			if (preg_match('/^\//', $uri)) {
-				$uri = substr($uri, 1);
+		if (self::$uri ?? false) {
+			if (preg_match('/^\//', self::$uri)) {
+				self::$uri = substr(self::$uri, 1);
 			}
-			$ext = explode('/', $uri);
+			$ext = explode('/', self::$uri);
 
 			if (count($ext)) {
 				self::$type = $dash->do_unslugify($ext[0]);
@@ -61,7 +62,7 @@ class Init {
 
 			}
 
-			if (count($ext) > 1) {
+			if ($type != 'uploads' && count($ext) > 1) {
 				self::$slug = $dash->do_unslugify($ext[1]);
 			}
 		} elseif ($_GET['type'] ?? false) {
@@ -98,6 +99,10 @@ class Init {
 			unset($theme_functions_old);
 		}
 		unset($theme_functions);
+
+		if (($type ?? '') == 'uploads') {
+			return $this->loadFile();
+		}
 
 		if (($type ?? '') == 'admin') {
 			return $this->loadAdmin();
@@ -174,6 +179,23 @@ class Init {
 
 		unset($admin_file);
 		return true;
+	}
+	/**
+	 * @name loadFile
+	 * @desc loads file from uploads folder
+	 */
+	private function loadFile() {
+		$file_to_download = ABSOLUTE_PATH . self::$uri;
+		header("Expires: 0");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		header("Content-type: application/file");
+		header('Content-length: ' . filesize($file_to_download));
+		header('Content-disposition: attachment; filename=' . basename($file_to_download));
+		readfile($file_to_download);
+		exit;
 	}
 
 	/**
