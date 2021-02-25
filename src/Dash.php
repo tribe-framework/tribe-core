@@ -615,10 +615,18 @@ class Dash extends Init {
 	public function get_uploaded_file_versions($file_url) {
 		$file_arr = array();
 		$file_parts = explode('/', $file_url);
-		$year = $file_parts[3];
-		$month = $file_parts[4];
-		$day = $file_parts[5];
-		$filename = $file_parts[6];
+		$file_parts = array_reverse($file_parts);
+		$filename = $file_parts[0];
+		if (strlen($file_parts[1]) == 2) {
+			$year = $file_parts[4];
+			$month = $file_parts[3];
+			$day = $file_parts[2];
+			$size = $file_parts[1];
+		} else {
+			$year = $file_parts[3];
+			$month = $file_parts[2];
+			$day = $file_parts[1];
+		}
 		$sizes = array('xl', 'lg', 'md', 'sm', 'xs');
 		foreach ($sizes as $size) {
 			if (file_exists(ABSOLUTE_PATH . '/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
