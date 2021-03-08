@@ -629,12 +629,12 @@ class Dash extends Init {
 		}
 		$sizes = array('xl', 'lg', 'md', 'sm', 'xs');
 		foreach ($sizes as $size) {
-			if (file_exists(ABSOLUTE_PATH . '/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
-				$file_arr['path'][$size] = ABSOLUTE_PATH . '/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename;
+			if (file_exists(ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
+				$file_arr['path'][$size] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename;
 				$file_arr['url'][$size] = BASE_URL . '/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename;
 			}
 		}
-		$file_arr['path']['source'] = ABSOLUTE_PATH . '/' . $year . '/' . $month . '/' . $day . '/' . $filename;
+		$file_arr['path']['source'] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $filename;
 		$file_arr['url']['source'] = $file_url;
 
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_arr['path']['source'])) {
