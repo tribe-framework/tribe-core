@@ -616,7 +616,7 @@ class Dash extends Init {
 		$file_arr = array();
 		$file_parts = explode('/', $file_url);
 		$file_parts = array_reverse($file_parts);
-		$filename = $file_parts[0];
+		$filename = urldecode($file_parts[0]);
 		if (strlen($file_parts[1]) == 2) {
 			$year = $file_parts[4];
 			$month = $file_parts[3];
