@@ -612,7 +612,7 @@ class Dash extends Init {
 		return array('upload_dir' => ABSOLUTE_PATH . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
 	}
 
-	public function get_uploaded_file_versions($file_url) {
+	public function get_uploaded_file_versions($file_url, $thumbnail = 'xs') {
 		$file_arr = array();
 		$file_parts = explode('/', $file_url);
 		$file_parts = array_reverse($file_parts);
@@ -638,9 +638,9 @@ class Dash extends Init {
 		$file_arr['url']['source'] = $file_url;
 
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_arr['path']['source'])) {
-			if (file_exists($file_arr['path']['xs'])) {
-				$file_arr['url']['thumbnail'] = $file_arr['url']['xs'];
-				$file_arr['path']['thumbnail'] = $file_arr['path']['xs'];
+			if (file_exists($file_arr['path'][$thumbnail])) {
+				$file_arr['url']['thumbnail'] = $file_arr['url'][$thumbnail];
+				$file_arr['path']['thumbnail'] = $file_arr['path'][$thumbnail];
 			} else {
 				$file_arr['url']['thumbnail'] = $file_arr['url']['source'];
 				$file_arr['path']['thumbnail'] = $file_arr['path']['source'];
