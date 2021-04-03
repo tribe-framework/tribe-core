@@ -87,7 +87,7 @@ class Dash extends Init {
 
 	public function push_content($post) {
 		$sql = new MySQL();
-		$types = $this->types;
+		$types = self::$types;
 		$updated_on = time();
 		$posttype = $post['type'];
 
