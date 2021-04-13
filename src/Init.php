@@ -349,6 +349,33 @@ class Init {
 			return true;
 		}
 
+		// checking for "/theme/includes/$type/_$slug.php"
+		$file_path = THEME_PATH . '/includes/' . $type . '/_' . $slug . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
+		// checking for "/theme/includes/_$type-$slug.php"
+		$file_path = THEME_PATH . '/includes/_' . $type . '-' . $slug . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
+		// checking for "/theme/includes/_single-ID.php"
+		$file_path = THEME_PATH . '/includes/_single-' . $postdata['id'] . '.php';
+
+		if (file_exists($file_path)) {
+			include_once $file_path;
+			unset($file_path);
+			return true;
+		}
+
 		// checking for "/theme/pages/single-$type.php"
 		$file_path = THEME_PATH . '/pages/single-' . $type . '.php';
 
