@@ -99,6 +99,10 @@ class Init {
         }
         unset($theme_functions);
 
+        if (($type ?? '') == 'api') {
+            return $this->loadApi();
+        }
+
         if (($type ?? '') == 'admin') {
             return $this->loadAdmin();
         }
@@ -150,6 +154,24 @@ class Init {
         }
 
         $this->errorNotFound();
+    }
+
+    /**
+     * @name loadApi
+     * @desc loads theme/pages/api/index.php file for api requests
+     */
+    private function loadApi() {
+
+        // load the api file from theme
+        $api_file = ABSOLUTE_PATH . '/theme/pages/api/index.php';
+        if (file_exists($api_file)) {
+            include_once $api_file;
+        } else {
+            include_once THEME_PATH . '/errors/404.php';
+        }
+
+        unset($api_file);
+        return true;
     }
 
     /**
