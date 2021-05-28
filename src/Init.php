@@ -1,6 +1,7 @@
 <?php
 
 namespace Wildfire\Core;
+use Wildfire\Auth\Auth as Auth;
 
 class Init {
     // properties
@@ -15,7 +16,9 @@ class Init {
     public function __construct() {
         session_save_path('/tmp');
         session_start();
-        self::$currentUser = $_SESSION['user'] ?? null;
+
+        $auth = new Auth();
+        self::$currentUser = $auth->getCurrentUser();
 
         // browser debugging
         if (defined('ENV') && (ENV == 'dev')) {
