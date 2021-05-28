@@ -1,16 +1,14 @@
 <?php
 
 namespace Wildfire\Core;
+use Wildfire\Auth\Auth as Auth;
 
-class Admin
-{
-    public function __construct()
-    {
+class Admin {
+    public function __construct() {
         $this->dash = new Dash();
     }
 
-    public function get_admin_menu($page, $type = '', $role_slug = '', $id = 0)
-    {
+    public function get_admin_menu($page, $type = '', $role_slug = '', $id = 0) {
         $op = '';
         if ($page == 'dash') {
             $op .= '
@@ -47,8 +45,7 @@ class Admin
         return $op;
     }
 
-    public function edit_options($type, $id = 0)
-    {
+    public function edit_options($type, $id = 0) {
         return '<div class="btn-group">
 					<button type="submit" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 save_btn"><span class="fa fa-save"></span>&nbsp;Save</button>
 					<a href="' . ($id ? BASE_URL . '/' . $type . '/' . $this->dash->get_content_meta($id, 'slug') : '#') . '" target="new" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0 view_btn ' . ($type == 'user' ? 'd-none' : '') . ' ' . ($id ? '' : 'disabled') . '"><span class="fa fa-external-link-alt"></span>&nbsp;View</a>
@@ -56,8 +53,7 @@ class Admin
 				</div>';
     }
 
-    public function new_and_list($type, $role_slug = '')
-    {
+    public function new_and_list($type, $role_slug = '') {
         return '
 		<div class="btn-group">
 			<a href="' . BASE_URL . '/admin/edit?type=' . $type . (trim($role_slug) ? '&role=' . urlencode($role_slug) : '') . '" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-edit"></span>&nbsp;New</a>
@@ -65,8 +61,7 @@ class Admin
 		</div>';
     }
 
-    public function list_types($type = '')
-    {
+    public function list_types($type = '') {
         $types = $this->dash->getTypes();
 
         $list_types = '<div class="btn-group" role="group"><a href="' . BASE_URL . '/admin/" class="btn btn-outline-primary border-top-0 border-left-0 border-right-0 rounded-0"><span class="fa fa-tachometer-alt"></span></a>';
@@ -97,9 +92,7 @@ class Admin
         return $list_types;
     }
 
-    public function is_access_allowed($id, $user_restricted_to_input_modules = array())
-    {
-        use Wildfire/Auth;
+    public function is_access_allowed($id, $user_restricted_to_input_modules = array()) {
         $auth = new Auth();
         $currentUser = $auth->getCurrentUser();
 
