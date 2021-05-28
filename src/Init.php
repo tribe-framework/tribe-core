@@ -163,11 +163,11 @@ class Init {
     private function loadApi() {
 
         // load the api file from theme
-        $api_file = ABSOLUTE_PATH . '/theme/pages/api/index.php';
+        $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/authorize.php';
         if (file_exists($api_file)) {
             include_once $api_file;
         } else {
-            include_once THEME_PATH . '/errors/404.php';
+            include_once THEME_PATH . '/pages/404.php';
         }
 
         unset($api_file);
@@ -191,7 +191,7 @@ class Init {
         if (file_exists($admin_file)) {
             include_once $admin_file;
         } else {
-            include_once THEME_PATH . '/errors/404.php';
+            include_once THEME_PATH . '/pages/404.php';
         }
 
         unset($admin_file);
