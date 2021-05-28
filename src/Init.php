@@ -10,12 +10,12 @@ class Init {
     protected static $type;
     protected static $slug;
     protected static $menus;
-    protected static $session_user;
+    protected static $currentUser;
 
     public function __construct() {
         session_save_path('/tmp');
         session_start();
-        self::$session_user = $_SESSION['user'] ?? null;
+        self::$currentUser = $_SESSION['user'] ?? null;
 
         // browser debugging
         if (defined('ENV') && (ENV == 'dev')) {
@@ -619,6 +619,6 @@ class Init {
     }
 
     public function getSessionUser() {
-        return self::$session_user;
+        return self::$currentUser;
     }
 }

@@ -99,16 +99,18 @@ class Admin
 
     public function is_access_allowed($id, $user_restricted_to_input_modules = array())
     {
-        $session_user = $this->dash->getSessionUser();
+        use Wildfire\Auth;
+        $auth = new Auth();
+        $currentUser = $auth->getCurrentUser();
 
         //if user has even on field allowing access to edit post, they will be given access to the post
         $allowed_access = 0;
         if (count($user_restricted_to_input_modules)) {
             foreach ($user_restricted_to_input_modules as $key => $value) {
-                if (is_array($this->dash->get_content_meta($id, $value)) && count(array_intersect($session_user[$value], $this->dash->get_content_meta($id, $value)))) {
+                if (is_array($this->dash->get_content_meta($id, $value)) && count(array_intersect($currentUser[$value], $this->dash->get_content_meta($id, $value)))) {
                     $allowed_access = 1;
                     break;
-                } elseif (in_array($this->dash->get_content_meta($id, $value), $session_user[$value]) || ($session_user[$value] && $this->dash->get_content_meta($id, $value) == $session_user[$value])) {
+                } elseif (in_array($this->dash->get_content_meta($id, $value), $currentUser[$value]) || ($currentUser[$value] && $this->dash->get_content_meta($id, $value) == $currentUser[$value])) {
                     $allowed_access = 1;
                     break;
                 }

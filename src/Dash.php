@@ -21,6 +21,10 @@ class Dash extends Init {
     public $statusCode = null; // to set server response code
 
     public function __construct() {
+
+        /*
+        If it's a new installation, create the first user
+         */
         $sql = new MySQL();
         $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
         if (!$q[0]['id']) {
@@ -214,7 +218,7 @@ class Dash extends Init {
 
     public function get_content($val) {
         $sql = new MySQL();
-        $session_user = self::$session_user;
+        $currentUser = self::$currentUser;
         $or = array();
         if (is_numeric($val)) {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
@@ -229,13 +233,13 @@ class Dash extends Init {
             $or['created_on'] = $q[0]['created_on'];
 
             if ($or['content_privacy'] == 'draft') {
-                if ($session_user['user_id'] == $or['user_id']) {
+                if ($currentUser['user_id'] == $or['user_id']) {
                     return $or;
                 } else {
                     return 0;
                 }
             } elseif ($or['content_privacy'] == 'pending') {
-                if ($session_user['role'] == 'admin' || $session_user['user_id'] == $or['user_id']) {
+                if ($currentUser['role'] == 'admin' || $currentUser['user_id'] == $or['user_id']) {
                     return $or;
                 } else {
                     return 0;
@@ -262,12 +266,12 @@ class Dash extends Init {
 
     public static function get_all_ids_count($type) {
         $sql = new MySQL();
-        $session_user = self::$session_user;
+        $currentUser = self::$currentUser;
 
         //user
         if (is_array($type)) {
             //accessible only to admins
-            if ($session_user['role'] != 'admin') {
+            if ($currentUser['role'] != 'admin') {
                 return 0;
             } else {
                 $role_slug = $type['role_slug'];
@@ -279,10 +283,10 @@ class Dash extends Init {
         //content
         else {
             $role_slug = '';
-            if ($session_user['role'] == 'admin') {
+            if ($currentUser['role'] == 'admin') {
                 $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
             } else {
-                $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='" . $session_user['user_id'] . "') && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
+                $q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='" . $currentUser['user_id'] . "') && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
             }
         }
 
@@ -306,7 +310,7 @@ class Dash extends Init {
         $debug_show_sql_statement = 0
     ) {
         $sql = new MySQL();
-        $session_user = self::$session_user;
+        $currentUser = self::$currentUser;
 
         if ($priority_field == 'id') {
             $priority = "$priority_field $priority_order";
@@ -317,7 +321,7 @@ class Dash extends Init {
         //user
         if (is_array($type)) {
             //accessible only to admins
-            if ($session_user['role'] != 'admin') {
+            if ($currentUser['role'] != 'admin') {
                 return 0;
             }
 
@@ -349,7 +353,7 @@ class Dash extends Init {
                 '@limit' => $limit ? " LIMIT $limit" : "",
             ];
 
-            if (($session_user['role'] ?? false) == 'admin') {
+            if (($currentUser['role'] ?? false) == 'admin') {
                 $query = "SELECT id FROM data
                     WHERE
                         content->'$.content_privacy'!='draft'
@@ -364,7 +368,7 @@ class Dash extends Init {
 
                 $q = $sql->executeSQL($query);
             } else {
-                $trans['@userId'] = isset($session_user['user_id']) ? $session_user['user_id'] : '';
+                $trans['@userId'] = isset($currentUser['user_id']) ? $currentUser['user_id'] : '';
 
                 $query = "SELECT id FROM data
                     WHERE
@@ -442,13 +446,13 @@ class Dash extends Init {
     }
 
     public static function get_types($json_path) {
-        $session_user = self::$session_user;
+        $currentUser = self::$currentUser;
 
         $types = json_decode(file_get_contents($json_path), true);
         foreach ($types as $key => $type) {
             if (($type['type'] ?? '') == 'content') {
                 if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
-                    if (($session_user['role'] ?? false) == 'admin') {
+                    if (($currentUser['role'] ?? false) == 'admin') {
                         $content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
@@ -663,68 +667,6 @@ class Dash extends Init {
         }
 
         return $file_arr;
-    }
-
-    public function after_login($user, $redirect_url = '') {
-        global $_SESSION;
-        $roleslug = $user['role_slug'];
-        $types = self::$types;
-
-        $user['role'] = $types['user']['roles'][$roleslug]['role'];
-
-        //for admin and crew (staff)
-        if ($types['user']['roles'][$roleslug]['role'] == 'admin' || $types['user']['roles'][$roleslug]['role'] == 'crew') {
-            $_SESSION['user'] = $user;
-            $_SESSION['user']['wildfire_dashboard_access'] = 1;
-            ob_start();
-            header('Location: ' . (trim($redirect_url) ? trim($redirect_url) : '/admin'));
-        }
-
-        //for members
-        elseif ($types['user']['roles'][$roleslug]['role'] == 'member') {
-            $_SESSION['user'] = $user;
-            $_SESSION['user']['wildfire_dashboard_access'] = 0;
-            ob_start();
-            header('Location: ' . (trim($redirect_url) ? trim($redirect_url) : '/user'));
-        }
-
-        //for visitors and anybody else
-        else {
-            ob_start();
-            header('Location: ' . (trim($redirect_url) ? trim($redirect_url) : '/'));
-        }
-    }
-
-    /**
-     * sends a json response setting appropriate json header
-     * @param array
-     * @optional $data[resCode] to specifiy server response code
-     */
-    public function json($data) {
-        header('Content-Type: application/json');
-
-        if (isset($this->statusCode)) {
-            http_response_code($this->statusCode);
-        }
-
-        echo json_encode($data);
-        die();
-    }
-
-    /**
-     * checks method type on a server request
-     * @return boolean
-     */
-    public function method($method) {
-        return $_SERVER['REQUEST_METHOD'] == strtoupper($method);
-    }
-
-    /**
-     * set server response code
-     */
-    public function status($code) {
-        $this->statusCode = $code;
-        return $this;
     }
 
     public function get_dir_url() {
