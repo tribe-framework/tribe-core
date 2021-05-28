@@ -99,7 +99,7 @@ class Admin
 
     public function is_access_allowed($id, $user_restricted_to_input_modules = array())
     {
-        use Wildfire\Auth;
+        use Wildfire/Auth;
         $auth = new Auth();
         $currentUser = $auth->getCurrentUser();
 
