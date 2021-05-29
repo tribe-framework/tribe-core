@@ -469,12 +469,12 @@ class Dash extends Init {
               {
                 "input_slug": "meta_key",
                 "input_type": "text",
-                "input_placeholder": "Key"
+                "input_placeholder": "Meta Key"
               },
               {
                 "input_slug": "meta_value",
                 "input_type": "text",
-                "input_placeholder": "Value"
+                "input_placeholder": "Meta Value"
               }
             ]
           },
@@ -483,7 +483,7 @@ class Dash extends Init {
             "name": "API key-secret pair",
             "plural": "API key-secret pairs",
             "description": "List of API key-secret pairs.",
-            "disallow_editing": false,
+            "disallow_editing": true,
             "modules": [
               {
                 "input_slug": "title",
@@ -498,12 +498,12 @@ class Dash extends Init {
               {
                 "input_slug": "api_key",
                 "input_type": "text",
-                "input_placeholder": "Key"
+                "input_placeholder": "API Key"
               },
               {
                 "input_slug": "api_secret",
                 "input_type": "text",
-                "input_placeholder": "Value"
+                "input_placeholder": "API Secret"
               }
             ]
           }
