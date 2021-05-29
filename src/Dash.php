@@ -448,9 +448,70 @@ class Dash extends Init {
     public static function get_types($json_path) {
         $currentUser = self::$currentUser;
 
-        $types = json_decode(file_get_contents($json_path), true);
+        $meta_types = json_decode('{
+          "key_value_pair": {
+            "slug": "key_value_pair",
+            "name": "key-value pair",
+            "plural": "key-value pairs",
+            "description": "List of key-value pairs.",
+            "disallow_editing": false,
+            "modules": [
+              {
+                "input_slug": "title",
+                "input_primary": true,
+                "input_type": "text",
+                "input_placeholder": "Enter remarks",
+                "input_unique": false,
+                "list_field": true,
+                "list_searchable": true,
+                "list_sortable": true
+              },
+              {
+                "input_slug": "meta_key",
+                "input_type": "text",
+                "input_placeholder": "Key"
+              },
+              {
+                "input_slug": "meta_value",
+                "input_type": "text",
+                "input_placeholder": "Value"
+              }
+            ]
+          },
+          "api_key_secret": {
+            "slug": "key_value_pair",
+            "name": "API key-secret pair",
+            "plural": "API key-secret pairs",
+            "description": "List of API key-secret pairs.",
+            "disallow_editing": false,
+            "modules": [
+              {
+                "input_slug": "title",
+                "input_primary": true,
+                "input_type": "text",
+                "input_placeholder": "Enter remarks",
+                "input_unique": false,
+                "list_field": true,
+                "list_searchable": true,
+                "list_sortable": true
+              },
+              {
+                "input_slug": "api_key",
+                "input_type": "text",
+                "input_placeholder": "Key"
+              },
+              {
+                "input_slug": "api_secret",
+                "input_type": "text",
+                "input_placeholder": "Value"
+              }
+            ]
+          }
+        }', true);
+
+        $types = array_merge(json_decode(file_get_contents($json_path), true), $meta_types);
         foreach ($types as $key => $type) {
-            if (($type['type'] ?? '') == 'content') {
+            if (!($type['slug'] == 'user' || $type['slug'] == 'webapp')) {
                 if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
                     if (($currentUser['role'] ?? false) == 'admin') {
                         $content_privacy_json = '{
