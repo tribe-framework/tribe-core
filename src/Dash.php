@@ -483,7 +483,7 @@ class Dash extends Init {
             "name": "API key-secret pair",
             "plural": "API key-secret pairs",
             "description": "List of API key-secret pairs.",
-            "disallow_editing": true,
+            "disallow_editing": false,
             "modules": [
               {
                 "input_slug": "title",
