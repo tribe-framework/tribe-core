@@ -192,7 +192,7 @@ class Dash extends Init {
             $qry = "`content`->>'$." . $meta_key . "' `" . $meta_key . "`";
         }
 
-        if (is_numeric($val)) {
+        if (is_int($val)) {
             $q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
         } else {
             $q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "'");
@@ -220,7 +220,7 @@ class Dash extends Init {
         $sql = new MySQL();
         $or = array();
 
-        if (is_numeric($val)) {
+        if (is_int($val)) {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' && `content`->'$.type'='user'");
         } else {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.user_id'='$val' && `content`->'$.type'='user'");
@@ -242,7 +242,7 @@ class Dash extends Init {
         $sql = new MySQL();
         $currentUser = self::$currentUser;
         $or = array();
-        if (is_numeric($val)) {
+        if (is_int($val)) {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
         } else {
             $q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "'");
