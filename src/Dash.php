@@ -216,6 +216,28 @@ class Dash extends Init {
         }
     }
 
+    public function get_user($val) {
+        $sql = new MySQL();
+        $or = array();
+
+        if (is_numeric($val)) {
+            $q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' && `content`->'$.type'='user'");
+        } else {
+            $q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.user_id'='$val' && `content`->'$.type'='user'");
+        }
+
+        if ($q[0]['id']) {
+            $or = json_decode($q[0]['content'], true);
+            $or['id'] = $q[0]['id'];
+            $or['updated_on'] = $q[0]['updated_on'];
+            $or['created_on'] = $q[0]['created_on'];
+            return $or;
+        } else {
+            return 0;
+        }
+
+    }
+
     public function get_content($val) {
         $sql = new MySQL();
         $currentUser = self::$currentUser;
