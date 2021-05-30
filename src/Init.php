@@ -166,7 +166,7 @@ class Init {
     private function loadApi() {
 
         // load the api file from theme
-        $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/authorize.php';
+        $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/_init.php';
         if (file_exists($api_file)) {
             include_once $api_file;
         } else {
