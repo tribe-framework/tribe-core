@@ -690,6 +690,32 @@ class Dash extends Init {
         return array('upload_dir' => ABSOLUTE_PATH . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
     }
 
+    public function get_uploaded_file_version($file_url, $thumbnail = 'md') {
+        if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
+            $file_arr = array();
+            $file_parts = explode('/', $file_url);
+            $file_parts = array_reverse($file_parts);
+            $filename = urldecode($file_parts[0]);
+            if (strlen($file_parts[1]) == 2) {
+                $year = $file_parts[4];
+                $month = $file_parts[3];
+                $day = $file_parts[2];
+                $size = $file_parts[1];
+            } else {
+                $year = $file_parts[3];
+                $month = $file_parts[2];
+                $day = $file_parts[1];
+            }
+            $file_arr['path'][$thumbnail] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . escapeshellarg($filename);
+            $file_arr['url'][$thumbnail] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . rawurlencode($filename);
+
+            return $file_arr;
+        } else {
+            return false;
+        }
+
+    }
+
     public function get_uploaded_file_versions($file_url, $thumbnail = 'xs') {
         if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
             $file_arr = array();
@@ -724,9 +750,11 @@ class Dash extends Init {
                 $file_arr['path']['thumbnail'] = $file_arr['path']['source'];
             }
 
+            return $file_arr;
+        } else {
+            return false;
         }
 
-        return $file_arr;
     }
 
     public function get_dir_url() {
