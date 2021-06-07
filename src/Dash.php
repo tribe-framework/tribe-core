@@ -691,31 +691,31 @@ class Dash extends Init {
     }
 
     public function get_uploaded_file_versions($file_url, $thumbnail = 'xs') {
-        $file_arr = array();
-        $file_parts = explode('/', $file_url);
-        $file_parts = array_reverse($file_parts);
-        $filename = urldecode($file_parts[0]);
-        if (strlen($file_parts[1]) == 2) {
-            $year = $file_parts[4];
-            $month = $file_parts[3];
-            $day = $file_parts[2];
-            $size = $file_parts[1];
-        } else {
-            $year = $file_parts[3];
-            $month = $file_parts[2];
-            $day = $file_parts[1];
-        }
-        $sizes = array('xl', 'lg', 'md', 'sm', 'xs');
-        foreach ($sizes as $size) {
-            if (file_exists(ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
-                $file_arr['path'][$size] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename;
-                $file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
+        if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
+            $file_arr = array();
+            $file_parts = explode('/', $file_url);
+            $file_parts = array_reverse($file_parts);
+            $filename = urldecode($file_parts[0]);
+            if (strlen($file_parts[1]) == 2) {
+                $year = $file_parts[4];
+                $month = $file_parts[3];
+                $day = $file_parts[2];
+                $size = $file_parts[1];
+            } else {
+                $year = $file_parts[3];
+                $month = $file_parts[2];
+                $day = $file_parts[1];
             }
-        }
-        $file_arr['path']['source'] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $filename;
-        $file_arr['url']['source'] = $file_url;
+            $sizes = array('xl', 'lg', 'md', 'sm', 'xs');
+            foreach ($sizes as $size) {
+                if (file_exists(ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
+                    $file_arr['path'][$size] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . escapeshellarg($filename);
+                    $file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
+                }
+            }
+            $file_arr['path']['source'] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $filename;
+            $file_arr['url']['source'] = $file_url;
 
-        if (preg_match('/\.(gif|jpe?g|png)$/i', $file_arr['path']['source'])) {
             if (file_exists($file_arr['path'][$thumbnail])) {
                 $file_arr['url']['thumbnail'] = $file_arr['url'][$thumbnail];
                 $file_arr['path']['thumbnail'] = $file_arr['path'][$thumbnail];
@@ -723,8 +723,7 @@ class Dash extends Init {
                 $file_arr['url']['thumbnail'] = $file_arr['url']['source'];
                 $file_arr['path']['thumbnail'] = $file_arr['path']['source'];
             }
-        } else {
-            $file_arr['url']['thumbnail'] = '';
+
         }
 
         return $file_arr;
