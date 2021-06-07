@@ -674,7 +674,7 @@ class Dash extends Init {
     }
 
     public function get_upload_dir_path() {
-        return ABSOLUTE_PATH . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
+        return TRIBE_ROOT . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
     }
 
     public function get_upload_dir_url() {
@@ -683,11 +683,11 @@ class Dash extends Init {
 
     public function get_uploader_path() {
         $folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-        if (!is_dir(ABSOLUTE_PATH . '/' . $folder_path)) {
-            mkdir(ABSOLUTE_PATH . '/' . $folder_path, 0755, true);
+        if (!is_dir(TRIBE_ROOT . '/' . $folder_path)) {
+            mkdir(TRIBE_ROOT . '/' . $folder_path, 0755, true);
         }
 
-        return array('upload_dir' => ABSOLUTE_PATH . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
+        return array('upload_dir' => TRIBE_ROOT . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
     }
 
     public function get_uploaded_image_in_size($file_url, $thumbnail = 'md') {
@@ -706,7 +706,7 @@ class Dash extends Init {
                 $month = $file_parts[2];
                 $day = $file_parts[1];
             }
-            $file_arr['path'] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . escapeshellarg($filename);
+            $file_arr['path'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . escapeshellarg($filename);
             $file_arr['url'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . rawurlencode($filename);
 
             return $file_arr;
@@ -760,7 +760,7 @@ class Dash extends Init {
     }
 
     public function get_dir_url() {
-        return str_replace(ABSOLUTE_PATH, BASE_URL, getcwd());
+        return str_replace(TRIBE_ROOT, BASE_URL, getcwd());
     }
 
     public function do_upload_file_from_url($url) {
