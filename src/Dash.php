@@ -442,7 +442,7 @@ class Dash extends Init {
     }
 
     public function do_unslugify($url_part) {
-        return strtolower(trim(urlencode($url_part)));
+        return strtolower(trim(rawurlencode($url_part)));
     }
 
     public static function get_types($json_path) {
@@ -709,7 +709,7 @@ class Dash extends Init {
         foreach ($sizes as $size) {
             if (file_exists(ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
                 $file_arr['path'][$size] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename;
-                $file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . urlencode($filename);
+                $file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
             }
         }
         $file_arr['path']['source'] = ABSOLUTE_PATH . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $filename;
