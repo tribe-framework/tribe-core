@@ -511,8 +511,12 @@ class Dash extends Init {
 
         $types = array_merge(json_decode(file_get_contents($json_path), true), $meta_types);
         foreach ($types as $key => $type) {
-            if (!($type['slug'] == 'user' || $type['slug'] == 'webapp')) {
-                if (!in_array('content_privacy', array_column($types[$key]['modules'], 'input_slug'))) {
+            $type_slug = $type['slug'] ?? 'undefined';
+
+            if (!($type_slug == 'user' || $type_slug == 'webapp')) {
+                $type_key_modules = $types[$key]['modules'] ?? [];
+
+                if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
                     if (($currentUser['role'] ?? false) == 'admin') {
                         $content_privacy_json = '{
 					        "input_slug": "content_privacy",
@@ -544,10 +548,12 @@ class Dash extends Init {
                 }
 
                 foreach ($types[$key]['modules'] as $module) {
-                    if ($module['input_primary']) {
-                        $types[$key]['primary_module'] = $module['input_slug'];
-                        break;
+                    if (!isset($module['input_primary'])) {
+                        continue;
                     }
+
+                    $types[$key]['primary_module'] = $module['input_slug'];
+                    break;
                 }
             }
         }
