@@ -49,7 +49,7 @@ class Theme
 					<ul class="' . $css_classes['ul'] . '">';
             if (isset($items['menu'])) {
                 foreach ($items['menu'] as $item) {
-                    if (($item['admin_access_only'] ?? false) && $types['user']['roles'][$session_user[role_slug]]['role'] != 'admin') {
+                    if (($item['admin_access_only'] ?? false) && $types['user']['roles'][$session_user['role_slug']]['role'] != 'admin') {
                         continue;
                     }
 
