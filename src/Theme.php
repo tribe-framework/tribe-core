@@ -10,20 +10,17 @@ is_ is for a yes/no answer
 
 namespace Wildfire\Core;
 
-class Theme
-{
+class Theme {
     public static $last_error = null; //array of error messages
     public static $last_info = null; //array of info messages
     public static $last_data = null; //array of data to be sent for display
     public static $last_redirect = null; //redirection url
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->dash = new Dash();
     }
 
-    public function get_navbar_menu($slug = '', $css_classes = array('navbar' => 'navbar-expand-md navbar-light bg-light', 'ul' => 'navbar-nav ml-auto mr-0', 'li' => 'nav-item', 'a' => 'nav-link', 'toggler' => 'navbar-toggler'), $hamburger_bars = '<span class="navbar-toggler-icon"></span>')
-    {
+    public function get_navbar_menu($slug = '', $css_classes = array('navbar' => 'navbar-expand-md navbar-light bg-light', 'ul' => 'navbar-nav ml-auto mr-0', 'li' => 'nav-item', 'a' => 'nav-link', 'toggler' => 'navbar-toggler'), $hamburger_bars = '<span class="navbar-toggler-icon"></span>') {
         $types = $this->dash->getTypes();
         $menus = $this->dash->getMenus();
         $session_user = $this->dash->getSessionUser();
@@ -78,7 +75,11 @@ class Theme
                             foreach ($subitems as $key => $opt) {
                                 if ($is_user_role_menu) {
                                     $subitem = $opt;
-                                    $subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
+                                    if ($opt['type']) {
+                                        $subitem['href'] = '/admin/list?type=' . $key;
+                                    } else {
+                                        $subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
+                                    }
                                 } else {
                                     $subitem = $this->dash->get_content($opt['id']);
                                     $subitem['href'] = '/' . $item['submenu'] . '/' . $subitem['slug'];
@@ -148,8 +149,7 @@ class Theme
         return $op;
     }
 
-    public function get_menu($slug = '', $css_classes = array('ul' => 'justify-content-center', 'li' => 'nav-item', 'a' => 'nav-link'))
-    {
+    public function get_menu($slug = '', $css_classes = array('ul' => 'justify-content-center', 'li' => 'nav-item', 'a' => 'nav-link')) {
         $types = $this->dash->getTypes();
         $menus = $this->dash->getMenus();
         $session_user = $this->dash->getSessionUser();
