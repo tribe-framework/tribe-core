@@ -573,7 +573,7 @@ class Dash extends Init {
         $i = 0;
         foreach ($types[$posttype]['modules'] as $module) {
             $title = array();
-            if ($module['input_primary'] && (!$module['restrict_id_max'] || $post_id <= $module['restrict_id_max']) && (!$module['restrict_id_min'] || $post_id >= $module['restrict_id_min'])) {
+            if ($module['input_primary']) {
                 $title_id = $i;
                 $title['slug'] = $module['input_slug'] . (is_array($module['input_lang']) ? '_' . $module['input_lang'][0]['slug'] : '');
                 $title['primary'] = $module['input_primary'];
