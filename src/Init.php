@@ -58,20 +58,19 @@ class Init {
                     $uri = substr($uri, 1);
                 }
 
-                if (strstr($uri, '/')) {
-                    $ext = explode('/', $uri);
-                    if (count($ext)) {
-                        self::$type = $dash->do_unslugify($ext[0]);
-                        if (self::$type == 'user') {
-                            self::$type = 'auth';
-                        }
-
+                $ext = explode('/', $uri);
+                if (count($ext)) {
+                    self::$type = $dash->do_unslugify($ext[0]);
+                    if (self::$type == 'user') {
+                        self::$type = 'auth';
                     }
 
-                    if (count($ext) > 1) {
-                        self::$slug = $dash->do_unslugify($ext[1]);
-                    }
                 }
+
+                if (count($ext) > 1) {
+                    self::$slug = $dash->do_unslugify($ext[1]);
+                }
+
             } elseif ($_GET['type'] ?? false) {
                 // for dashboard
                 self::$type = $dash->do_unslugify($_GET['type']);
@@ -91,12 +90,10 @@ class Init {
                 $uri = substr($uri, 1);
             }
 
-            if (strstr($uri, '/')) {
-                $ext = explode('/', $uri);
+            $ext = explode('/', $uri);
 
-                if (count($ext)) {
-                    self::$slug = $dash->do_unslugify($ext[0]);
-                }
+            if (trim($ext[0])) {
+                self::$slug = $dash->do_unslugify($ext[0]);
             }
 
         }
