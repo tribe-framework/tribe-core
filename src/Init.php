@@ -58,7 +58,7 @@ class Init {
                     $uri = substr($uri, 1);
                 }
 
-                if (strstr($url, '/')) {
+                if (strstr($uri, '/')) {
                     $ext = explode('/', $uri);
                     if (count($ext)) {
                         self::$type = $dash->do_unslugify($ext[0]);
@@ -91,7 +91,7 @@ class Init {
                 $uri = substr($uri, 1);
             }
 
-            if (strstr($url, '/')) {
+            if (strstr($uri, '/')) {
                 $ext = explode('/', $uri);
 
                 if (count($ext)) {
