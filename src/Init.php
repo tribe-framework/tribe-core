@@ -51,7 +51,7 @@ class Init {
 
         // for theme
 
-        if ($_SERVER[HTTP_HOST] == BASE_URL || $_SERVER[HTTP_HOST] == 'www.' . BASE_URL) {
+        if ($_SERVER[SERVER_NAME] == BASE_URL || $_SERVER[SERVER_NAME] == 'www.' . BASE_URL) {
             //handing main domain
             if ($uri ?? false) {
                 if (preg_match('/^\//', $uri)) {
@@ -74,12 +74,12 @@ class Init {
                 // for dashboard
                 self::$type = $dash->do_unslugify($_GET['type']);
             }
-        } elseif (strstr($_SERVER[HTTP_HOST], BASE_URL)) {
+        } elseif (strstr($_SERVER[SERVER_NAME], BASE_URL)) {
             //handling subdomains - use subdomain as a type name in types.json
             //replace - (hyphen) in URL, with _ (underscore) in types.json
             //to handle sub-sub-domains use sub.subdomain as a type name
 
-            self::$type = str_replace('.' . BASE_URL, '', $_SERVER[HTTP_HOST]);
+            self::$type = str_replace('.' . BASE_URL, '', $_SERVER[SERVER_NAME]);
 
             if (self::$type == 'user') {
                 self::$type = 'auth';
