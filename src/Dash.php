@@ -209,7 +209,7 @@ class Dash extends Init {
 				//to delete a key, leave it empty
 				$q = $sql->executeSQL("UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$." . $meta_key . "') WHERE `id`='$id'");
 			} else {
-				$q = $sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$." . $meta_key . "', '".mysqli_real_escape_string($sql->databaseLink, $meta_value)."') WHERE `id`='$id'");
+				$q = $sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$." . $meta_key . "', '" . mysqli_real_escape_string($sql->databaseLink, $meta_value) . "') WHERE `id`='$id'");
 			}
 			return 1;
 		} else {
@@ -240,7 +240,7 @@ class Dash extends Init {
 					return 0;
 				}
 			} elseif ($or['content_privacy'] == 'pending') {
-				if ($currentUser['role'] == 'admin' || $currentUser['user_id'] == $or['user_id']) {
+				if ($currentUser['role'] == 'admin' || $currentUser['user_id'] == $or['user_id'] || $_ENV['SKIP_CONTENT_PRIVACY']) {
 					return $or;
 				} else {
 					return 0;
