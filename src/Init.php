@@ -128,7 +128,7 @@ class Init {
         }
         unset($theme_functions);
 
-        if (($type ?? '') == 'api') {
+        if (($type ?? '') == 'api' && !$_ENV['SKIP_TRIBE_API']) {
             return $this->loadApi();
         }
 
