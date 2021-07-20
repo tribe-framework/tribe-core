@@ -31,7 +31,7 @@ class MySQL {
 		$this->hostname = DB_HOST;
 		$this->port = DB_PORT;
 
-		$this->databaseLink = mysqli_connect($this->hostname, $this->username, $this->password, $this->database, $this->port);
+		$this->databaseLink = mysqli_connect($this->hostname, $this->username, $this->password, $this->database, (int) $this->port);
 		if (!$this->databaseLink) {
 			$this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
 			$this->lastError = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
