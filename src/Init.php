@@ -51,7 +51,11 @@ class Init {
 
         // for theme
 
-        if ($_SERVER['SERVER_NAME'] == $_ENV['WEB_BARE_URL'] || $_SERVER['SERVER_NAME'] == 'www.' . $_ENV['WEB_BARE_URL']) {
+        if (
+            $_SERVER['SERVER_NAME'] == $_ENV['WEB_BARE_URL'] ||
+            $_SERVER['SERVER_NAME'] == "www.{$_ENV['WEB_BARE_URL']}" ||
+            $_SERVER['HTTP_HOST'] == $_ENV['WEB_BARE_URL']
+        ) {
             //handing main domain
             if ($uri ?? false) {
                 if (preg_match('/^\//', $uri)) {
@@ -128,7 +132,7 @@ class Init {
         }
         unset($theme_functions);
 
-        if (($type ?? '') == 'api') {
+        if (($type ?? '') == 'api' && !$_ENV['SKIP_TRIBE_API']) {
             return $this->loadApi();
         }
 
