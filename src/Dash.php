@@ -21,21 +21,7 @@ class Dash extends Init {
 	public $statusCode = null; // to set server response code
 
 	public function __construct() {
-
-		/*
-			        If it's a new installation, create the first user
-		*/
-		$sql = new MySQL();
-		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='user'");
-		if (!$q[0]['id']) {
-			$usr = array();
-			$usr['type'] = 'user';
-			$usr['role_slug'] = 'admin';
-			$usr['email'] = $_ENV['CONTACT_EMAIL'];
-			$usr['password'] = md5($_ENV['DB_PASS']);
-			$usr['user_id'] = $this->get_unique_user_id();
-			$this->push_content($usr);
-		}
+		// WARNING: this block is to be kept
 	}
 
 	public function get_last_error() {
