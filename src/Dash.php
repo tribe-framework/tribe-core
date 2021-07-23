@@ -137,7 +137,7 @@ class Dash extends Init {
 		}
 
 		if ($title_unique) {
-			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "'");
+			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 1");
 
 			if ($q[0]['id'] && $post['id'] != $q[0]['id']) {
 				dash::$last_error[] = 'Either the title is left empty or the same title already exists in ' . $types[$posttype]['plural'];
@@ -208,9 +208,9 @@ class Dash extends Init {
 		$currentUser = self::$currentUser;
 		$or = array();
 		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val'");
+			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' ORDER BY `id` DESC LIMIT 1");
 		} else {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "'");
+			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "' ORDER BY `id` DESC LIMIT 1");
 		}
 
 		if ($q[0]['id']) {
@@ -654,7 +654,7 @@ class Dash extends Init {
             WHERE
                 content->'$.user_id'='$bytes'
                 AND
-                content->'$.type'='user'
+                content->'$.type'='user' ORDER BY id DESC LIMIT 1
         ");
 
 		if ($q && $q[0]['id']) {
