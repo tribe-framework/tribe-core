@@ -650,12 +650,7 @@ class Dash extends Init {
 		$sql = new MySQL();
 		$bytes = strtoupper(bin2hex(random_bytes(3)));
 
-		$q = $sql->executeSQL("SELECT id FROM data
-            WHERE
-                content->'$.user_id'='$bytes'
-                AND
-                content->'$.type'='user' ORDER BY id DESC LIMIT 1
-        ");
+		$q = $sql->executeSQL("SELECT id FROM data WHERE content->'$.user_id'='$bytes' ORDER BY id DESC LIMIT 1");
 
 		if ($q && $q[0]['id']) {
 			return $this->get_unique_user_id();
