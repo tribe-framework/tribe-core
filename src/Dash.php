@@ -58,7 +58,7 @@ class Dash extends Init {
 
 	public function get_next_id() {
 		$sql = new MySQL();
-		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 1");
+		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 0,1");
 		return ($q[0]['id'] + 1);
 	}
 
@@ -72,7 +72,7 @@ class Dash extends Init {
 
 	public function get_ids_by_search_query($query) {
 		$sql = new MySQL();
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%" . strtolower(urldecode($query)) . "%' && `content`->'$.content_privacy'='public' GROUP BY `id` LIMIT 25");
+		return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%" . strtolower(urldecode($query)) . "%' && `content_privacy`='public' GROUP BY `id` LIMIT 0,25");
 	}
 
 	public function push_content($post) {
@@ -137,7 +137,7 @@ class Dash extends Init {
 		}
 
 		if ($title_unique) {
-			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 1");
+			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
 
 			if ($q[0]['id'] && $post['id'] != $q[0]['id']) {
 				dash::$last_error[] = 'Either the title is left empty or the same title already exists in ' . $types[$posttype]['plural'];
@@ -182,7 +182,7 @@ class Dash extends Init {
 		if (is_numeric($val)) {
 			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
 		} else {
-			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "'");
+			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `slug`='" . $val['slug'] . "' && `type`='" . $val['type'] . "'");
 		}
 
 		return $q[0][$meta_key];
@@ -208,9 +208,9 @@ class Dash extends Init {
 		$currentUser = self::$currentUser;
 		$or = array();
 		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' ORDER BY `id` DESC LIMIT 1");
+			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' ORDER BY `id` DESC LIMIT 0,1");
 		} else {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `content`->'$.slug'='" . $val['slug'] . "' && `content`->'$.type'='" . $val['type'] . "' ORDER BY `id` DESC LIMIT 1");
+			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `slug`='" . $val['slug'] . "' && `type`='" . $val['type'] . "' ORDER BY `id` DESC LIMIT 0,1");
 		}
 
 		if ($q[0]['id']) {
@@ -243,7 +243,7 @@ class Dash extends Init {
 		$sql = new MySQL();
 		$types = self::$types;
 
-		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `content`->'$.type'='$column_key' && `content`->'$.slug'='$slug'");
+		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `type`='$column_key' && `slug`='$slug'");
 		if ($with_link) {
 			return '<a href="' . BASE_URL . '/' . $column_key . '/' . $slug . '">' . json_decode($q[0]['title']) . '</a>';
 		} else {
@@ -263,7 +263,7 @@ class Dash extends Init {
 			} else {
 				$role_slug = $type['role_slug'];
 				$type = $type['type'];
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
+				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
 			}
 		}
 
@@ -271,9 +271,9 @@ class Dash extends Init {
 		else {
 			$role_slug = '';
 			if ($currentUser['role'] == 'admin') {
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'!='draft' && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
+				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content_privacy`!='draft' && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
 			} else {
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content`->'$.content_privacy'='public' OR `content`->'$.user_id'='" . $currentUser['user_id'] . "') && `content`->'$.type'='$type' " . ($role_slug ? "&& `content`->'$.role_slug'='$role_slug'" : ""));
+				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content_privacy`='public' OR `user_id`='" . $currentUser['user_id'] . "') && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
 			}
 		}
 
@@ -316,13 +316,13 @@ class Dash extends Init {
 			$type = $type['type'];
 
 			$trans = [
-				'@roleSlug' => $role_slug ? " AND content->'$.role_slug'='$role_slug'" : "",
+				'@roleSlug' => $role_slug ? " AND role_slug='$role_slug'" : "",
 				'@limit' => $limit ? " LIMIT $limit" : "",
 			];
 
 			$query = "SELECT id FROM data
                 WHERE
-                    content->'$.type'='$type'
+                    type='$type'
                     @roleSlug
                     ORDER BY $priority
                     @limit
@@ -336,16 +336,16 @@ class Dash extends Init {
 			$role_slug = '';
 
 			$trans = [
-				'@roleSlug' => $role_slug ? " AND content->'$.role_slug'='$role_slug'" : "",
+				'@roleSlug' => $role_slug ? " AND role_slug='$role_slug'" : "",
 				'@limit' => $limit ? " LIMIT $limit" : "",
 			];
 
 			if (($currentUser['role'] ?? false) == 'admin') {
 				$query = "SELECT id FROM data
                     WHERE
-                        content->'$.content_privacy'!='draft'
+                        content_privacy!='draft'
                         AND
-                        content->'$.type'='$type'
+                        type='$type'
                         @roleSlug
                         ORDER BY $priority
                         @limit
@@ -359,9 +359,9 @@ class Dash extends Init {
 
 				$query = "SELECT id FROM data
                     WHERE
-                        content->'$.content_privacy'='public'
+                        content_privacy='public'
                         AND
-                        content->'$.type'='$type'
+                        type='$type'
                         @userId
                         @roleSlug
                         ORDER BY $priority
@@ -409,7 +409,7 @@ class Dash extends Init {
 			$i++;
 		}
 
-		$qry = "SELECT `id` FROM `data` WHERE `content`->'$.content_privacy'='public' AND " . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		$qry = "SELECT `id` FROM `data` WHERE `content_privacy`='public' AND " . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 		$r = $sql->executeSQL($qry);
 		if ($debug_show_sql_statement) {
 			echo $qry;
@@ -554,7 +554,7 @@ class Dash extends Init {
 		$posttype = $post['type'];
 
 		if (!($post_id = $post['id'])) {
-			$last_id = $sql->executeSQL("SELECT `id` FROM `data` ORDER BY `id` DESC LIMIT 1");
+			$last_id = $sql->executeSQL("SELECT `id` FROM `data` ORDER BY `id` DESC LIMIT 0,1");
 			$post_id = $last_id[0]['id'] + 1;
 		}
 		//foreach loop that breaks
@@ -651,7 +651,7 @@ class Dash extends Init {
 		$sql = new MySQL();
 		$bytes = strtoupper(bin2hex(random_bytes(3)));
 
-		$q = $sql->executeSQL("SELECT id FROM data WHERE content->'$.user_id'='$bytes' ORDER BY id DESC LIMIT 1");
+		$q = $sql->executeSQL("SELECT id FROM data WHERE user_id='$bytes' ORDER BY id DESC LIMIT 0,1");
 
 		if ($q && $q[0]['id']) {
 			return $this->get_unique_user_id();
