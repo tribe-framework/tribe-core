@@ -424,7 +424,8 @@ class Dash extends Init {
 	}
 
 	public function do_slugify($string, $input_itself_is_unique = 0) {
-		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 1500) . ($input_itself_is_unique ? '' : '-' . uniqid());
+		//size of slug should be less than 255 characters because of DB field, so 230 + length of uniqid()
+		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 230) . ($input_itself_is_unique ? '' : '-' . uniqid());
 		return $slug;
 	}
 
