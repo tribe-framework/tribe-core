@@ -243,7 +243,7 @@ class Dash extends Init {
 		$sql = new MySQL();
 		$types = self::$types;
 
-		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `type`='$column_key' && `slug`='$slug'");
+		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `slug`='$slug' && `type`='$column_key'");
 		if ($with_link) {
 			return '<a href="' . BASE_URL . '/' . $column_key . '/' . $slug . '">' . json_decode($q[0]['title']) . '</a>';
 		} else {
