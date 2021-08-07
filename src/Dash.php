@@ -99,17 +99,20 @@ class Dash extends Init {
 					if ($post['id']) {
 						//while importing from get_content function
 						$post[$password_slug] = $post[$password_slug];
+						$post[$password_slug_md5] = $post[$password_slug];
 					} else {
 						//for new entries
 						$post[$password_slug] = md5($post[$password_slug]);
+						$post[$password_slug_md5] = $post[$password_slug];
 					}
 				} elseif ($post[$password_slug] && (md5($post[$password_slug]) != $post[$password_slug_md5])) {
 					//post edit, password changed
 					$post[$password_slug] = md5($post[$password_slug]);
+					$post[$password_slug_md5] = $post[$password_slug];
 				} elseif ($post[$password_slug_md5]) {
 					//post edit, when password unchanged
 					$post[$password_slug] = $post[$password_slug_md5];
-					unset($post[$password_slug_md5]);
+					$post[$password_slug_md5] = $post[$password_slug_md5];
 				}
 			}
 
