@@ -150,6 +150,7 @@ class Dash extends Init {
 
 		if (!trim($post['slug']) || $post['slug_update']) {
 			$post['slug'] = dash::do_slugify($post[$title_slug], $title_unique);
+			unset($post['slug_update']);
 		}
 
 		if (!trim($post['id'])) {
