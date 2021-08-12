@@ -501,7 +501,12 @@ class Dash extends Init {
           }
         }', true);
 
-		$types = array_merge(json_decode(file_get_contents($json_path), true), $meta_types);
+		$types_json = \json_decode(\file_get_contents($json_path), true);
+		if (!$types_json) {
+			die("<em><b>Error:</b> types</em> validation failed");
+		}
+
+		$types = array_merge($types_json, $meta_types);
 		foreach ($types as $key => $type) {
 			$type_slug = $type['slug'] ?? 'undefined';
 
