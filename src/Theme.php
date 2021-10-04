@@ -75,7 +75,7 @@ class Theme {
                             foreach ($subitems as $key => $opt) {
                                 if ($is_user_role_menu) {
                                     $subitem = $opt;
-                                    if ($opt['type']) {
+                                    if (isset($opt['type']) && $opt['type']) {
                                         $subitem['href'] = '/admin/list?type=' . $key;
                                     } else {
                                         $subitem['href'] = '/admin/list?type=' . $item['submenu'] . '&role=' . $key;
