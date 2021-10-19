@@ -25,13 +25,13 @@ class MySQL {
 	private function Connect() {
 		$this->CloseConnection();
 
-		$this->database = DB_NAME;
-		$this->username = DB_USER;
-		$this->password = DB_PASS;
-		$this->hostname = DB_HOST;
-		$this->port = DB_PORT;
+		$database = $this->database = isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : NULL;
+		$username = $this->username = isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : NULL;
+		$password = $this->password = isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : NULL;
+		$hostname = $this->hostname = isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : 'localhost';
+		$port = $this->port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
 
-		$this->databaseLink = mysqli_connect($this->hostname, $this->username, $this->password, $this->database, (int) $this->port);
+		$this->databaseLink = mysqli_connect($hostname, $username, $password, $database, (int) $port);
 		if (!$this->databaseLink) {
 			$this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
 			$this->lastError = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;

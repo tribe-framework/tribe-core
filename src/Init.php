@@ -1,7 +1,9 @@
 <?php
 
 namespace Wildfire\Core;
-use Wildfire\Auth\Auth as Auth;
+
+use \Wildfire\Auth\Auth as Auth;
+use \Wildfire\Api\Api as Api;
 
 class Init {
     // properties
@@ -194,17 +196,43 @@ class Init {
      * @desc loads theme/pages/api/index.php file for api requests
      */
     private function loadApi() {
-
         // load the api file from theme
-        $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/_init.php';
-        if (file_exists($api_file)) {
-            include_once $api_file;
-        } else {
-            include_once THEME_PATH . '/pages/404.php';
+        // $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/_init.php';
+
+        // if (file_exists($api_file)) {
+        //     include_once $api_file;
+        // } else {
+        //     include_once THEME_PATH . '/pages/404.php';
+        // }
+
+        $url_parts = array_values(
+            array_filter(
+                explode('/', $_SERVER['PATH_INFO'])
+            )
+        );
+
+        ///////////////////////////////////////
+        // strip off the "api" prefix to url //
+        ///////////////////////////////////////
+        if (strtolower($url_parts[0]) == 'api') {
+            unset($url_parts[0]);
+            $url_parts = array_values($url_parts);
         }
 
-        unset($api_file);
-        return true;
+        $api = new Api;
+
+        /////////////////////////////////////////////
+        // handle requests for "static" tribe APIs //
+        /////////////////////////////////////////////
+        if (strtolower($url_parts[0]) == "s"){
+            $db_index = $_GET['index'] ?? 0;
+            $db_limit = $_GET['limit'] ?? 20;
+            $all_types = array_keys(self::$types);
+
+            $api->exposeTribeApi($url_parts, $all_types, $db_index, $db_limit);
+        }
+
+        // ToDo: add support for user defined APIs
     }
 
     /**
