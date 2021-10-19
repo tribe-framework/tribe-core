@@ -728,22 +728,24 @@ class Dash extends Init {
 			$year = $file_parts[4];
 			$month = $file_parts[3];
 			$day = $file_parts[2];
-			$size = $file_parts[1];
+			$size = "$file_parts[1]/";
 		} else {
 			$year = $file_parts[3];
 			$month = $file_parts[2];
 			$day = $file_parts[1];
+			$size = '';
 		}
 
-		$file_arr['path']['source'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
-		$file_arr['url']['source'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
+		$file_arr['path']['source'] = TRIBE_ROOT . "/uploads/$year/$month/$day/" . substr(escapeshellarg($filename), 1, -1);
+		$file_arr['url']['source'] = BASE_URL . "/uploads/$year/$month/$day/$size" . rawurlencode($filename);
 
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
 			$sizes = array('xl', 'lg', 'md', 'sm', 'xs');
+
 			foreach ($sizes as $size) {
-				if (file_exists(TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
-					$file_arr['path'][$size] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . substr(escapeshellarg($filename), 1, -1);
-					$file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
+				if (file_exists(TRIBE_ROOT . "/uploads/$year/$month/$day/$size/$filename")) {
+					$file_arr['path'][$size] = TRIBE_ROOT . "/uploads/$year/$month/$day/$size/" . substr(escapeshellarg($filename), 1, -1);
+					$file_arr['url'][$size] = BASE_URL . "/uploads/$year/$month/$day/$size/" . rawurlencode($filename);
 				}
 			}
 
