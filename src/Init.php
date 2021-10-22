@@ -272,7 +272,7 @@ class Init {
         }
 
         // load the search file from theme
-        $auth_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
+        $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/{$slug}.php";
         if (file_exists($auth_file)) {
             include_once $auth_file;
         } else {
