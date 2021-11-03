@@ -165,15 +165,22 @@ class Theme {
         $op = '';
 
         if ($items) {
-            $op .= '
-			<ul class="' . ($css_classes['ul'] ?? '') . '">';
+            $op .= '<ul class="' . ($css_classes['ul'] ?? '') . '">';
             if (isset($items['menu'])) {
                 foreach ($items['menu'] as $item) {
-                    if ($item['admin_access_only'] && $types['user']['roles'][$session_user[role_slug]]['role'] != 'admin') {
+                    if (
+                        isset($item['admin_access_only']) &&
+                        $item['admin_access_only'] &&
+                        $types['user']['roles'][$session_user[role_slug]]['role'] != 'admin'
+                    ) {
                         continue;
                     }
 
-                    if (is_array(($item['submenu'] ?? ''))) {
+                    if (
+                        isset($item['submenu']) &&
+                        is_array($item['submenu'])
+                    ) {
+                        $op .= "<li class='dropdown ${$css_classes['li'] ?? ''}'";
                         $op .= '<li class="dropdown ' . ($css_classes['li'] ?? '') . '"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '
 								</a><div class="dropdown-menu ' . ($css_classes['dropdown'] ?? '') . ' ' . ($item['dropdown_class'] ?? '') . '">';
                         if (isset($item['submenu'])) {
@@ -182,7 +189,7 @@ class Theme {
                             }
                         }
                         $op .= '</div></li>';
-                    } elseif (isset($item['submenu'])) {
+                    } else if (isset($item['submenu'])) {
                         $submenu = $item['submenu'];
                         $subitems = $this->dash->get_all_ids($item['submenu'], ($types[$submenu]['priority_field'] ?? ''), ($types[$submenu]['priority_order'] ?? ''));
                         $op .= '<li class="dropdown ' . ($css_classes['li'] ?? '') . '"><a class="' . ($css_classes['a'] ?? '') . ' dropdown-toggle" href="#" title="' . ($item['title'] ?? '') . '" role="button" data-toggle="dropdown">' . ($item['name'] ?? '') . '

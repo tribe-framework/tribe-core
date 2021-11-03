@@ -224,15 +224,9 @@ class Init {
         /////////////////////////////////////////////
         // handle requests for "static" tribe APIs //
         /////////////////////////////////////////////
-        if (strtolower($url_parts[0]) == "s"){
-            $db_index = $_GET['index'] ?? 0;
-            $db_limit = $_GET['limit'] ?? 20;
-            $all_types = array_keys(self::$types);
+        $all_types = array_keys(self::$types);
 
-            $api->exposeTribeApi($url_parts, $all_types, $db_index, $db_limit);
-        }
-
-        // ToDo: add support for user defined APIs
+        $api->exposeTribeApi($url_parts, $all_types);
     }
 
     /**
@@ -272,7 +266,7 @@ class Init {
         }
 
         // load the search file from theme
-        $auth_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
+        $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/{$slug}.php";
         if (file_exists($auth_file)) {
             include_once $auth_file;
         } else {
