@@ -207,7 +207,7 @@ class Init {
 
         $url_parts = array_values(
             array_filter(
-                explode('/', $_SERVER['PATH_INFO'])
+                explode('/', $_SERVER['REQUEST_URI'])
             )
         );
 
