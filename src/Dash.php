@@ -20,11 +20,13 @@ class Dash extends Init {
 	public static $last_redirect = null; //redirection url
 	public $statusCode = null; // to set server response code
 
-	public function __construct() {
+	public function __construct()
+	{
 		// WARNING: this block is to be kept
 	}
 
-	public function get_last_error() {
+	public function get_last_error()
+	{
 		if (count(dash::$last_error)) {
 			$op = implode('<br>', dash::$last_error);
 			dash::$last_error = array();
@@ -34,7 +36,8 @@ class Dash extends Init {
 		}
 	}
 
-	public function get_last_info() {
+	public function get_last_info()
+	{
 		if (count(dash::$last_info)) {
 			$op = implode('<br>', dash::$last_info);
 			dash::$last_info = array();
@@ -44,25 +47,29 @@ class Dash extends Init {
 		}
 	}
 
-	public function get_last_data() {
+	public function get_last_data()
+	{
 		$arr = dash::$last_data;
 		dash::$last_data = array();
 		return $arr;
 	}
 
-	public function get_last_redirect() {
+	public function get_last_redirect()
+	{
 		$r = dash::$last_redirect;
 		dash::$last_redirect = '';
 		return $r;
 	}
 
-	public function get_next_id() {
+	public function get_next_id()
+	{
 		$sql = new MySQL();
 		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 0,1");
 		return ($q[0]['id'] + 1);
 	}
 
-	public function do_delete($post = array()) {
+	public function do_delete($post = array())
+	{
 		$sql = new MySQL();
 		$role_slug = $this->get_content_meta($post['id'], 'role_slug');
 		$q = $sql->executeSQL("DELETE FROM `data` WHERE `id`='" . $post['id'] . "'");
@@ -70,12 +77,14 @@ class Dash extends Init {
 		return 1;
 	}
 
-	public function get_ids_by_search_query($query) {
+	public function get_ids_by_search_query($query)
+	{
 		$sql = new MySQL();
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%" . strtolower(urldecode($query)) . "%' && `content_privacy`='public' GROUP BY `id` LIMIT 0,25");
 	}
 
-	public function push_content($post) {
+	public function push_content($post)
+	{
 		$sql = new MySQL();
 		$types = self::$types;
 		$updated_on = time();
@@ -174,7 +183,8 @@ class Dash extends Init {
 		return $id;
 	}
 
-	public function get_content_meta($val, $meta_key) {
+	public function get_content_meta($val, $meta_key)
+	{
 		$sql = new MySQL();
 
 		if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
@@ -192,7 +202,8 @@ class Dash extends Init {
 		return $q[0][$meta_key];
 	}
 
-	public function push_content_meta($id, $meta_key, $meta_value = '') {
+	public function push_content_meta($id, $meta_key, $meta_value = '')
+	{
 		$sql = new MySQL();
 		if ($id && $meta_key) {
 			if (!trim($meta_value)) {
@@ -207,7 +218,8 @@ class Dash extends Init {
 		}
 	}
 
-	public function get_content($val) {
+	public function get_content($val)
+	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
 		$or = array();
@@ -243,7 +255,8 @@ class Dash extends Init {
 		}
 	}
 
-	public function fetch_content_title_array($slug, $column_key, $with_link = 1) {
+	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
+	{
 		$sql = new MySQL();
 		$types = self::$types;
 
@@ -255,7 +268,8 @@ class Dash extends Init {
 		}
 	}
 
-	public static function get_all_ids_count($type) {
+	public static function get_all_ids_count($type)
+	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
 
@@ -299,7 +313,8 @@ class Dash extends Init {
 		$priority_order = 'DESC',
 		$limit = '',
 		$debug_show_sql_statement = 0
-	) {
+	)
+	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
 
@@ -385,7 +400,8 @@ class Dash extends Init {
 		return $q;
 	}
 
-	public function get_ids($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0) {
+	public function get_ids($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
+	{
 		$sql = new MySQL();
 		if ($priority_field == 'id') {
 			$priority = "`" . $priority_field . "` " . $priority_order;
@@ -422,22 +438,26 @@ class Dash extends Init {
 		return $r;
 	}
 
-	public function get_date_ids($publishing_date) {
+	public function get_date_ids($publishing_date)
+	{
 		$sql = new MySQL();
 		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.publishing_date'='$publishing_date'");
 	}
 
-	public function do_slugify($string, $input_itself_is_unique = 0) {
+	public function do_slugify($string, $input_itself_is_unique = 0)
+	{
 		//size of slug should be less than 255 characters because of DB field, so 230 + length of uniqid()
 		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 230) . ($input_itself_is_unique ? '' : '-' . uniqid());
 		return $slug;
 	}
 
-	public function do_unslugify($url_part) {
+	public function do_unslugify($url_part)
+	{
 		return strtolower(trim(rawurlencode($url_part)));
 	}
 
-	public static function get_types($json_path) {
+	public static function get_types($json_path)
+	{
 		$currentUser = self::$currentUser;
 
 		$meta_types = json_decode('{
@@ -557,7 +577,8 @@ class Dash extends Init {
 		return $types;
 	}
 
-	public function get_type_title_data($post) {
+	public function get_type_title_data($post)
+	{
 		$sql = new MySQL();
 		$types = self::$types;
 		$posttype = $post['type'];
@@ -583,7 +604,8 @@ class Dash extends Init {
 		return $title;
 	}
 
-	public function push_wp_posts($type = 'story', $meta_vars = array(), $max_records = 0, $overwrite = 0) {
+	public function push_wp_posts($type = 'story', $meta_vars = array(), $max_records = 0, $overwrite = 0)
+	{
 		$sql = new MySQL();
 		$i = 0;
 
@@ -656,7 +678,8 @@ class Dash extends Init {
 		}
 	}
 
-	public function get_unique_user_id() {
+	public function get_unique_user_id()
+	{
 		$sql = new MySQL();
 		$bytes = strtoupper(bin2hex(random_bytes(3)));
 
@@ -669,7 +692,8 @@ class Dash extends Init {
 		}
 	}
 
-	public function do_shell_command($cmd) {
+	public function do_shell_command($cmd)
+	{
 		ob_start();
 		passthru($cmd);
 		$tml = ob_get_contents();
@@ -677,15 +701,18 @@ class Dash extends Init {
 		return $tml;
 	}
 
-	public function get_upload_dir_path() {
+	public function get_upload_dir_path()
+	{
 		return TRIBE_ROOT . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
-	public function get_upload_dir_url() {
+	public function get_upload_dir_url()
+	{
 		return BASE_URL . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
-	public function get_uploader_path() {
+	public function get_uploader_path()
+	{
 		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 		if (!is_dir(TRIBE_ROOT . '/' . $folder_path)) {
 			mkdir(TRIBE_ROOT . '/' . $folder_path, 0755, true);
@@ -694,7 +721,8 @@ class Dash extends Init {
 		return array('upload_dir' => TRIBE_ROOT . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
 	}
 
-	public function get_uploaded_image_in_size($file_url, $thumbnail = 'md') {
+	public function get_uploaded_image_in_size($file_url, $thumbnail = 'md')
+	{
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
 			$file_arr = array();
 			$file_parts = explode('/', $file_url);
@@ -724,10 +752,10 @@ class Dash extends Init {
 		} else {
 			return false;
 		}
-
 	}
 
-	public function get_uploaded_file_versions($file_url, $thumbnail = 'xs') {
+	public function get_uploaded_file_versions($file_url, $thumbnail = 'xs')
+	{
 
 		$file_arr = array();
 		$file_parts = explode('/', $file_url);
@@ -772,14 +800,15 @@ class Dash extends Init {
 		}
 
 		return $file_arr;
-
 	}
 
-	public function get_dir_url() {
+	public function get_dir_url()
+	{
 		return str_replace(TRIBE_ROOT, BASE_URL, getcwd());
 	}
 
-	public function do_upload_file_from_url($url) {
+	public function do_upload_file_from_url($url)
+	{
 		if ($url ?? false) {
 			$path = $this->get_uploader_path();
 
