@@ -94,7 +94,6 @@ class Dash extends Init {
 		$title_slug = $title_data['slug'];
 		$title_unique = $title_data['unique'];
 
-		//loop that doesn't break
 		$post['view_searchable_data'] = '';
 		foreach ($types[$posttype]['modules'] as $module) {
 			//password md5 handling is a tricky game
@@ -202,20 +201,21 @@ class Dash extends Init {
 		return $q[0][$meta_key];
 	}
 
-	public function push_content_meta($id, $meta_key, $meta_value = '')
+	public function push_content_meta($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
+
 		if ($id && $meta_key) {
-			if (!trim($meta_value)) {
-				//to delete a key, leave it empty
-				$q = $sql->executeSQL("UPDATE `data` SET `content` = JSON_REMOVE(`content`, '$." . $meta_key . "') WHERE `id`='$id'");
+			if (!trim($meta_value)) { // to delete a key, when left empty
+				$q = $sql->executeSQL("UPDATE data SET content = JSON_REMOVE(content, '$.$meta_key') WHERE id='$id'");
 			} else {
-				$q = $sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, '$." . $meta_key . "', '" . mysqli_real_escape_string($sql->databaseLink, $meta_value) . "') WHERE `id`='$id'");
+				$meta_value = mysqli::real_escape_string($meta_value);
+				$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
 			}
 			return 1;
-		} else {
-			return 0;
 		}
+
+		return 0;
 	}
 
 	public function get_content($val)
@@ -824,5 +824,16 @@ class Dash extends Init {
 		} else {
 			return false;
 		}
+	}
+
+	public function logAdminActivity(int $id, array $user)
+	{
+		$sql = new MySQL;
+
+		$user = $user['name'] ?? $user['user_id'];
+		$time = date('Y-m-d H:i:s');
+		$data = "<b>{$user}</b> modified this record at <b>{$time}</b>";
+
+		$q = $sql->executeSQL("UPDATE data set content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') where id=$id");
 	}
 }
