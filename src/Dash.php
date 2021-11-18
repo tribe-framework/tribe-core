@@ -836,4 +836,14 @@ class Dash extends Init {
 
 		$q = $sql->executeSQL("UPDATE data set content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') where id=$id");
 	}
+
+	public function checkFileUploadName(string $filename): bool
+	{
+		return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i", $filename)) ? true : false);
+	}
+
+	public function checkFileUploadNameLength(string $filename): bool
+	{
+		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+	}
 }

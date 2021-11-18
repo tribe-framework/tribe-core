@@ -196,37 +196,22 @@ class Init {
      * @desc loads theme/pages/api/index.php file for api requests
      */
     private function loadApi() {
-        // load the api file from theme
-        // $api_file = ABSOLUTE_PATH . '/vendor/wildfire/api/_init.php';
-
-        // if (file_exists($api_file)) {
-        //     include_once $api_file;
-        // } else {
-        //     include_once THEME_PATH . '/pages/404.php';
-        // }
-
         $url_parts = array_values(
             array_filter(
                 explode('/', $_SERVER['REQUEST_URI'])
             )
         );
 
-        ///////////////////////////////////////
-        // strip off the "api" prefix to url //
-        ///////////////////////////////////////
+        // strip off the "api" prefix to url
         if (strtolower($url_parts[0]) == 'api') {
             unset($url_parts[0]);
             $url_parts = array_values($url_parts);
         }
 
         $api = new Api;
+        $api->exposeTribeApi($url_parts, array_keys(self::$types));
 
-        /////////////////////////////////////////////
-        // handle requests for "static" tribe APIs //
-        /////////////////////////////////////////////
-        $all_types = array_keys(self::$types);
-
-        $api->exposeTribeApi($url_parts, $all_types);
+        return;
     }
 
     /**
