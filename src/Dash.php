@@ -218,41 +218,60 @@ class Dash extends Init {
 		return 0;
 	}
 
+    /**
+     * Method to get content from database in a flattened structure
+     * @param  [integer | array] $val id of record or named array with type & slug keys
+     * @return [integer | array]      returns either 0 (for fail) or array of data
+     */
 	public function get_content($val)
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
-		$or = array();
+
 		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `id`='$val' ORDER BY `id` DESC LIMIT 0,1");
+			$q = $sql->executeSQL("SELECT * from data
+                where id = '{$val}'
+                order by id desc
+            ");
 		} else {
-			$q = $sql->executeSQL("SELECT * FROM `data` WHERE `slug`='" . $val['slug'] . "' && `type`='" . $val['type'] . "' ORDER BY `id` DESC LIMIT 0,1");
+			$q = $sql->executeSQL("SELECT * from data
+                where
+                    slug = '{$val['slug']}' and
+                    type = '{$val['type']}'
+                order by id desc
+                limit 0,1
+            ");
 		}
 
-		if ($q[0]['id']) {
-			$or = json_decode($q[0]['content'], true);
-			$or['id'] = $q[0]['id'];
-			$or['updated_on'] = $q[0]['updated_on'];
-			$or['created_on'] = $q[0]['created_on'];
+        if (!$q[0]['id']) {
+            return 0;
+        }
 
-			if ($or['content_privacy'] == 'draft') {
-				if ($currentUser['user_id'] == $or['user_id']) {
-					return $or;
-				} else {
-					return 0;
-				}
-			} elseif ($or['content_privacy'] == 'pending') {
-				if ($currentUser['role'] == 'admin' || $currentUser['user_id'] == $or['user_id'] || $_ENV['SKIP_CONTENT_PRIVACY']) {
-					return $or;
-				} else {
-					return 0;
-				}
-			} else {
-				return $or;
+        $q = $q[0];
+		$final_response = json_decode($q['content'], true);
+		$final_response['id'] = $q['id'];
+		$final_response['updated_on'] = $q['updated_on'];
+		$final_response['created_on'] = $q['created_on'];
+
+		if ($final_response['content_privacy'] == 'draft') {
+			if ($currentUser['user_id'] != $final_response['user_id']) {
+				return 0;
 			}
-		} else {
+
+			return $final_response;
+		} else if ($final_response['content_privacy'] == 'pending') {
+			if (
+                $currentUser['role'] == 'admin' ||
+                $currentUser['user_id'] == $final_response['user_id'] ||
+                $_ENV['SKIP_CONTENT_PRIVACY']
+            ) {
+				return $final_response;
+			}
+
 			return 0;
 		}
+
+		return $final_response;
 	}
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
