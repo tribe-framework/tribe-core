@@ -220,24 +220,24 @@ class Dash extends Init {
 
     /**
      * Method to get content from database in a flattened structure
-     * @param  [integer | array] $val id of record or named array with type & slug keys
+     * @param  [integer | array] $identifier id of record or named array with type & slug keys
      * @return [integer | array]      returns either 0 (for fail) or array of data
      */
-	public function get_content($val)
+	public function get_content($identifier)
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
 
-		if (is_numeric($val)) {
+		if (is_numeric($identifier)) {
 			$q = $sql->executeSQL("SELECT * from data
-                where id = '{$val}'
+                where id = '{$identifier}'
                 order by id desc
             ");
 		} else {
 			$q = $sql->executeSQL("SELECT * from data
                 where
-                    slug = '{$val['slug']}' and
-                    type = '{$val['type']}'
+                    slug = '{$identifier['slug']}' and
+                    type = '{$identifier['type']}'
                 order by id desc
                 limit 0,1
             ");
