@@ -10,12 +10,6 @@ class MySQL {
 	public $affected; // Holds the total number of records affected
 	public $arrayedResult; // Holds an array of the result
 
-	public $hostname; // MySQL Hostname
-	public $username; // MySQL Username
-	public $password; // MySQL Password
-	public $database; // MySQL Database
-	public $port; // MySQL Database
-
 	public $databaseLink; // Database Connection Link
 
 	public function __construct() {
@@ -25,11 +19,11 @@ class MySQL {
 	private function Connect() {
 		$this->CloseConnection();
 
-		$database = $this->database = isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : NULL;
-		$username = $this->username = isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : NULL;
-		$password = $this->password = isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : NULL;
-		$hostname = $this->hostname = isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : 'localhost';
-		$port = $this->port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
+		$database = isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : NULL;
+		$username = isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : NULL;
+		$password = isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : NULL;
+		$hostname = isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : 'localhost';
+		$port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
 
 		$this->databaseLink = mysqli_connect($hostname, $username, $password, $database, (int) $port);
 		if (!$this->databaseLink) {
