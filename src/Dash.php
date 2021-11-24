@@ -27,7 +27,7 @@ class Dash extends Init {
 
 	public function get_last_error()
 	{
-		if (count(dash::$last_error)) {
+		if (count(dash::$last_error ?? [])) {
 			$op = implode('<br>', dash::$last_error);
 			dash::$last_error = array();
 			return $op;
@@ -38,7 +38,7 @@ class Dash extends Init {
 
 	public function get_last_info()
 	{
-		if (count(dash::$last_info)) {
+		if (count(dash::$last_info ?? [])) {
 			$op = implode('<br>', dash::$last_info);
 			dash::$last_info = array();
 			return $op;
@@ -906,9 +906,15 @@ class Dash extends Init {
 	{
 		$sql = new MySQL;
 
-		$user = $user['name'] ?? $user['user_id'];
+		// $user = $user['name'] ?? $user['user_id'];
 		$time = date('Y-m-d H:i:s');
-		$data = "<b>{$user}</b> modified this record at <b>{$time}</b>";
+		// $data = "<b>{$user}</b> modified this record at <b>{$time}</b>";
+		$data = [
+			'user_name' => $user['name'],
+			'user_id' => $user['id'],
+			'time' => $time
+		];
+		$data = json_encode($data);
 
 		$q = $sql->executeSQL("UPDATE data set content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') where id=$id");
 	}
@@ -940,6 +946,12 @@ class Dash extends Init {
 		foreach ($decoded_data as $key => $value) {
 			if (\gettype($value) == 'string') {
 				$decoded_data[$key] = $this->jsonDecode($value);
+			} else if (\gettype($value) == 'array') {
+				foreach ($value as $value_key => $value_value) {
+					$value[$value_key] = $this->jsonDecode($value_value);
+				}
+
+				$decoded_data[$key] = $value;
 			}
 		}
 
