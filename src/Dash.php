@@ -248,7 +248,7 @@ class Dash extends Init {
         }
 
         $q = $q[0];
-		$final_response = json_decode($q['content'], true);
+		$final_response = $this->jsonDecode($q['content'], true);
 		$final_response['id'] = $q['id'];
 		$final_response['updated_on'] = $q['updated_on'];
 		$final_response['created_on'] = $q['created_on'];
@@ -921,5 +921,28 @@ class Dash extends Init {
 	public function checkFileUploadNameLength(string $filename): bool
 	{
 		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
+	}
+
+	/**
+	 * takes a json string and returns deeply nested decoded array
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function jsonDecode(string $data)
+	{
+		$decoded_data =  \json_decode($data, 1);
+
+		if (!$decoded_data) {
+			return $data;
+		}
+
+		foreach ($decoded_data as $key => $value) {
+			if (\gettype($value) == 'string') {
+				$decoded_data[$key] = $this->jsonDecode($value);
+			}
+		}
+
+		return $decoded_data;
 	}
 }
