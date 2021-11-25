@@ -914,21 +914,21 @@ class Dash extends Init {
 		}
 	}
 
-	public function logAdminActivity(int $id, array $user)
+	public function writeLog(int $id, array $user, string $msg = null)
 	{
 		$sql = new MySQL;
 
-		// $user = $user['name'] ?? $user['user_id'];
-		$time = date('Y-m-d H:i:s');
-		// $data = "<b>{$user}</b> modified this record at <b>{$time}</b>";
-		$data = [
+		$data = json_encode([
 			'user_name' => $user['name'],
 			'user_id' => $user['id'],
-			'time' => $time
-		];
-		$data = json_encode($data);
+			'time' => date('Y-m-d H:i:s'),
+			'msg' => $msg
+		]);
 
-		$q = $sql->executeSQL("UPDATE data set content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') where id=$id");
+		$q = $sql->executeSQL("UPDATE data
+			SET content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data')
+			WHERE id=$id
+		");
 	}
 
 	public function checkFileUploadName(string $filename): bool
