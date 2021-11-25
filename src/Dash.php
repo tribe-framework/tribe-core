@@ -68,13 +68,25 @@ class Dash extends Init {
 		return ($q[0]['id'] + 1);
 	}
 
-	public function do_delete($post = array())
+	public function do_delete(array $post = []): bool
 	{
 		$sql = new MySQL();
+		$types = Init::$types;
+
 		$role_slug = $this->get_content_meta($post['id'], 'role_slug');
-		$q = $sql->executeSQL("DELETE FROM `data` WHERE `id`='" . $post['id'] . "'");
-		dash::$last_redirect = '/admin/list?type=' . $post['type'] . ($role_slug ? '&role=' . $role_slug : '');
-		return 1;
+		$role_slug = $role_slug ? "&role=$role_slug" : '';
+
+		if ($types['webapp']['soft_delete']) {
+			$type = $this->get_content_meta($post['id'], 'type');
+			$this->push_content_meta($post['id'], 'undelete_to', $type);
+			$this->push_content_meta($post['id'], 'type', 'soft_delete');
+		} else {
+			$q = $sql->executeSQL("DELETE FROM data WHERE id={$post['id']}");
+		}
+
+		dash::$last_redirect = "/admin/list?type={$post['type']}$role_slug";
+
+		return true;
 	}
 
 	public function get_ids_by_search_query($query)
@@ -195,7 +207,7 @@ class Dash extends Init {
 		if (is_numeric($val)) {
 			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
 		} else {
-			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `slug`='" . $val['slug'] . "' && `type`='" . $val['type'] . "'");
+			$q = $sql->executeSQL("SELECT $qry FROM data WHERE slug='{$val['slug']}' && type='{$val['type']}'");
 		}
 
 		return $q[0][$meta_key];
