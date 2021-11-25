@@ -248,7 +248,7 @@ class Dash extends Init {
         }
 
         $q = $q[0];
-		$final_response = $this->jsonDecode($q['content'], true);
+		$final_response = json_decode($q['content'], true);
 		$final_response['id'] = $q['id'];
 		$final_response['updated_on'] = $q['updated_on'];
 		$final_response['created_on'] = $q['created_on'];
