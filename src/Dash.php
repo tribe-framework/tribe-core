@@ -98,6 +98,8 @@ class Dash extends Init {
 	public function push_content($post)
 	{
 		$sql = new MySQL();
+		$auth = new \Wildfire\Auth\Auth;
+		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
 		$types = self::$types;
 		$updated_on = time();
 		$posttype = $post['type'];
@@ -191,6 +193,9 @@ class Dash extends Init {
 
 		dash::$last_info[] = 'Content saved.';
 		dash::$last_data[] = array('updated_on' => $updated_on, 'id' => $id, 'slug' => $post['slug'], 'url' => BASE_URL . '/' . $post['type'] . '/' . $post['slug']);
+
+		$this->writeLog($id, $currentUser, 'updated current record');
+
 		return $id;
 	}
 
@@ -216,18 +221,27 @@ class Dash extends Init {
 	public function push_content_meta($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
+		$auth = new \Wildfire\Auth\Auth;
+		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null ];
 
-		if ($id && $meta_key) {
-			if (!trim($meta_value)) { // to delete a key, when left empty
-				$q = $sql->executeSQL("UPDATE data SET content = JSON_REMOVE(content, '$.$meta_key') WHERE id='$id'");
-			} else {
-				$meta_value = $sql->databaseLink->real_escape_string($meta_value);
-				$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
-			}
-			return 1;
+		if (!($id && $meta_key)) {
+			return 0;
 		}
 
-		return 0;
+		if (!trim($meta_value)) { // to delete a key, when left empty
+			$q = $sql->executeSQL("UPDATE data SET content = JSON_REMOVE(content, '$.$meta_key') WHERE id='$id'");
+			$log_msg = "deleted key $meta_key";
+		} else {
+			$meta_value = $sql->databaseLink->real_escape_string($meta_value);
+			$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
+			$log_msg = "updated key &#39;$meta_key&#39; to &#39;$meta_value&#39;";
+		}
+
+		if ($meta_key != "view_searchable_data") {
+			$this->writeLog($id, $currentUser, $log_msg);
+		}
+
+		return 1;
 	}
 
     /**
@@ -925,10 +939,7 @@ class Dash extends Init {
 			'msg' => $msg
 		]);
 
-		$q = $sql->executeSQL("UPDATE data
-			SET content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data')
-			WHERE id=$id
-		");
+		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') WHERE id=$id");
 	}
 
 	public function checkFileUploadName(string $filename): bool
