@@ -76,10 +76,10 @@ class Dash extends Init {
 		$role_slug = $this->get_content_meta($post['id'], 'role_slug');
 		$role_slug = $role_slug ? "&role=$role_slug" : '';
 
-		if ($types['webapp']['soft_delete']) {
+		if ($types['webapp']['soft_delete_records']) {
 			$type = $this->get_content_meta($post['id'], 'type');
-			$this->push_content_meta($post['id'], 'undelete_to', $type);
-			$this->push_content_meta($post['id'], 'type', 'soft_delete');
+			$this->push_content_meta($post['id'], 'deleted_type', $type);
+			$this->push_content_meta($post['id'], 'type', 'deleted_record');
 		} else {
 			$q = $sql->executeSQL("DELETE FROM data WHERE id={$post['id']}");
 		}
@@ -936,10 +936,10 @@ class Dash extends Init {
 			'user_name' => $user['name'],
 			'user_id' => $user['id'],
 			'time' => date('Y-m-d H:i:s'),
-			'msg' => $msg
+			'message' => $msg
 		]);
 
-		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_access_log', '$data') WHERE id=$id");
+		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_activity_log', '$data') WHERE id=$id");
 	}
 
 	public function checkFileUploadName(string $filename): bool
