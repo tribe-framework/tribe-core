@@ -112,6 +112,11 @@ class MySQL {
 		return $this->arrayedResult;
 	}
 
+	/**
+	 * request column/keys from database
+	 *
+	 * @param string|null $column_keys comma separated list of keys or empty for all
+	 */
 	public function select($column_keys = null)
 	{
 		if (!$column_keys) {
@@ -131,56 +136,100 @@ class MySQL {
 		return $this;
 	}
 
+	/**
+	 * WHERE condition joined by AND
+	 *
+	 * @param array $filter ['column', '=', 'pattern']
+	 */
 	public function andWhere(array $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'and');
 		return $this;
 	}
 
+	/**
+	 * WHERE condition joined by OR
+	 *
+	 * @param array $filter ['column', '=', 'pattern']
+	 */
 	public function orWhere(array $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'or');
 		return $this;
 	}
 
+	/**
+	 * WHERE NOT condition
+	 *
+	 * @param array $filter ['column', '=', 'pattern']
+	 */
 	public function notWhere(array $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'not');
 		return $this;
 	}
 
+	/**
+	 * WHERE NOT condition joined by AND
+	 *
+	 * @param array $filter ['column', '=', 'pattern']
+	 */
 	public function andNotWhere(array $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'andnot');
 		return $this;
 	}
 
+	/**
+	 * WHERE condition joined by OR
+	 *
+	 * @param array $filter ['column', '=', 'pattern']
+	 */
 	public function orNotWhere(array $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'ornot');
 		return $this;
 	}
 
+	/**
+	 * set limit on the number of records fetched
+	 *
+	 * @param string|int $limit e.g-2 or '0,2'
+	 */
 	public function limit($limit)
 	{
 		$this->sqlQuery .= " LIMIT $limit";
 		return $this;
 	}
 
-	public function orderBy($key, $order = 'DESC')
+	/**
+	 * ORDER BY on fetch request
+	 *
+	 * @param string $key
+	 * @param string $order
+	 */
+	public function orderBy(string $key, $order = 'DESC')
 	{
 		$key = $this->queryWithSchema($key);
 		$this->sqlQuery .= " ORDER BY $key $order";
 		return $this;
 	}
 
-	public function groupBy($key)
+	/**
+	 * GROUP BY on query
+	 *
+	 * @param string $key
+	 */
+	public function groupBy(string $key)
 	{
 		$qws_key = $this->queryWithSchema($key);
 		$this->sqlQuery .= " GROUP BY $qws_key as '$key'";
 		return $this;
 	}
 
+	/**
+	 * run the query
+	 */
 	public function get()
 	{
 		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
@@ -196,6 +245,9 @@ class MySQL {
 		return $q;
 	}
 
+	/**
+	 * Debug function: prints prepared query on screen
+	 */
 	public function query()
 	{
 		echo $this->sqlQuery;
