@@ -248,7 +248,7 @@ class MySQL {
 	/**
 	 * Debug function: prints prepared query on screen
 	 */
-	public function query()
+	public function print()
 	{
 		echo $this->sqlQuery;
 		return $this;
