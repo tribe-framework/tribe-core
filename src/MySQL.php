@@ -9,10 +9,13 @@ class MySQL {
 	public $records; // Holds the total number of records returned
 	public $affected; // Holds the total number of records affected
 	public $arrayedResult; // Holds an array of the result
-
 	public $databaseLink; // Database Connection Link
+	private $sqlQuery;
+	private $schema;
 
 	public function __construct() {
+		$this->schema = ['id', 'content', 'updated_on', 'created_on', 'user_id', 'role_slug', 'slug', 'content_privacy', 'type'];
+
 		$this->Connect();
 	}
 
@@ -107,5 +110,140 @@ class MySQL {
 	public function arrayResult() {
 		$this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
 		return $this->arrayedResult;
+	}
+
+	public function select($column_keys = null)
+	{
+		if (!$column_keys) {
+			$select_columns = 'content';
+		} else {
+			$keys = \explode(',', $column_keys);
+			$select_columns = '';
+
+			foreach($keys as $i => $key) {
+				$select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
+
+				$select_columns .= $this->queryWithSchema($key);
+			}
+		}
+
+		$this->sqlQuery = "SELECT $select_columns FROM data";
+		return $this;
+	}
+
+	public function andWhere(array $filter)
+	{
+		$this->sqlQuery = $this->whereClause($filter, 'and');
+		return $this;
+	}
+
+	public function orWhere(array $filter)
+	{
+		$this->sqlQuery = $this->whereClause($filter, 'or');
+		return $this;
+	}
+
+	public function notWhere(array $filter)
+	{
+		$this->sqlQuery = $this->whereClause($filter, 'not');
+		return $this;
+	}
+
+	public function andNotWhere(array $filter)
+	{
+		$this->sqlQuery = $this->whereClause($filter, 'andnot');
+		return $this;
+	}
+
+	public function orNotWhere(array $filter)
+	{
+		$this->sqlQuery = $this->whereClause($filter, 'ornot');
+		return $this;
+	}
+
+	public function limit($limit)
+	{
+		$this->sqlQuery .= " LIMIT $limit";
+		return $this;
+	}
+
+	public function orderBy($key, $order = 'DESC')
+	{
+		$key = $this->queryWithSchema($key);
+		$this->sqlQuery .= " ORDER BY $key $order";
+		return $this;
+	}
+
+	public function groupBy($key)
+	{
+		$qws_key = $this->queryWithSchema($key);
+		$this->sqlQuery .= " GROUP BY $qws_key as '$key'";
+		return $this;
+	}
+
+	public function get()
+	{
+		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
+		$q = \json_encode($this->executeSQL($this->sqlQuery), $options);
+
+		$dash = new \Wildfire\Core\Dash;
+		$res = $dash->jsonDecode($q);
+
+		return $q;
+	}
+
+	public function query()
+	{
+		echo $this->sqlQuery;
+		return $this;
+	}
+
+	private function whereClause(array $filter, string $condition): string
+	{
+		$query = $this->sqlQuery;
+
+		if (!\strpos(strtolower($query), 'where')) {
+			$query .= " WHERE ";
+
+			if (\strtolower($condition) == 'not') {
+				$query .= ' NOT ';
+			}
+		} else {
+			switch(\strtolower($condition)) {
+				case 'and':
+					$query .= " AND ";
+					break;
+
+				case 'or':
+					$query .= " OR ";
+					break;
+
+				case 'andnot':
+					$query .= " AND NOT ";
+					break;
+
+				case 'ornot':
+					$query .= " OR NOT ";
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		$filter[0] = $this->queryWithSchema($filter[0]);
+		$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
+
+		$query .= "$filter[0] $filter[1] $filter[2]";
+		return $query;
+	}
+
+	private function queryWithSchema($key)
+	{
+		if (\in_array($key, $this->schema)) {
+			return "`$key`";
+		} else {
+			return "`content`->>'$.$key'";
+		}
 	}
 }
