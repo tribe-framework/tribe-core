@@ -19,11 +19,11 @@ class Dash extends Init {
 	public static $last_data = null; //array of data to be sent for display
 	public static $last_redirect = null; //redirection url
 	public $statusCode = null; // to set server response code
-	public $ignored_keys;
+	public static $ignored_keys;
 
 	public function __construct()
 	{
-		$this->ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_activity_log'];
+		self::$ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_activity_log'];
 	}
 
 	public function get_last_error()
