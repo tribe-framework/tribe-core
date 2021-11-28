@@ -187,7 +187,11 @@ class MySQL {
 		$q = \json_encode($this->executeSQL($this->sqlQuery), $options);
 
 		$dash = new \Wildfire\Core\Dash;
-		$res = $dash->jsonDecode($q);
+		$q = $dash->jsonDecode($q);
+
+		if (\sizeof($q) == 1) {
+			$q = $q[0];
+		}
 
 		return $q;
 	}
