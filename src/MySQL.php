@@ -128,7 +128,7 @@ class MySQL {
 			foreach($keys as $i => $key) {
 				$select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
 
-				$select_columns .= $this->queryWithSchema($key);
+				$select_columns .= $this->validateKeyWithSchema($key);
 			}
 		}
 
@@ -210,7 +210,7 @@ class MySQL {
 	 */
 	public function orderBy(string $key, $order = 'DESC')
 	{
-		$key = $this->queryWithSchema($key);
+		$key = $this->validateKeyWithSchema($key);
 		$this->sqlQuery .= " ORDER BY $key $order";
 		return $this;
 	}
@@ -222,7 +222,7 @@ class MySQL {
 	 */
 	public function groupBy(string $key)
 	{
-		$qws_key = $this->queryWithSchema($key);
+		$qws_key = $this->validateKeyWithSchema($key);
 		$this->sqlQuery .= " GROUP BY $qws_key as '$key'";
 		return $this;
 	}
@@ -287,14 +287,14 @@ class MySQL {
 			}
 		}
 
-		$filter[0] = $this->queryWithSchema($filter[0]);
+		$filter[0] = $this->validateKeyWithSchema($filter[0]);
 		$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
 
 		$query .= "$filter[0] $filter[1] $filter[2]";
 		return $query;
 	}
 
-	private function queryWithSchema($key)
+	private function validateKeyWithSchema($key)
 	{
 		if (\in_array($key, $this->schema)) {
 			return "`$key`";
