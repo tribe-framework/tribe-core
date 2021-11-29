@@ -305,8 +305,6 @@ class MySQL {
 		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
 		$q = $this->executeSQL($this->sqlQuery);
 
-		print_r($q);
-
 		if ($q && \sizeof($q) > 0) {
 			foreach($q as $r) {
 				$queryResponse[] = $this->cleanUpQueryResponse($r, $respect_privacy);
