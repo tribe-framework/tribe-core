@@ -201,6 +201,12 @@ class MySQL {
 		return $this;
 	}
 
+	public function count()
+	{
+		$this->sqlQuery = "SELECT count(*) AS 'count' FROM data";
+		return $this;
+	}
+
 	/**
 	 * WHERE condition joined by AND
 	 *
@@ -301,6 +307,8 @@ class MySQL {
 		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
 		$q = $this->executeSQL($this->sqlQuery);
 
+		print_r($q);
+
 		if ($q && \sizeof($q) > 0) {
 			foreach($q as $r) {
 				$queryResponse[] = $this->cleanUpQueryResponse($r, $respect_privacy);
@@ -370,7 +378,7 @@ class MySQL {
 		if (\in_array($key, $this->schema)) {
 			return "`$key`";
 		} else {
-			return "`content`->>'$.$key' as '$key'";
+			return "`content`->>'$.$key' AS '$key'";
 		}
 	}
 }
