@@ -252,11 +252,15 @@ class Init {
 
         // load the search file from theme
         $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/{$slug}.php";
+        $alternate_file = THEME_PATH . "/pages/user/{$slug}.php";
         if (file_exists($auth_file)) {
             include_once $auth_file;
+        } else if (\file_exists($alternate_file)) {
+            include_once $alternate_file;
         } else {
             include_once AUTH_PATH . '/404.php';
         }
+
         unset($auth_file);
         return true;
     }
