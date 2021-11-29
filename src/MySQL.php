@@ -115,57 +115,66 @@ class MySQL {
 	/**
      * Fetch db record based on id
      * @param  int    $id id of record in database
-     * @return array     empty or non-empty (depening on status)
+	 * @param  bool   $respect_privacy default:true
+     * @return array|null	array or null if nothing is found
      */
-    public function getId(int $id): array
+    public function getId(int $id, bool $respect_privacy = true)
     {
         try {
-            $q = $this->executeSQL("SELECT * FROM data WHERE id = '{$id}' limit 1");
+            $q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
 
-            return $this->cleanUpQueryResponse($q);
+			if ($q[0]['content']) {
+				return $this->cleanUpQueryResponse($q[0], $respect_privacy);
+			}
+
         } catch (\Error $e) {
-            return [];
+            return array();
         }
     }
 
     /**
      * flattens database query result and organizes it (also respects privacy)
      * @param  array  $queryResponse db query result array
-     * @return array    false for fail or array for success
+	 * @param  bool   $respect_privacy default:true
+     * @return array|none	array, or null if validation fails
      */
-    private function cleanUpQueryResponse(array $queryResponse): array
+    private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
     {
 		$dash = new \Wildfire\Core\Dash;
 
-        if (!$queryResponse[0]['id']) {
-            return [];
-        }
+		foreach($queryResponse as $key => $value) {
+			if (\gettype($value) != 'array') {
+				if ($key == 'content') {
+					$finalResponse = $dash->jsonDecode($value);
+				} else {
+					$finalResponse[$key] = $dash->jsonDecode($value);
+				}
+			}
+		}
 
-        $queryResponse = $queryResponse[0];
-        $final_response = $dash->jsonDecode($queryResponse['content'], true);
-        $final_response['id'] = $queryResponse['id'];
-        $final_response['updated_on'] = $queryResponse['updated_on'];
-        $final_response['created_on'] = $queryResponse['created_on'];
+		if (!$respect_privacy) {
+			return $finalResponse;
+		}
 
-        if ($final_response['content_privacy'] == 'draft') {
-            if ($currentUser['user_id'] != $final_response['user_id']) {
-                return [];
+        if ($finalResponse['content_privacy'] == 'draft') {
+            if ($currentUser['user_id'] != $finalResponse['user_id']) {
+                return array();
             }
 
-            return $final_response;
-        } else if ($final_response['content_privacy'] == 'pending') {
+            return $finalResponse;
+        } else if ($queryResponse['content_privacy'] == 'pending') {
             if (
                 $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $final_response['user_id'] ||
+                $currentUser['user_id'] == $finalResponse['user_id'] ||
                 $_ENV['SKIP_CONTENT_PRIVACY']
             ) {
-                return $final_response;
+                return $finalResponse;
             }
 
-            return [];
+            return array();
         }
 
-        return $final_response;
+        return $finalResponse;
     }
 
 	/**
@@ -285,20 +294,20 @@ class MySQL {
 
 	/**
 	 * run the query
+	 * @param  bool $respect_privacy    default:true
 	 */
-	public function get()
+	public function get(bool $respect_privacy = true)
 	{
 		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
-		$q = \json_encode($this->executeSQL($this->sqlQuery), $options);
+		$q = $this->executeSQL($this->sqlQuery);
 
-		$dash = new \Wildfire\Core\Dash;
-		$q = $dash->jsonDecode($q);
-
-		if (\sizeof($q) == 1) {
-			$q = $q[0];
+		if ($q && \sizeof($q) > 0) {
+			foreach($q as $r) {
+				$queryResponse[] = $this->cleanUpQueryResponse($r, $respect_privacy);
+			}
 		}
 
-		return $q;
+		return $queryResponse;
 	}
 
 	/**
@@ -361,7 +370,7 @@ class MySQL {
 		if (\in_array($key, $this->schema)) {
 			return "`$key`";
 		} else {
-			return "`content`->>'$.$key'";
+			return "`content`->>'$.$key' as '$key'";
 		}
 	}
 }

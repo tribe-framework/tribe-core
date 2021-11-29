@@ -309,15 +309,7 @@ class Dash extends Init {
     public function findById(int $id)
     {
         $sql = new MySQL();
-        $currentUser = self::$currentUser;
-
-        try {
-            $q = $sql->executeSQL("SELECT * from data where id = '{$id}'");
-
-            return $sql->cleanUpQueryResponse($q);
-        } catch (\Error $e) {
-            return [];
-        }
+		return $sql->getId($id);
     }
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
