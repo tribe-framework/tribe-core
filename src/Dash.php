@@ -314,48 +314,10 @@ class Dash extends Init {
         try {
             $q = $sql->executeSQL("SELECT * from data where id = '{$id}'");
 
-            return $this->cleanUpQueryResponse($q);
+            return $sql->cleanUpQueryResponse($q);
         } catch (\Error $e) {
             return [];
         }
-    }
-
-    /**
-     * flattens database query result and organizes it (also respects privacy)
-     * @param  array  $queryResponse db query result array
-     * @return bool|array    false for fail or array for success
-     */
-    private function cleanUpQueryResponse(array $queryResponse)
-    {
-        if (!$queryResponse[0]['id']) {
-            return [];
-        }
-
-        $queryResponse = $queryResponse[0];
-        $final_response = $this->jsonDecode($queryResponse['content'], true);
-        $final_response['id'] = $queryResponse['id'];
-        $final_response['updated_on'] = $queryResponse['updated_on'];
-        $final_response['created_on'] = $queryResponse['created_on'];
-
-        if ($final_response['content_privacy'] == 'draft') {
-            if ($currentUser['user_id'] != $final_response['user_id']) {
-                return [];
-            }
-
-            return $final_response;
-        } else if ($final_response['content_privacy'] == 'pending') {
-            if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $final_response['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-            ) {
-                return $final_response;
-            }
-
-            return [];
-        }
-
-        return $final_response;
     }
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
