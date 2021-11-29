@@ -156,7 +156,7 @@ class MySQL {
 
         if ($finalResponse['content_privacy'] == 'draft') {
             if ($currentUser['user_id'] != $finalResponse['user_id']) {
-                return array();
+                return null;
             }
 
             return $finalResponse;
@@ -169,7 +169,7 @@ class MySQL {
                 return $finalResponse;
             }
 
-            return array();
+            return null;
         }
 
         return $finalResponse;
@@ -307,7 +307,10 @@ class MySQL {
 
 		if ($q && \sizeof($q) > 0) {
 			foreach($q as $r) {
-				$queryResponse[] = $this->cleanUpQueryResponse($r, $respect_privacy);
+				$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
+				if ($tmp) {
+					$queryResponse[] = $tmp;
+				}
 			}
 		}
 
