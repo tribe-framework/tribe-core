@@ -294,7 +294,13 @@ class MySQL {
 		return $query;
 	}
 
-	private function validateKeyWithSchema($key)
+	/**
+	 * validates key/column names with db schema and prepends `content` if required
+	 *
+	 * @param string $key
+	 * @return string
+	 */
+	private function validateKeyWithSchema(string $key): string
 	{
 		if (\in_array($key, $this->schema)) {
 			return "`$key`";
