@@ -140,14 +140,12 @@ class MySQL {
      */
     private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
     {
-		$dash = new \Wildfire\Core\Dash;
-
 		foreach($queryResponse as $key => $value) {
 			if (\gettype($value) != 'array') {
 				if ($key == 'content') {
-					$finalResponse = $dash->jsonDecode($value);
+					$finalResponse = $this->jsonDecode($value);
 				} else {
-					$finalResponse[$key] = $dash->jsonDecode($value);
+					$finalResponse[$key] = $this->jsonDecode($value);
 				}
 			}
 		}
@@ -380,5 +378,34 @@ class MySQL {
 		} else {
 			return "`content`->>'$.$key' AS '$key'";
 		}
+	}
+
+	/**
+	 * takes a json string and returns deeply nested array decoded
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function jsonDecode(string $data)
+	{
+		$decoded_data =  \json_decode($data, 1);
+
+		if (!$decoded_data) {
+			return $data;
+		}
+
+		foreach ($decoded_data as $key => $value) {
+			if (\gettype($value) == 'string') {
+				$decoded_data[$key] = $this->jsonDecode($value);
+			} else if (\gettype($value) == 'array') {
+				foreach ($value as $value_key => $value_value) {
+					$value[$value_key] = $this->jsonDecode($value_value);
+				}
+
+				$decoded_data[$key] = $value;
+			}
+		}
+
+		return $decoded_data;
 	}
 }

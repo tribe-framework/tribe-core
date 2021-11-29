@@ -906,33 +906,4 @@ class Dash extends Init {
 	{
 		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
 	}
-
-	/**
-	 * takes a json string and returns deeply nested decoded array
-	 *
-	 * @param string $data
-	 * @return void
-	 */
-	public function jsonDecode(string $data)
-	{
-		$decoded_data =  \json_decode($data, 1);
-
-		if (!$decoded_data) {
-			return $data;
-		}
-
-		foreach ($decoded_data as $key => $value) {
-			if (\gettype($value) == 'string') {
-				$decoded_data[$key] = $this->jsonDecode($value);
-			} else if (\gettype($value) == 'array') {
-				foreach ($value as $value_key => $value_value) {
-					$value[$value_key] = $this->jsonDecode($value_value);
-				}
-
-				$decoded_data[$key] = $value;
-			}
-		}
-
-		return $decoded_data;
-	}
 }
