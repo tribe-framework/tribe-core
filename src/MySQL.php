@@ -208,9 +208,9 @@ class MySQL {
 	/**
 	 * WHERE condition joined by AND
 	 *
-	 * @param array $filter ['column', '=', 'pattern']
+	 * @param string $filter  space separated string: "type = user"
 	 */
-	public function andWhere(array $filter)
+	public function andWhere(string $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'and');
 		return $this;
@@ -219,9 +219,9 @@ class MySQL {
 	/**
 	 * WHERE condition joined by OR
 	 *
-	 * @param array $filter ['column', '=', 'pattern']
+	 * @param string $filter  space separated string: "type = user"
 	 */
-	public function orWhere(array $filter)
+	public function orWhere(string $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'or');
 		return $this;
@@ -230,9 +230,9 @@ class MySQL {
 	/**
 	 * WHERE NOT condition
 	 *
-	 * @param array $filter ['column', '=', 'pattern']
+	 * @param string $filter  space separated string: "type = user"
 	 */
-	public function notWhere(array $filter)
+	public function notWhere(string $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'not');
 		return $this;
@@ -241,9 +241,9 @@ class MySQL {
 	/**
 	 * WHERE NOT condition joined by AND
 	 *
-	 * @param array $filter ['column', '=', 'pattern']
+	 * @param string $filter  space separated string: "type = user"
 	 */
-	public function andNotWhere(array $filter)
+	public function andNotWhere(string $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'andnot');
 		return $this;
@@ -252,9 +252,9 @@ class MySQL {
 	/**
 	 * WHERE condition joined by OR
 	 *
-	 * @param array $filter ['column', '=', 'pattern']
+	 * @param string $filter  space separated string: "type = user"
 	 */
-	public function orNotWhere(array $filter)
+	public function orNotWhere(string $filter)
 	{
 		$this->sqlQuery = $this->whereClause($filter, 'ornot');
 		return $this;
@@ -323,7 +323,7 @@ class MySQL {
 		return $this;
 	}
 
-	private function whereClause(array $filter, string $condition): string
+	private function whereClause(string $filter, string $condition): string
 	{
 		$query = $this->sqlQuery;
 
@@ -356,6 +356,7 @@ class MySQL {
 			}
 		}
 
+		$filter = \explode(' ', $filter);
 		$filter[0] = $this->validateKeyWithSchema($filter[0]);
 		$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
 
