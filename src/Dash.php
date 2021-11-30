@@ -908,4 +908,36 @@ class Dash extends Init {
 	{
 		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
 	}
+
+	/**
+	 * Generates password hash
+	 *
+	 * @param string $password
+	 *
+	 * @return string
+	 */
+	public function doPasswordHash(string $password): string
+	{
+		return \password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
+	}
+
+	/**
+	 * Verifies password using newer and falls back to older method
+	 *
+	 * @param string $password
+	 * @param string $hash
+	 *
+	 * @return boolean
+	 */
+	public function doVerifyPassword(string $password, string $hash): bool
+	{
+		$is_match = \password_verify($password, $hash);
+
+		// if password doesn't match, test it against md5 hash
+		if (!$is_match) {
+			$is_match = md5($password) == $hash;
+		}
+
+		return $is_match;
+	}
 }
