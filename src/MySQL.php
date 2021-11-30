@@ -133,7 +133,7 @@ class MySQL
             $q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
 
             if ($q[0]['content']) {
-                return $this->cleanUpQueryResponse($q[0], $respect_privacy);
+                return $this->doSanitizeResponse($q[0], $respect_privacy);
             }
         } catch (\Error $e) {
             return array();
@@ -144,9 +144,10 @@ class MySQL
     * flattens database query result and organizes it (also respects privacy)
     * @param  array  $queryResponse db query result array
     * @param  bool   $respect_privacy default:true
+    *
     * @return array|none	array, or null if validation fails
     */
-    private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
+    private function doSanitizeResponse(array $queryResponse, bool $respect_privacy = true)
     {
         foreach ($queryResponse as $key => $value) {
             if (\gettype($value) != 'array') {
@@ -162,6 +163,9 @@ class MySQL
             return $finalResponse;
         }
 
+        $auth = new \Wildfire\Auth\Auth();
+        $currentUser = $auth->getCurrentUser();
+
         if ($finalResponse['content_privacy'] == 'draft') {
             if ($currentUser['user_id'] != $finalResponse['user_id']) {
                 return null;
@@ -173,7 +177,7 @@ class MySQL
                 $currentUser['role'] == 'admin' ||
                 $currentUser['user_id'] == $finalResponse['user_id'] ||
                 $_ENV['SKIP_CONTENT_PRIVACY']
-                ) {
+            ) {
                 return $finalResponse;
             }
 
@@ -187,6 +191,8 @@ class MySQL
     * request column/keys from database
     *
     * @param string|null $column_keys comma separated list of keys or empty for all
+    *
+    * @return object
     */
     public function select($column_keys = null)
     {
@@ -207,6 +213,11 @@ class MySQL
         return $this;
     }
 
+    /**
+     * Count matching fields
+     *
+     * @return object
+     */
     public function count()
     {
         $this->sqlQuery = "SELECT count(*) AS 'count' FROM data";
@@ -217,7 +228,8 @@ class MySQL
     * Where condition
     *
     * @param string $filter  space separated string: "type = user"
-    * @return void
+    *
+    * @return object
     */
     public function where(string $filter)
     {
@@ -229,6 +241,8 @@ class MySQL
     * WHERE condition joined by AND
     *
     * @param string $filter  space separated string: "type = user"
+    *
+    * @return object
     */
     public function andWhere(string $filter)
     {
@@ -240,6 +254,8 @@ class MySQL
     * WHERE condition joined by OR
     *
     * @param string $filter  space separated string: "type = user"
+    *
+    * @return object
     */
     public function orWhere(string $filter)
     {
@@ -251,6 +267,8 @@ class MySQL
     * WHERE NOT condition
     *
     * @param string $filter  space separated string: "type = user"
+    *
+    * @return object
     */
     public function notWhere(string $filter)
     {
@@ -262,6 +280,8 @@ class MySQL
     * WHERE NOT condition joined by AND
     *
     * @param string $filter  space separated string: "type = user"
+    *
+    * @return object
     */
     public function andNotWhere(string $filter)
     {
@@ -273,6 +293,8 @@ class MySQL
     * WHERE condition joined by OR
     *
     * @param string $filter  space separated string: "type = user"
+    *
+    * @return object
     */
     public function orNotWhere(string $filter)
     {
@@ -284,6 +306,8 @@ class MySQL
     * set limit on the number of records fetched
     *
     * @param string|int $limit e.g-2 or '0,2'
+    *
+    * @return object
     */
     public function limit($limit)
     {
@@ -296,6 +320,8 @@ class MySQL
     *
     * @param string $key
     * @param string $order
+    *
+    * @return object
     */
     public function orderBy(string $key, $order = 'DESC')
     {
@@ -308,6 +334,8 @@ class MySQL
     * GROUP BY on query
     *
     * @param string $key
+    *
+    * @return object
     */
     public function groupBy(string $key)
     {
@@ -327,7 +355,7 @@ class MySQL
 
         if ($q && \sizeof($q) > 0) {
             foreach ($q as $r) {
-                $tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
+                $tmp = $this->doSanitizeResponse($r, $respect_privacy);
                 if ($tmp) {
                     $queryResponse[] = $tmp;
                 }
