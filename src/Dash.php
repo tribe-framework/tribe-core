@@ -195,7 +195,9 @@ class Dash extends Init {
 		dash::$last_info[] = 'Content saved.';
 		dash::$last_data[] = array('updated_on' => $updated_on, 'id' => $id, 'slug' => $post['slug'], 'url' => BASE_URL . '/' . $post['type'] . '/' . $post['slug']);
 
-		$this->writeLog($id, $currentUser, 'updated current record');
+		if ($types['webapp']['display_activity_log']) {
+			$this->writeLog($id, $currentUser, 'updated current record');
+		}
 
 		return $id;
 	}
@@ -238,7 +240,7 @@ class Dash extends Init {
 			$log_msg = "updated key &#39;$meta_key&#39; to &#39;$meta_value&#39;";
 		}
 
-		if ($meta_key != "view_searchable_data") {
+		if ($types['webapp']['display_activity_log'] && $meta_key != "view_searchable_data") {
 			$this->writeLog($id, $currentUser, $log_msg);
 		}
 
