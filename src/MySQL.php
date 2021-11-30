@@ -113,33 +113,33 @@ class MySQL {
 	}
 
 	/**
-     * Fetch db record based on id
-     * @param  int    $id id of record in database
-	 * @param  bool   $respect_privacy default:true
-     * @return array|null	array or null if nothing is found
-     */
-    public function getId(int $id, bool $respect_privacy = true)
-    {
-        try {
-            $q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
+	* Fetch db record based on id
+	* @param  int    $id id of record in database
+	* @param  bool   $respect_privacy default:true
+	* @return array|null	array or null if nothing is found
+	*/
+	public function getId(int $id, bool $respect_privacy = true)
+	{
+		try {
+			$q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
 
 			if ($q[0]['content']) {
 				return $this->cleanUpQueryResponse($q[0], $respect_privacy);
 			}
 
-        } catch (\Error $e) {
-            return array();
-        }
-    }
+		} catch (\Error $e) {
+			return array();
+		}
+	}
 
-    /**
-     * flattens database query result and organizes it (also respects privacy)
-     * @param  array  $queryResponse db query result array
-	 * @param  bool   $respect_privacy default:true
-     * @return array|none	array, or null if validation fails
-     */
-    private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
-    {
+	/**
+	* flattens database query result and organizes it (also respects privacy)
+	* @param  array  $queryResponse db query result array
+	* @param  bool   $respect_privacy default:true
+	* @return array|none	array, or null if validation fails
+	*/
+	private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
+	{
 		foreach($queryResponse as $key => $value) {
 			if (\gettype($value) != 'array') {
 				if ($key == 'content') {
@@ -154,260 +154,272 @@ class MySQL {
 			return $finalResponse;
 		}
 
-        if ($finalResponse['content_privacy'] == 'draft') {
-            if ($currentUser['user_id'] != $finalResponse['user_id']) {
-                return null;
-            }
-
-            return $finalResponse;
-        } else if ($queryResponse['content_privacy'] == 'pending') {
-            if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $finalResponse['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-            ) {
-                return $finalResponse;
-            }
-
-            return null;
-        }
-
-        return $finalResponse;
-    }
-
-	/**
-	 * request column/keys from database
-	 *
-	 * @param string|null $column_keys comma separated list of keys or empty for all
-	 */
-	public function select($column_keys = null)
-	{
-		if (!$column_keys) {
-			$select_columns = 'content';
-		} else {
-			$keys = \explode(',', $column_keys);
-			$select_columns = '';
-
-			foreach($keys as $i => $key) {
-				$select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
-
-				$select_columns .= $this->validateKeyWithSchema($key);
+		if ($finalResponse['content_privacy'] == 'draft') {
+			if ($currentUser['user_id'] != $finalResponse['user_id']) {
+				return null;
 			}
-		}
 
-		$this->sqlQuery = "SELECT $select_columns FROM data";
-		return $this;
-	}
-
-	public function count()
-	{
-		$this->sqlQuery = "SELECT count(*) AS 'count' FROM data";
-		return $this;
-	}
-
-	/**
-	 * WHERE condition joined by AND
-	 *
-	 * @param string $filter  space separated string: "type = user"
-	 */
-	public function andWhere(string $filter)
-	{
-		$this->sqlQuery = $this->whereClause($filter, 'and');
-		return $this;
-	}
-
-	/**
-	 * WHERE condition joined by OR
-	 *
-	 * @param string $filter  space separated string: "type = user"
-	 */
-	public function orWhere(string $filter)
-	{
-		$this->sqlQuery = $this->whereClause($filter, 'or');
-		return $this;
-	}
-
-	/**
-	 * WHERE NOT condition
-	 *
-	 * @param string $filter  space separated string: "type = user"
-	 */
-	public function notWhere(string $filter)
-	{
-		$this->sqlQuery = $this->whereClause($filter, 'not');
-		return $this;
-	}
-
-	/**
-	 * WHERE NOT condition joined by AND
-	 *
-	 * @param string $filter  space separated string: "type = user"
-	 */
-	public function andNotWhere(string $filter)
-	{
-		$this->sqlQuery = $this->whereClause($filter, 'andnot');
-		return $this;
-	}
-
-	/**
-	 * WHERE condition joined by OR
-	 *
-	 * @param string $filter  space separated string: "type = user"
-	 */
-	public function orNotWhere(string $filter)
-	{
-		$this->sqlQuery = $this->whereClause($filter, 'ornot');
-		return $this;
-	}
-
-	/**
-	 * set limit on the number of records fetched
-	 *
-	 * @param string|int $limit e.g-2 or '0,2'
-	 */
-	public function limit($limit)
-	{
-		$this->sqlQuery .= " LIMIT $limit";
-		return $this;
-	}
-
-	/**
-	 * ORDER BY on fetch request
-	 *
-	 * @param string $key
-	 * @param string $order
-	 */
-	public function orderBy(string $key, $order = 'DESC')
-	{
-		$key = $this->validateKeyWithSchema($key);
-		$this->sqlQuery .= " ORDER BY $key $order";
-		return $this;
-	}
-
-	/**
-	 * GROUP BY on query
-	 *
-	 * @param string $key
-	 */
-	public function groupBy(string $key)
-	{
-		$qws_key = $this->validateKeyWithSchema($key);
-		$this->sqlQuery .= " GROUP BY $qws_key as '$key'";
-		return $this;
-	}
-
-	/**
-	 * run the query
-	 * @param  bool $respect_privacy    default:true
-	 */
-	public function get(bool $respect_privacy = true)
-	{
-		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
-		$q = $this->executeSQL($this->sqlQuery);
-
-		if ($q && \sizeof($q) > 0) {
-			foreach($q as $r) {
-				$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
-				if ($tmp) {
-					$queryResponse[] = $tmp;
-				}
-			}
-		}
-
-		return $queryResponse;
-	}
-
-	/**
-	 * Debug function: prints prepared query on screen
-	 */
-	public function print()
-	{
-		echo $this->sqlQuery;
-		return $this;
-	}
-
-	private function whereClause(string $filter, string $condition): string
-	{
-		$query = $this->sqlQuery;
-
-		if (!\strpos(strtolower($query), 'where')) {
-			$query .= " WHERE ";
-
-			if (\strtolower($condition) == 'not') {
-				$query .= ' NOT ';
-			}
-		} else {
-			switch(\strtolower($condition)) {
-				case 'and':
-					$query .= " AND ";
-					break;
-
-				case 'or':
-					$query .= " OR ";
-					break;
-
-				case 'andnot':
-					$query .= " AND NOT ";
-					break;
-
-				case 'ornot':
-					$query .= " OR NOT ";
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		$filter = \explode(' ', $filter);
-		$filter[0] = $this->validateKeyWithSchema($filter[0]);
-		$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
-
-		$query .= "$filter[0] $filter[1] $filter[2]";
-		return $query;
-	}
-
-	/**
-	 * validates key/column names with db schema and prepends `content` if required
-	 *
-	 * @param string $key
-	 * @return string
-	 */
-	private function validateKeyWithSchema(string $key): string
-	{
-		if (\in_array($key, $this->schema)) {
-			return "`$key`";
-		} else {
-			return "`content`->>'$.$key' AS '$key'";
-		}
-	}
-
-	/**
-	 * takes a json string and returns deeply nested array decoded
-	 *
-	 * @param string $data
-	 * @return void
-	 */
-	public function jsonDecode(string $data)
-	{
-		$decoded_data =  \json_decode($data, 1);
-
-		if (!$decoded_data) {
-			return $data;
-		}
-
-		foreach ($decoded_data as $key => $value) {
-			if (\gettype($value) == 'string') {
-				$decoded_data[$key] = $this->jsonDecode($value);
-			} else if (\gettype($value) == 'array') {
-				foreach ($value as $value_key => $value_value) {
-					$value[$value_key] = $this->jsonDecode($value_value);
+			return $finalResponse;
+		} else if ($queryResponse['content_privacy'] == 'pending') {
+			if (
+				$currentUser['role'] == 'admin' ||
+				$currentUser['user_id'] == $finalResponse['user_id'] ||
+				$_ENV['SKIP_CONTENT_PRIVACY']
+				) {
+					return $finalResponse;
 				}
 
-				$decoded_data[$key] = $value;
+				return null;
 			}
+
+			return $finalResponse;
 		}
 
-		return $decoded_data;
-	}
-}
+		/**
+		* request column/keys from database
+		*
+		* @param string|null $column_keys comma separated list of keys or empty for all
+		*/
+		public function select($column_keys = null)
+		{
+			if (!$column_keys) {
+				$select_columns = 'content';
+			} else {
+				$keys = \explode(',', $column_keys);
+				$select_columns = '';
+
+				foreach($keys as $i => $key) {
+					$select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
+
+					$select_columns .= $this->validateKeyWithSchema($key, true);
+				}
+			}
+
+			$this->sqlQuery = "SELECT $select_columns FROM data";
+			return $this;
+		}
+
+		public function count()
+		{
+			$this->sqlQuery = "SELECT count(*) AS 'count' FROM data";
+			return $this;
+		}
+
+		/**
+		* Where condition
+		*
+		* @param string $filter  space separated string: "type = user"
+		* @return void
+		*/
+		public function where(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter);
+			return $this;
+		}
+
+		/**
+		* WHERE condition joined by AND
+		*
+		* @param string $filter  space separated string: "type = user"
+		*/
+		public function andWhere(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter, 'and');
+			return $this;
+		}
+
+		/**
+		* WHERE condition joined by OR
+		*
+		* @param string $filter  space separated string: "type = user"
+		*/
+		public function orWhere(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter, 'or');
+			return $this;
+		}
+
+		/**
+		* WHERE NOT condition
+		*
+		* @param string $filter  space separated string: "type = user"
+		*/
+		public function notWhere(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter, 'not');
+			return $this;
+		}
+
+		/**
+		* WHERE NOT condition joined by AND
+		*
+		* @param string $filter  space separated string: "type = user"
+		*/
+		public function andNotWhere(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter, 'andnot');
+			return $this;
+		}
+
+		/**
+		* WHERE condition joined by OR
+		*
+		* @param string $filter  space separated string: "type = user"
+		*/
+		public function orNotWhere(string $filter)
+		{
+			$this->sqlQuery = $this->whereClause($filter, 'ornot');
+			return $this;
+		}
+
+		/**
+		* set limit on the number of records fetched
+		*
+		* @param string|int $limit e.g-2 or '0,2'
+		*/
+		public function limit($limit)
+		{
+			$this->sqlQuery .= " LIMIT $limit";
+			return $this;
+		}
+
+		/**
+		* ORDER BY on fetch request
+		*
+		* @param string $key
+		* @param string $order
+		*/
+		public function orderBy(string $key, $order = 'DESC')
+		{
+			$key = $this->validateKeyWithSchema($key);
+			$this->sqlQuery .= " ORDER BY $key $order";
+			return $this;
+		}
+
+		/**
+		* GROUP BY on query
+		*
+		* @param string $key
+		*/
+		public function groupBy(string $key)
+		{
+			$qws_key = $this->validateKeyWithSchema($key);
+			$this->sqlQuery .= " GROUP BY $qws_key as '$key'";
+			return $this;
+		}
+
+		/**
+		* run the query
+		* @param  bool $respect_privacy    default:true
+		*/
+		public function get(bool $respect_privacy = true)
+		{
+			$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
+			$q = $this->executeSQL($this->sqlQuery);
+
+			if ($q && \sizeof($q) > 0) {
+				foreach($q as $r) {
+					$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
+					if ($tmp) {
+						$queryResponse[] = $tmp;
+					}
+				}
+			}
+
+			return $queryResponse;
+		}
+
+		/**
+		* Debug function: prints prepared query on screen
+		*/
+		public function print()
+		{
+			echo $this->sqlQuery;
+			return $this;
+		}
+
+		private function whereClause(string $filter, string $condition = ''): string
+		{
+			$query = $this->sqlQuery;
+
+			if (!\strpos(strtolower($query), 'where')) {
+				$query .= " WHERE ";
+
+				if (\strtolower($condition) == 'not') {
+					$query .= ' NOT ';
+				}
+			} else {
+				switch(\strtolower($condition)) {
+					case 'and':
+						$query .= " AND ";
+						break;
+
+						case 'or':
+							$query .= " OR ";
+							break;
+
+							case 'andnot':
+								$query .= " AND NOT ";
+								break;
+
+								case 'ornot':
+									$query .= " OR NOT ";
+									break;
+
+									default:
+									break;
+								}
+							}
+
+							$filter = \explode(' ', $filter);
+							$filter[0] = $this->validateKeyWithSchema($filter[0]);
+							$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
+
+							$query .= "$filter[0] $filter[1] $filter[2]";
+							return $query;
+						}
+
+						/**
+						* validates key/column names with db schema and prepends `content` if required
+						*
+						* @param string $key
+						* @return string
+						*/
+						private function validateKeyWithSchema(string $key, bool $rename = false): string
+						{
+							if (\in_array($key, $this->schema)) {
+								return "`$key`";
+							} else {
+								return $rename ? "`content`->>'$.$key' AS '$key'" : "`content`->>'$.$key'";
+							}
+						}
+
+						/**
+						* takes a json string and returns deeply nested array decoded
+						*
+						* @param string $data
+						* @return void
+						*/
+						public function jsonDecode(string $data)
+						{
+							$decoded_data =  \json_decode($data, 1);
+
+							if (!$decoded_data) {
+								return $data;
+							}
+
+							foreach ($decoded_data as $key => $value) {
+								if (\gettype($value) == 'string') {
+									$decoded_data[$key] = $this->jsonDecode($value);
+								} else if (\gettype($value) == 'array') {
+									foreach ($value as $value_key => $value_value) {
+										$value[$value_key] = $this->jsonDecode($value_value);
+									}
+
+									$decoded_data[$key] = $value;
+								}
+							}
+
+							return $decoded_data;
+						}
+					}
