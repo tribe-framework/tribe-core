@@ -2,6 +2,7 @@
 
 namespace Wildfire\Core;
 
+use \eftec\bladeone\BladeOne;
 use \Wildfire\Auth\Auth as Auth;
 use \Wildfire\Api\Api as Api;
 
@@ -14,6 +15,7 @@ class Init {
     protected static $slug;
     protected static $menus;
     protected static $currentUser;
+    private $blade_options;
 
     public function __construct() {
         session_save_path('/tmp');
@@ -103,6 +105,11 @@ class Init {
             }
 
         }
+
+        $this->blade_options = [
+            'currentUser' => self::$currentUser,
+            'types' => self::$types
+        ];
 
         $this->init();
     }
@@ -226,15 +233,21 @@ class Init {
             $slug = 'index';
         }
 
-        // load the search file from theme
-        $admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
-        if (file_exists($admin_file)) {
-            include_once $admin_file;
-        } else {
-            include_once THEME_PATH . '/pages/404.php';
+        $views = TRIBE_ROOT.'/vendor/wildfire/admin/views';
+        $cache = TRIBE_ROOT.'/vendor/wildfire/admin/cache';
+
+        $blade = new BladeOne($views,$cache);
+        $blade->setAuth(self::$currentUser['name'] ?? '', self::$currentUser['role_slug'] ?? null);
+
+        try {
+            echo $blade->run($slug, $this->blade_options);
+        } catch (\Exception $e) {
+            $normal_file = TRIBE_ROOT."/vendor/wildfire/admin/{$slug}.php";
+            if (\file_exists($normal_file)) {
+                require_once $normal_file;
+            }
         }
 
-        unset($admin_file);
         return true;
     }
 
