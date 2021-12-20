@@ -11,7 +11,7 @@ class MySQL {
 	public $arrayedResult; // Holds an array of the result
 	public $databaseLink; // Database Connection Link
 	private $sqlQuery;
-	private $schema;
+	public $schema;
 
 	public function __construct() {
 		$this->schema = ['id', 'content', 'updated_on', 'created_on', 'user_id', 'role_slug', 'slug', 'content_privacy', 'type'];
@@ -373,7 +373,7 @@ class MySQL {
 	 * @param string $key
 	 * @return string
 	 */
-	private function validateKeyWithSchema(string $key): string
+	public function validateKeyWithSchema(string $key): string
 	{
 		if (\in_array($key, $this->schema)) {
 			return "`$key`";
