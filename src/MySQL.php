@@ -358,25 +358,25 @@ class MySQL
             }
         } else {
             switch (\strtolower($condition)) {
-                    case 'and':
-                        $query .= " AND ";
-                        break;
+				case 'and':
+					$query .= " AND ";
+					break;
 
-                        case 'or':
-                            $query .= " OR ";
-                            break;
+				case 'or':
+					$query .= " OR ";
+					break;
 
-                            case 'andnot':
-                                $query .= " AND NOT ";
-                                break;
+				case 'andnot':
+					$query .= " AND NOT ";
+					break;
 
-                                case 'ornot':
-                                    $query .= " OR NOT ";
-                                    break;
+				case 'ornot':
+					$query .= " OR NOT ";
+					break;
 
-                                    default:
-                                    break;
-                                }
+				default:
+				break;
+			}
         }
 
         $filter = \explode(' ', $filter);
