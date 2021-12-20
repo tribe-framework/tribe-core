@@ -284,6 +284,12 @@ class Dash extends Init {
 		return $final_response;
 	}
 
+	/**
+	 * Update single key in content with a value
+	 *
+	 * @param any $val
+	 * @param string $meta_key is the key than has to be updated
+	 */
 	public function get_content_meta($val, $meta_key)
 	{
 		$sql = new MySQL();
