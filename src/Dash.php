@@ -202,25 +202,6 @@ class Dash extends Init {
 		return $id;
 	}
 
-	public function get_content_meta($val, $meta_key)
-	{
-		$sql = new MySQL();
-
-		if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
-			$qry = "`" . $meta_key . "`";
-		} else {
-			$qry = "`content`->>'$." . $meta_key . "' `" . $meta_key . "`";
-		}
-
-		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
-		} else {
-			$q = $sql->executeSQL("SELECT $qry FROM data WHERE slug='{$val['slug']}' && type='{$val['type']}'");
-		}
-
-		return $q[0][$meta_key];
-	}
-
 	public function push_content_meta($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
@@ -301,6 +282,25 @@ class Dash extends Init {
 		}
 
 		return $final_response;
+	}
+
+	public function get_content_meta($val, $meta_key)
+	{
+		$sql = new MySQL();
+
+		if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
+			$qry = "`" . $meta_key . "`";
+		} else {
+			$qry = "`content`->>'$." . $meta_key . "' `" . $meta_key . "`";
+		}
+
+		if (is_numeric($val)) {
+			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
+		} else {
+			$q = $sql->executeSQL("SELECT $qry FROM data WHERE slug='{$val['slug']}' && type='{$val['type']}'");
+		}
+
+		return $q[0][$meta_key];
 	}
 
     /**
