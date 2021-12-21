@@ -196,7 +196,7 @@ class Dash extends Init {
 		dash::$last_data[] = array('updated_on' => $updated_on, 'id' => $id, 'slug' => $post['slug'], 'url' => BASE_URL . '/' . $post['type'] . '/' . $post['slug']);
 
 		if ($types['webapp']['display_activity_log']) {
-			$this->writeLog($id, $currentUser, 'updated current record');
+			$this->pushLog($id, $currentUser, 'updated current record');
 		}
 
 		return $id;
@@ -222,7 +222,7 @@ class Dash extends Init {
 		}
 
 		if ($types['webapp']['display_activity_log'] && $meta_key != "view_searchable_data") {
-			$this->writeLog($id, $currentUser, $log_msg);
+			$this->pushLog($id, $currentUser, $log_msg);
 		}
 
 		return 1;
@@ -898,7 +898,7 @@ class Dash extends Init {
 		}
 	}
 
-	public function writeLog(int $id, array $user, string $msg = null)
+	public function pushLog(int $id, array $user, string $msg = null)
 	{
 		$sql = new MySQL;
 
