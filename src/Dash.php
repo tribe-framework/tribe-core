@@ -309,7 +309,7 @@ class Dash extends Init {
 
 		$q = $sql->executeSQL("SELECT {$qry} FROM `data` WHERE {$search} LIMIT 0,1");
 
-		if (\str_contains($meta_key, ',')) {
+		if (\strpos($meta_key, ',')) {
 			return $q[0];
 		}
 
