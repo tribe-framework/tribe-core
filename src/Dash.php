@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * functions start with push_, pull_, get_, do_ or is_
  * push_ is to save to database
  * pull_ is to pull from database, returns 1 or 0, saves the output array in $last_data
@@ -285,25 +285,32 @@ class Dash extends Init {
 	}
 
 	/**
-	 * Update single key in content with a value
+	 * cherry pick key(s) from content based on match condition
 	 *
-	 * @param any $val
-	 * @param string $meta_key is the key than has to be updated
+	 * @param integer|array $search can either be an id or associative array with 'type' and 'slug' keys
+	 * @param string $meta_key csv to select from table
 	 */
-	public function get_content_meta($val, $meta_key)
+	public function get_content_meta($search, string $meta_key)
 	{
 		$sql = new MySQL();
+		$keys = \explode(',', $meta_key);
+		$qry = '';
 
-		if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
-			$qry = "`" . $meta_key . "`";
-		} else {
-			$qry = "`content`->>'$." . $meta_key . "' `" . $meta_key . "`";
+		foreach ($keys as $i => $key) {
+			$qry .= ($i != 0) ? ',' : '';
+			$qry .= $sql->validateKeyWithSchema($key);
 		}
 
-		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
+		if (\is_array($search)) {
+			$search = "`slug`='{$search['slug']}' AND `type`='{$search['type']}'";
 		} else {
-			$q = $sql->executeSQL("SELECT $qry FROM data WHERE slug='{$val['slug']}' && type='{$val['type']}'");
+			$search = "`id`='${search}'";
+		}
+
+		$q = $sql->executeSQL("SELECT {$qry} FROM `data` WHERE {$search} LIMIT 0,1");
+
+		if (\strpos($meta_key, ',')) {
+			return $q[0];
 		}
 
 		return $q[0][$meta_key];

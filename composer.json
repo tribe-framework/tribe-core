@@ -5,5 +5,9 @@
         "psr-4": {
             "Wildfire\\Core\\": "src/"
         }
-    }
+    },
+  "require": {
+    "ext-json": "*",
+    "ext-mysqli": "*"
+  }
 }

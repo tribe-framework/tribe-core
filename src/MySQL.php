@@ -25,23 +25,26 @@ class MySQL
     {
         $this->CloseConnection();
 
-        $database = isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : null;
-        $username = isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : null;
-        $password = isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : null;
-        $hostname = isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : 'localhost';
-        $port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
+        $database = $_ENV['DB_NAME'] ?? null;
+        $username = $_ENV['DB_USER'] ?? null;
+        $password = $_ENV['DB_PASS'] ?? null;
+        $hostname = $_ENV['DB_HOST'] ?? 'localhost';
+        $port = $_ENV['DB_PORT'] ?? 3306;
 
         $this->databaseLink = mysqli_connect($hostname, $username, $password, $database, (int) $port);
         if (!$this->databaseLink) {
             $this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
             $this->lastError = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
             $this->lastError = "Debugging error: " . mysqli_connect_error() . PHP_EOL;
-            return false;
+
+            if ($_ENV['ENV'] == 'dev') {
+                echo "<div class='alert alert-danger'>Database initialization failed</div>";
+            }
+
+            return;
         }
 
         mysqli_set_charset($this->databaseLink, 'utf8');
-
-        return true;
     }
 
     public function lastInsertID()
@@ -138,14 +141,18 @@ class MySQL
         } catch (\Error $e) {
             return array();
         }
+
+        return array();
     }
 
     /**
-    * flattens database query result and organizes it (also respects privacy)
-    * @param  array  $queryResponse db query result array
-    * @param  bool   $respect_privacy default:true
-    * @return array|none	array, or null if validation fails
-    */
+     * flattens database query result and organizes it (also respects privacy)
+     *
+     * @param  array  $queryResponse db query result array
+     * @param  bool   $respect_privacy default:true
+     *
+     * @return array|null	array, or null if validation fails
+     */
     private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
     {
         foreach ($queryResponse as $key => $value) {
@@ -188,7 +195,7 @@ class MySQL
     *
     * @param string|null $column_keys comma separated list of keys or empty for all
     */
-    public function select($column_keys = null)
+    public function select(string $column_keys = null): MySQL
     {
         if (!$column_keys) {
             $select_columns = 'content';
@@ -198,7 +205,6 @@ class MySQL
 
             foreach ($keys as $i => $key) {
                 $select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
-
                 $select_columns .= $this->validateKeyWithSchema($key, true);
             }
         }
@@ -207,7 +213,7 @@ class MySQL
         return $this;
     }
 
-    public function count()
+    public function count(): MySQL
     {
         $this->sqlQuery = "SELECT count(*) AS 'count' FROM data";
         return $this;
@@ -217,9 +223,8 @@ class MySQL
     * Where condition
     *
     * @param string $filter  space separated string: "type = user"
-    * @return void
     */
-    public function where(string $filter)
+    public function where(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter);
         return $this;
@@ -230,7 +235,7 @@ class MySQL
     *
     * @param string $filter  space separated string: "type = user"
     */
-    public function andWhere(string $filter)
+    public function andWhere(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter, 'and');
         return $this;
@@ -241,7 +246,7 @@ class MySQL
     *
     * @param string $filter  space separated string: "type = user"
     */
-    public function orWhere(string $filter)
+    public function orWhere(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter, 'or');
         return $this;
@@ -252,7 +257,7 @@ class MySQL
     *
     * @param string $filter  space separated string: "type = user"
     */
-    public function notWhere(string $filter)
+    public function notWhere(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter, 'not');
         return $this;
@@ -263,7 +268,7 @@ class MySQL
     *
     * @param string $filter  space separated string: "type = user"
     */
-    public function andNotWhere(string $filter)
+    public function andNotWhere(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter, 'andnot');
         return $this;
@@ -274,7 +279,7 @@ class MySQL
     *
     * @param string $filter  space separated string: "type = user"
     */
-    public function orNotWhere(string $filter)
+    public function orNotWhere(string $filter): MySQL
     {
         $this->sqlQuery = $this->whereClause($filter, 'ornot');
         return $this;
@@ -285,19 +290,20 @@ class MySQL
     *
     * @param string|int $limit e.g-2 or '0,2'
     */
-    public function limit($limit)
+    public function limit($limit): MySQL
     {
         $this->sqlQuery .= " LIMIT $limit";
         return $this;
     }
 
     /**
-    * ORDER BY on fetch request
-    *
-    * @param string $key
-    * @param string $order
-    */
-    public function orderBy(string $key, $order = 'DESC')
+     * ORDER BY on fetch request
+     *
+     * @param string $key
+     * @param string $order
+     * @return MySQL
+     */
+    public function orderBy(string $key, string $order = 'DESC'): MySQL
     {
         $key = $this->validateKeyWithSchema($key);
         $this->sqlQuery .= " ORDER BY $key $order";
@@ -305,11 +311,12 @@ class MySQL
     }
 
     /**
-    * GROUP BY on query
-    *
-    * @param string $key
-    */
-    public function groupBy(string $key)
+     * GROUP BY on query
+     *
+     * @param string $key
+     * @return MySQL
+     */
+    public function groupBy(string $key): MySQL
     {
         $qws_key = $this->validateKeyWithSchema($key);
         $this->sqlQuery .= " GROUP BY $qws_key as '$key'";
@@ -317,10 +324,11 @@ class MySQL
     }
 
     /**
-    * run the query
-    * @param  bool $respect_privacy    default:true
-    */
-    public function get(bool $respect_privacy = true)
+     * run the query
+     *
+     * @param  bool $respect_privacy    default:true
+     */
+    public function get(bool $respect_privacy = true): array
     {
         $options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
         $q = $this->executeSQL($this->sqlQuery);
@@ -340,7 +348,7 @@ class MySQL
     /**
     * Debug function: prints prepared query on screen
     */
-    public function print()
+    public function print(): MySQL
     {
         echo $this->sqlQuery;
         return $this;
@@ -388,12 +396,13 @@ class MySQL
     }
 
     /**
-    * validates key/column names with db schema and prepends `content` if required
-    *
-    * @param string $key
-    * @return string
-    */
-    private function validateKeyWithSchema(string $key, bool $rename = false): string
+     * validates key/column names with db schema and prepends `content` if required
+     *
+     * @param string $key
+     * @param bool $rename
+     * @return string
+     */
+    public function validateKeyWithSchema(string $key, bool $rename = false): string
     {
         if (\in_array($key, $this->schema)) {
             return "`$key`";
@@ -403,11 +412,11 @@ class MySQL
     }
 
     /**
-    * takes a json string and returns deeply nested array decoded
-    *
-    * @param string $data
-    * @return void
-    */
+     * takes a json string and returns deeply nested array decoded
+     *
+     * @param string $data
+     * @return mixed|string
+     */
     public function jsonDecode(string $data)
     {
         $decoded_data =  \json_decode($data, 1);
