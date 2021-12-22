@@ -289,7 +289,16 @@ class Dash extends Init {
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
 
-		if (is_numeric($identifier)) {
+		// interface to handle $q[*]['id] from get_all_ids
+		if (\is_array($identifier) && !isset($identifier['type'])) {
+			// extracting ids and preparing them for sql "where in"
+			$_ids = \array_column($identifier, 'id');
+			$_ids = json_encode($_ids);
+			$_ids = \str_replace('[', '(', $_ids);
+			$_ids = \str_replace(']', ')', $_ids);
+
+			$q = $sql->executeSQL("SELECT * FROM data WHERE id IN $_ids");
+		} else if (is_numeric($identifier)) {
 			$q = $sql->executeSQL("SELECT * from data
                 where id = '{$identifier}'
                 order by id desc
@@ -297,41 +306,22 @@ class Dash extends Init {
 		} else {
 			$q = $sql->executeSQL("SELECT * from data
                 where
-                    slug = '{$identifier['slug']}' and
-                    type = '{$identifier['type']}'
+                    `slug` = '{$identifier['slug']}' and
+                    `type` = '{$identifier['type']}'
                 order by id desc
                 limit 0,1
             ");
 		}
 
-        if (!$q[0]['id']) {
-            return 0;
-        }
+        if (!$q[0]['id']) return 0;
 
-        $q = $q[0];
-		$final_response = json_decode($q['content'], true);
-		$final_response['id'] = $q['id'];
-		$final_response['updated_on'] = $q['updated_on'];
-		$final_response['created_on'] = $q['created_on'];
-
-		if ($final_response['content_privacy'] == 'draft') {
-			if ($currentUser['user_id'] != $final_response['user_id']) {
-				return 0;
+		if (\sizeof($q) == 1) {
+			$final_response = $sql->cleanUpQueryResponse($q);
+		} else {
+			foreach ($q as $_result) {
+				$final_response[] = $sql->cleanUpQueryResponse($_result);
 			}
-
-			return $final_response;
-		} else if ($final_response['content_privacy'] == 'pending') {
-			if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $final_response['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-            ) {
-				return $final_response;
-			}
-
-			return 0;
 		}
-
 		return $final_response;
 	}
 
