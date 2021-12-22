@@ -177,6 +177,9 @@ class MySQL
             return $finalResponse;
         }
 
+		$auth = new \Wildfire\Auth\Auth;
+		$currentUser = $auth->getCurrentUser();
+
         if ($finalResponse['content_privacy'] == 'draft') {
             if ($currentUser['user_id'] != $finalResponse['user_id']) {
                 return null;
