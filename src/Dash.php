@@ -282,44 +282,76 @@ class Dash extends Init {
     /**
      * Method to get content from database in a flattened structure
      * @param  integer|array $identifier id of record or named array with type & slug keys
-     * @return integer|array      returns either 0 (for fail) or array of data
+     * @return integer|array returns either 0 (for fail) or array of data
      */
 	public function get_content($identifier)
 	{
 		$sql = new MySQL();
-		$currentUser = self::$currentUser;
 
-		// interface to handle $q[*]['id] from get_all_ids
-		if (\is_array($identifier) && !isset($identifier['type'])) {
+		// if $identifier is a csv of ids
+		if (strpos($identifier, ',')) {
+			$_ids = \explode(',', $identifier);
+			$_ids = array_map('trim', $_ids);
+		}
+
+		if (isset($identifier['type'])) {
+			/**
+			 * interface to handle $identifier['type' && 'slug']
+			 */
+			$_where = "`slug` = '{$identifier['slug']}' AND `type` = '{$identifier['type']}'";
+
+			// returns single row matching type and slug
+			$sql_rows = $sql->executeSQL("SELECT * FROM data WHERE $_where ORDER BY id DESC LIMIT 0,1");
+		} else if ((\is_array($identifier) && !isset($identifier[0]['type'])) || isset($_ids)) {
+			/**
+			 * interface to handle $q[*]['id] from get_all_ids
+			 * or a csv containing ids
+			 */
+
 			// extracting ids and preparing them for sql "where in"
-			$_ids = \array_column($identifier, 'id');
+			if (!isset($_ids)) {
+				$_ids = \array_column($identifier, 'id');
+			}
+
 			$_ids = json_encode($_ids);
 			$_ids = \str_replace('[', '(', $_ids);
 			$_ids = \str_replace(']', ')', $_ids);
 
-			$q = $sql->executeSQL("SELECT * FROM data WHERE id IN $_ids");
+			// returns multiple rows
+			$sql_rows = $sql->executeSQL("SELECT * FROM data WHERE `id` IN $_ids ORDER BY `id` DESC");
+		} else if (\is_array($identifier) && isset($identifier[0]['type'])) {
+			// extract type & slug columns
+			$_slugs = \array_column($identifier, 'slug');
+			$_types = \array_column($identifier, 'type');
+
+			// convert values to string
+			$_slugs = json_encode($_slugs);
+			$_types = json_encode($_types);
+
+			// replace '[]' with '()'
+			$_slugs = \str_replace('[', '(', $_slugs);
+			$_slugs = \str_replace(']', ')', $_slugs);
+			$_types = \str_replace('[', '(', $_types);
+			$_types = \str_replace(']', ')', $_types);
+
+			// returns multiple rows
+			$sql_rows = $sql->executeSQL("SELECT * FROM data WHERE `slug` IN $_slugs AND `type` IN $_types ORDER BY `id` DESC");
 		} else if (is_numeric($identifier)) {
-			$q = $sql->executeSQL("SELECT * from data
-                where id = '{$identifier}'
-                order by id desc
-            ");
-		} else {
-			$q = $sql->executeSQL("SELECT * from data
-                where
-                    `slug` = '{$identifier['slug']}' and
-                    `type` = '{$identifier['type']}'
-                order by id desc
-                limit 0,1
-            ");
+			// return single row matching id
+			$sql_rows = $sql->executeSQL("SELECT * FROM data WHERE `id`='$identifier' ORDER BY `id` DESC LIMIT 0,1");
+			print_r($sql_rows);
 		}
 
-        if (!$q[0]['id']) return 0;
+		// if no sql rows could be fetched, return a 0
+        if (!$sql_rows[0]['id']) return 0;
 
-		if (\sizeof($q) == 1) {
-			$final_response = $sql->cleanUpQueryResponse($q);
+		if (\sizeof($sql_rows) == 1) {
+			$final_response = $sql->cleanUpQueryResponse($sql_rows);
 		} else {
-			foreach ($q as $_result) {
-				$final_response[] = $sql->cleanUpQueryResponse($_result);
+			// storing data as $final_response['id'] = $decoded_record;
+			foreach ($sql_rows as $_result) {
+				$_temp = $sql->cleanUpQueryResponse($_result);
+				$final_response[$_temp['id']] = $_temp;
 			}
 		}
 		return $final_response;
