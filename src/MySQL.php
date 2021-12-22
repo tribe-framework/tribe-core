@@ -148,20 +148,28 @@ class MySQL
     /**
      * flattens database query result and organizes it (also respects privacy)
      *
-     * @param  array  $queryResponse db query result array
-     * @param  bool   $respect_privacy default:true
-     *
-     * @return array|null	array, or null if validation fails
+     * @param array $queryResponse db query result array
+     * @param boolean $respect_privacy default:true
+     * @param boolean $do_expand_recurrsive
+     * @return array|null array, or null if validation fails
      */
-    private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
+    public function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true, bool $do_expand_recurrsive = false)
     {
         foreach ($queryResponse as $key => $value) {
             if (\gettype($value) != 'array') {
+                if (!$value) {
+                    $finalResponse[$key] = $value;
+                    continue;
+                }
+
                 if ($key == 'content') {
                     $finalResponse = $this->jsonDecode($value);
+                    $finalResponse = $do_expand_recurrsive ? $this->jsonDecode($value) : \json_decode($value, 1);
                 } else {
                     $finalResponse[$key] = $this->jsonDecode($value);
                 }
+            } else {
+                $finalResponse = $this->cleanUpQueryResponse($value, $respect_privacy, $do_expand_recurrsive);
             }
         }
 
