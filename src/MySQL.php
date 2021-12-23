@@ -164,25 +164,24 @@ class MySQL {
 		}
 
 		$auth = new \Wildfire\Auth\Auth;
-		$currentUser = $auth->getCurrentUser();
+		$currentUser = $auth->getCurrentUser() ?? ['user_id' => null];
 
-        if ($finalResponse['content_privacy'] == 'draft') {
-            if ($currentUser['user_id'] != $finalResponse['user_id']) {
-                return null;
-            }
-
-            return $finalResponse;
-        } else if ($queryResponse['content_privacy'] == 'pending') {
-            if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $finalResponse['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-            ) {
-                return $finalResponse;
-            }
-
-            return null;
-        }
+		switch ($finalResponse['content_privacy']) {
+			case 'draft':
+				if ($currentUser['user_id'] != $finalResponse['user_id']) {
+					$finalResponse = null;
+				}
+				break;
+			case 'pending':
+				if (
+					$currentUser['role'] != 'admin' ||
+					$currentUser['user_id'] != $finalResponse['user_id'] ||
+					!($_ENV['SKIP_CONTENT_PRIVACY'] ?? false)
+				) {
+					$finalResponse = null;
+				}
+				break;
+		}
 
         return $finalResponse;
     }

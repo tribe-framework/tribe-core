@@ -339,7 +339,6 @@ class Dash extends Init {
 		} else if (is_numeric($identifier)) {
 			// return single row matching id
 			$sql_rows = $sql->executeSQL("SELECT * FROM data WHERE `id`='$identifier' ORDER BY `id` DESC LIMIT 0,1");
-			print_r($sql_rows);
 		}
 
 		// if no sql rows could be fetched, return a 0
@@ -351,6 +350,9 @@ class Dash extends Init {
 			// storing data as $final_response['id'] = $decoded_record;
 			foreach ($sql_rows as $_result) {
 				$_temp = $sql->cleanUpQueryResponse($_result);
+
+				if (!$_temp) continue;
+
 				$final_response[$_temp['id']] = $_temp;
 			}
 		}
