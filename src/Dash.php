@@ -288,12 +288,19 @@ class Dash extends Init {
 	public function get_content($identifier, string $meta_key = null, bool $privacy_filter = true, bool $do_expand_all = false)
 	{
 		// id is required when requesting multiple records
-		if (
-			(!\strpos($meta_key, 'id') && \strpos($meta_key, ',')) ||
-			(!\is_array($identifier) && !\is_numeric($identifier)) ||
-			(\is_array($identifier) && !isset($identifier['type']))
+		if ($meta_key &&
+			(
+				(!\strpos($meta_key, 'id') && \strpos($meta_key, ',')) ||
+				(!\is_array($identifier) && !\is_numeric($identifier)) ||
+				(\is_array($identifier) && !isset($identifier['type']))
+			)
 		) {
 			$meta_key .= ',id';
+		}
+
+		// add content_privacy field so that privacy filter can be used
+		if ($privacy_filter && $meta_key && !\strpos($meta_key, 'content_privacy')) {
+			$meta_key .= ',content_privacy';
 		}
 
 		$sql = new MySQL();
