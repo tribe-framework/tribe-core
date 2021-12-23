@@ -191,7 +191,7 @@ class Dash extends Init {
 
 		// get keys which were updated during this operation
 		if ($do_write_log) {
-			$old_record = \json_decode($this->get_content_meta($post['id'], 'content'), 1);
+			$old_record = $this->get_content($post['id'], 'content');
 			$diff = \array_diff($post, $old_record);
 		}
 

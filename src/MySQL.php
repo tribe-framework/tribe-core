@@ -123,19 +123,24 @@ class MySQL {
     public function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true, bool $do_expand_recurrsive = false)
     {
 		foreach($queryResponse as $key => $value) {
-			if (\gettype($value) != 'array') {
-				if (!$value) {
-					$finalResponse[$key] = $value;
-					continue;
-				}
+			try {
+				if (\gettype($value) != 'array') {
+					if (!$value) {
+						$finalResponse[$key] = $value;
+						continue;
+					}
 
-				if ($key == 'content') {
-					$finalResponse = $do_expand_recurrsive ? $this->jsonDecode($value) : \json_decode($value, 1);
+					if ($key == 'content') {
+						$finalResponse = $do_expand_recurrsive ? $this->jsonDecode($value) : \json_decode($value, 1);
+					} else {
+						$finalResponse[$key] = $this->jsonDecode($value);
+					}
 				} else {
-					$finalResponse[$key] = $this->jsonDecode($value);
+					$finalResponse = $this->cleanUpQueryResponse($value, $respect_privacy, $do_expand_recurrsive);
 				}
-			} else {
-				$finalResponse = $this->cleanUpQueryResponse($value, $respect_privacy, $do_expand_recurrsive);
+			} catch (\TypeError $e) {
+				$finalResponse = $value;
+				continue;
 			}
 		}
 
@@ -460,9 +465,11 @@ class MySQL {
 	 * @param string $data
 	 * @return void
 	 */
-	public function jsonDecode(string $data)
+	public function jsonDecode($data)
 	{
-		$decoded_data =  \json_decode($data, 1);
+		if (\is_string($data)) {
+			$decoded_data =  \json_decode($data, 1);
+		}
 
 		if (!$decoded_data) {
 			return $data;
