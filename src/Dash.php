@@ -287,10 +287,16 @@ class Dash extends Init {
      */
 	public function get_content($identifier, string $meta_key = null, bool $privacy_filter = true, bool $do_expand_all = false)
 	{
-		$sql = new MySQL();
-		if (\strpos($meta_key, ',') && !\strpos($meta_key, 'id')) {
+		// id is required when requesting multiple records
+		if (
+			(!\strpos($meta_key, 'id') && \strpos($meta_key, ',')) ||
+			(!\is_array($identifier) && !\is_numeric($identifier)) ||
+			(\is_array($identifier) && !isset($identifier['type']))
+		) {
 			$meta_key .= ',id';
 		}
+
+		$sql = new MySQL();
 		$db_rows = $sql->select($meta_key)->getRows($identifier);
 
 		// if no sql rows could be fetched, return a 0
