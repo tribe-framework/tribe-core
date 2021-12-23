@@ -20,6 +20,7 @@ class Dash extends Init {
 	public static $last_redirect = null; //redirection url
 	public $statusCode = null; // to set server response code
 	public static $ignored_keys;
+	private $sql_query;
 
 	public function __construct()
 	{
@@ -287,8 +288,7 @@ class Dash extends Init {
 	public function get_content($identifier)
 	{
 		$sql = new MySQL();
-
-		$db_rows = $this->getDbRows($identifier);
+		$db_rows = $sql->select()->getRows($identifier);
 
 		// if no sql rows could be fetched, return a 0
         if (!$db_rows[0]['id']) return 0;
@@ -317,8 +317,7 @@ class Dash extends Init {
 	public function get_content_meta($identifier, string $meta_key = null)
 	{
 		$sql = new MySQL();
-
-		$db_rows = $this->getDbRows($identifier, $meta_key);
+		$db_rows = $sql->select($meta_key)->getRows($identifier);
 
 		if (\sizeof($db_rows) == 1) {
 			if (\strpos($meta_key, ',')) {
@@ -945,77 +944,5 @@ class Dash extends Init {
 	public function checkFileUploadNameLength(string $filename): bool
 	{
 		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
-	}
-
-	private function getDbRows ($identifier, string $meta_key = null) {
-		$sql = new MySQL();
-
-		// preparing columns to select
-		if ($meta_key) {
-			$keys = \explode(',', $meta_key);
-			$_select = '';
-
-			foreach ($keys as $i => $key) {
-				$_select .= ($i != 0) ? ',' : '';
-				$_select .= $sql->validateKeyWithSchema($key);
-			}
-		} else {
-			$_select = '*';
-		}
-
-		// if $identifier is a csv of ids
-		if (strpos($identifier, ',')) {
-			$_ids = \explode(',', $identifier);
-			$_ids = array_map('trim', $_ids);
-		}
-
-		if (isset($identifier['type'])) {
-			/**
-			 * interface to handle $identifier['type' && 'slug']
-			 */
-			$_where = "`slug` = '{$identifier['slug']}' AND `type` = '{$identifier['type']}'";
-
-			// returns single row matching type and slug
-			$sql_rows = $sql->executeSQL("SELECT $_select FROM data WHERE $_where ORDER BY id DESC LIMIT 0,1");
-		} else if ((\is_array($identifier) && !isset($identifier[0]['type'])) || isset($_ids)) {
-			/**
-			 * interface to handle $q[*]['id] from get_all_ids
-			 * or a csv containing ids
-			 */
-
-			// extracting ids and preparing them for sql "where in"
-			if (!isset($_ids)) {
-				$_ids = \array_column($identifier, 'id');
-			}
-
-			$_ids = json_encode($_ids);
-			$_ids = \str_replace('[', '(', $_ids);
-			$_ids = \str_replace(']', ')', $_ids);
-
-			// returns multiple rows
-			$sql_rows = $sql->executeSQL("SELECT $_select FROM data WHERE `id` IN $_ids ORDER BY `id` DESC");
-		} else if (\is_array($identifier) && isset($identifier[0]['type'])) {
-			// extract type & slug columns
-			$_slugs = \array_column($identifier, 'slug');
-			$_types = \array_column($identifier, 'type');
-
-			// convert values to string
-			$_slugs = json_encode($_slugs);
-			$_types = json_encode($_types);
-
-			// replace '[]' with '()'
-			$_slugs = \str_replace('[', '(', $_slugs);
-			$_slugs = \str_replace(']', ')', $_slugs);
-			$_types = \str_replace('[', '(', $_types);
-			$_types = \str_replace(']', ')', $_types);
-
-			// returns multiple rows
-			$sql_rows = $sql->executeSQL("SELECT $_select FROM data WHERE `slug` IN $_slugs AND `type` IN $_types ORDER BY `id` DESC");
-		} else if (is_numeric($identifier)) {
-			// return single row matching id
-			$sql_rows = $sql->executeSQL("SELECT $_select FROM data WHERE `id`='$identifier' ORDER BY `id` DESC LIMIT 0,1");
-		}
-
-		return $sql_rows;
 	}
 }

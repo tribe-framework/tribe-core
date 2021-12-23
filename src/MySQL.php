@@ -194,7 +194,7 @@ class MySQL {
 	public function select($column_keys = null)
 	{
 		if (!$column_keys) {
-			$select_columns = 'content';
+			$select_columns = '*';
 		} else {
 			$keys = \explode(',', $column_keys);
 			$select_columns = '';
@@ -208,6 +208,73 @@ class MySQL {
 
 		$this->sqlQuery = "SELECT $select_columns FROM data";
 		return $this;
+	}
+
+	/**
+	 * accepts a set of identifiers, prepares and runs sql query and returns response
+	 *
+	 * @param array|string|int $identifier can be [[type=>$type, slug=>$slug], ...], [type=>$type,slug=>$slug], 'id1,id2,id3', or [[id=>$id],...]
+	 */
+	public function getRows ($identifier)
+	{
+		$sqlQuery = "$this->sqlQuery WHERE";
+
+		// if $identifier is a csv of ids
+		if (strpos($identifier, ',')) {
+			$_ids = \explode(',', $identifier);
+			$_ids = array_map('trim', $_ids);
+		}
+
+		if (isset($identifier['type'])) {
+			/**
+			 * interface to handle $identifier['type' && 'slug']
+			 */
+			$_where = "`slug` = '{$identifier['slug']}' AND `type` = '{$identifier['type']}'";
+			// returns single row matching type and slug
+			$sqlQuery .= "$_where ORDER BY id DESC LIMIT 0,1";
+		} else if ((\is_array($identifier) && !isset($identifier[0]['type'])) || isset($_ids)) {
+			/**
+			 * interface to handle $q[*]['id] from get_all_ids
+			 * or a csv containing ids
+			 */
+
+			// extracting ids and preparing them for sql "where in"
+			if (!isset($_ids)) {
+				$_ids = \array_column($identifier, 'id');
+			}
+
+			$_ids = json_encode($_ids);
+			$_ids = \str_replace('[', '(', $_ids);
+			$_ids = \str_replace(']', ')', $_ids);
+
+			// returns multiple rows
+			$sqlQuery .= "`id` IN $_ids ORDER BY `id` DESC";
+		} else if (\is_array($identifier) && isset($identifier[0]['type'])) {
+			// extract type & slug columns
+			$_slugs = \array_column($identifier, 'slug');
+			$_types = \array_column($identifier, 'type');
+
+			// convert values to string
+			$_slugs = json_encode($_slugs);
+			$_types = json_encode($_types);
+
+			// replace '[]' with '()'
+			$_slugs = \str_replace('[', '(', $_slugs);
+			$_slugs = \str_replace(']', ')', $_slugs);
+			$_types = \str_replace('[', '(', $_types);
+			$_types = \str_replace(']', ')', $_types);
+
+			// returns multiple rows
+			$sqlQuery .= "`slug` IN $_slugs AND `type` IN $_types ORDER BY `id` DESC";
+		} else if (is_numeric($identifier)) {
+			// return single row matching id
+			$sqlQuery .= "`id`='$identifier' ORDER BY `id` DESC LIMIT 0,1";
+		}
+
+		$this->sqlQuery = $sqlQuery;
+		$sql_rows = $this->executeSQL($sqlQuery);
+
+		return $sql_rows;
 	}
 
 	public function count()
