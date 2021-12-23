@@ -113,26 +113,6 @@ class MySQL {
 	}
 
 	/**
-     * Fetch db record based on id
-     * @param  int    $id id of record in database
-	 * @param  bool   $respect_privacy default:true
-     * @return array|null	array or null if nothing is found
-     */
-    public function getId(int $id, bool $respect_privacy = true)
-    {
-        try {
-            $q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
-
-			if ($q[0]['content']) {
-				return $this->cleanUpQueryResponse($q[0], $respect_privacy);
-			}
-
-        } catch (\Error $e) {
-            return array();
-        }
-    }
-
-	/**
 	 * flattens database query result and organizes it (also respects privacy)
 	 *
 	 * @param array $queryResponse db query result array
@@ -220,7 +200,7 @@ class MySQL {
 		$sqlQuery = "$this->sqlQuery WHERE";
 
 		// if $identifier is a csv of ids
-		if (strpos($identifier, ',')) {
+		if (is_string($identifier) && strpos($identifier, ',')) {
 			$_ids = \explode(',', $identifier);
 			$_ids = array_map('trim', $_ids);
 		}
@@ -375,24 +355,38 @@ class MySQL {
 	}
 
 	/**
-	 * run the query
+	 * Fetch db record based on id or run the query
+	 *
+	 * @param  int $id id of record in database
 	 * @param  bool $respect_privacy    default:true
+	 * @return array|null	array or null if nothing is found
 	 */
-	public function get(bool $respect_privacy = true)
+	public function get(int $id = null, bool $respect_privacy = true)
 	{
-		$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
-		$q = $this->executeSQL($this->sqlQuery);
+		if (!$id) {
+			$q = $this->executeSQL($this->sqlQuery);
 
-		if ($q && \sizeof($q) > 0) {
-			foreach($q as $r) {
-				$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
-				if ($tmp) {
-					$queryResponse[] = $tmp;
+			if ($q && \sizeof($q) > 0) {
+				foreach($q as $r) {
+					$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
+					if ($tmp) {
+						$queryResponse[] = $tmp;
+					}
 				}
 			}
+
+			return $queryResponse;
 		}
 
-		return $queryResponse;
+		try {
+            $q = $this->executeSQL("SELECT * FROM data WHERE id = '{$id}' limit 1");
+
+			if ($q[0]['content']) {
+				return $this->cleanUpQueryResponse($q[0], $respect_privacy);
+			}
+        } catch (\Error $e) {
+            return 0;
+        }
 	}
 
 	/**
@@ -474,10 +468,14 @@ class MySQL {
 			return $data;
 		}
 
+		if (!\is_array($decoded_data)) {
+			return $decoded_data;
+		}
+
 		foreach ($decoded_data as $key => $value) {
-			if (\gettype($value) == 'string') {
+			if (\is_string($value)) {
 				$decoded_data[$key] = $this->jsonDecode($value);
-			} else if (\gettype($value) == 'array') {
+			} else if (\is_array($value)) {
 				foreach ($value as $value_key => $value_value) {
 					$value[$value_key] = $this->jsonDecode($value_value);
 				}

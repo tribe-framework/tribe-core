@@ -285,20 +285,23 @@ class Dash extends Init {
      * @param  integer|array $identifier id of record or named array with type & slug keys
      * @return integer|array returns either 0 (for fail) or array of data
      */
-	public function get_content($identifier)
+	public function get_content($identifier, string $meta_key = null, bool $privacy_filter = true, bool $do_expand_all = false)
 	{
 		$sql = new MySQL();
-		$db_rows = $sql->select()->getRows($identifier);
+		if (\strpos($meta_key, ',') && !\strpos($meta_key, 'id')) {
+			$meta_key .= ',id';
+		}
+		$db_rows = $sql->select($meta_key)->getRows($identifier);
 
 		// if no sql rows could be fetched, return a 0
-        if (!$db_rows[0]['id']) return 0;
+        if (!$db_rows) return 0;
 
 		if (\sizeof($db_rows) == 1) {
-			$final_response = $sql->cleanUpQueryResponse($db_rows);
+			$final_response = $sql->cleanUpQueryResponse($db_rows, $privacy_filter, $do_expand_all);
 		} else {
 			// storing data as $final_response['id'] = $decoded_record;
 			foreach ($db_rows as $_result) {
-				$_temp = $sql->cleanUpQueryResponse($_result);
+				$_temp = $sql->cleanUpQueryResponse($_result, $privacy_filter, $do_expand_all);
 
 				if (!$_temp) continue;
 
@@ -309,37 +312,22 @@ class Dash extends Init {
 	}
 
 	/**
-	 * cherry pick key(s) from content based on match condition
+	 * (Deprecated) cherry pick key(s) from content based on match condition
 	 *
 	 * @param integer|array $search can either be an id or associative array with 'type' and 'slug' keys
 	 * @param string $meta_key csv to select from table
 	 */
 	public function get_content_meta($identifier, string $meta_key = null)
 	{
-		$sql = new MySQL();
-		$db_rows = $sql->select($meta_key)->getRows($identifier);
+		trigger_error("'get_content_meta' deprecated, use 'get_content' instead", E_USER_NOTICE);
+		$db_rows = $this->get_content($identifier, $meta_key, false, false);
 
-		if (\sizeof($db_rows) == 1) {
-			if (\strpos($meta_key, ',')) {
-				return $db_rows[0];
-			} else {
-				return $db_rows[0][$meta_key];
-			}
-		} else {
-			return $db_rows;
+		if ((\sizeof($db_rows) == 1) && !\strpos($meta_key, ',')) {
+			return $db_rows[$meta_key];
 		}
-	}
 
-    /**
-     * Fetch db record based on id
-     * @param  int    $id id of record in database
-     * @return array     empty or non-empty (depening on status)
-     */
-    public function findById(int $id)
-    {
-        $sql = new MySQL();
-		return $sql->getId($id);
-    }
+		return $db_rows;
+	}
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
 	{
