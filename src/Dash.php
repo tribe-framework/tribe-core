@@ -20,6 +20,7 @@ class Dash extends Init {
 	public static $last_redirect = null; //redirection url
 	public $statusCode = null; // to set server response code
 	public static $ignored_keys;
+	private $sql_query;
 
 	public function __construct()
 	{
@@ -100,10 +101,12 @@ class Dash extends Init {
 	{
 		$sql = new MySQL();
 		$auth = new \Wildfire\Auth\Auth;
-		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
+		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null, 'slug' => null];
 		$types = self::$types;
 		$updated_on = time();
 		$posttype = $post['type'];
+		$is_new_record = false;
+		$do_write_log = $types['webapp']['display_activity_log'] ?? false;
 
 		$title_data = $this->get_type_title_data($post);
 		$title_slug = $title_data['slug'];
@@ -179,10 +182,17 @@ class Dash extends Init {
 		if (!trim($post['id'])) {
 			$sql->executeSQL("INSERT INTO `data` (`created_on`) VALUES ('$updated_on')");
 			$post['id'] = $sql->lastInsertID();
+			$is_new_record = true;
 		}
 
 		if ($post['wp_import']) {
 			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`) VALUES ('" . $post['id'] . "', '$updated_on')");
+		}
+
+		// get keys which were updated during this operation
+		if ($do_write_log) {
+			$old_record = $this->get_content($post['id'], 'content');
+			$diff = \array_diff($post, $old_record);
 		}
 
 		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode($post)) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
@@ -193,126 +203,144 @@ class Dash extends Init {
 		}
 
 		dash::$last_info[] = 'Content saved.';
-		dash::$last_data[] = array('updated_on' => $updated_on, 'id' => $id, 'slug' => $post['slug'], 'url' => BASE_URL . '/' . $post['type'] . '/' . $post['slug']);
+		dash::$last_data[] = array(
+			'id' => $id,
+			'slug' => $post['slug'],
+			'updated_on' => $updated_on,
+			'url' => BASE_URL . "/{$post['type']}/{$post['slug']}"
+		);
 
-		if ($types['webapp']['display_activity_log']) {
-			$this->writeLog($id, $currentUser, 'updated current record');
+		// write log for this operation
+		if ($do_write_log) {
+			$skip_log = false;
+
+			if ($is_new_record) {
+				$log_message = "created this record";
+				$log_meta = [
+					'created_on' => $updated_on,
+					'created_by' => $currentUser['slug'],
+					'user_id' => $currentUser['slug']
+				];
+			} else if (\sizeof($diff)) {
+				$log_meta = [
+					'updated_on' => $updated_on,
+					'updated_by' => $currentUser['slug'],
+					'user_id' => $currentUser['slug']
+				];
+				$log_message = "updated";
+
+				$i = 0;
+				foreach ($diff as $key => $value) {
+					$log_message .= $i ? ',' : '';
+					$log_message .= " &#39;$key&#39; to &#39;$value&#39;";
+					$i++;
+				}
+			} else {
+				$skip_log = true;
+			}
+
+			if (!$skip_log) {
+				$this->pushLog($id, $currentUser, $log_message, $log_meta);
+			}
 		}
 
 		return $id;
-	}
-
-	public function get_content_meta($val, $meta_key)
-	{
-		$sql = new MySQL();
-
-		if ($meta_key == 'id' || $meta_key == 'updated_on' || $meta_key == 'created_on') {
-			$qry = "`" . $meta_key . "`";
-		} else {
-			$qry = "`content`->>'$." . $meta_key . "' `" . $meta_key . "`";
-		}
-
-		if (is_numeric($val)) {
-			$q = $sql->executeSQL("SELECT " . $qry . " FROM `data` WHERE `id`='$val'");
-		} else {
-			$q = $sql->executeSQL("SELECT $qry FROM data WHERE slug='{$val['slug']}' && type='{$val['type']}'");
-		}
-
-		return $q[0][$meta_key];
 	}
 
 	public function push_content_meta($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
 		$auth = new \Wildfire\Auth\Auth;
-		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null ];
+		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null, 'slug' => null ];
 
 		if (!($id && $meta_key)) {
-			return 0;
+			return false;
 		}
 
 		if (!trim($meta_value)) { // to delete a key, when left empty
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_REMOVE(content, '$.$meta_key') WHERE id='$id'");
-			$log_msg = "deleted key $meta_key";
+			$log_message = "deleted key $meta_key";
 		} else {
 			$meta_value = $sql->databaseLink->real_escape_string($meta_value);
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
-			$log_msg = "updated key &#39;$meta_key&#39; to &#39;$meta_value&#39;";
+			$log_message = "updated key &#39;$meta_key&#39; to &#39;$meta_value&#39;";
 		}
 
-		if ($types['webapp']['display_activity_log'] && $meta_key != "view_searchable_data") {
-			$this->writeLog($id, $currentUser, $log_msg);
+		if (($types['webapp']['display_activity_log'] ?? false) && $meta_key != "view_searchable_data") {
+			$timestamp = time();
+			$log_meta = [
+				'updated_on' => $timestamp,
+				'updated_by' => $currentUser['slug'],
+				'user_id' => $currentUser['slug']
+			];
+
+			$this->pushLog($id, $currentUser, $log_message, $log_meta);
 		}
 
-		return 1;
+		return true;
 	}
 
     /**
      * Method to get content from database in a flattened structure
      * @param  integer|array $identifier id of record or named array with type & slug keys
-     * @return integer|array      returns either 0 (for fail) or array of data
+     * @return integer|array returns either 0 (for fail) or array of data
      */
-	public function get_content($identifier)
+	public function get_content($identifier, string $meta_key = null, bool $privacy_filter = true, bool $do_expand_all = false)
 	{
+		// id is required when requesting multiple records
+		if ($meta_key &&
+			(
+				(!\strpos($meta_key, 'id') && \strpos($meta_key, ',')) ||
+				(!\is_array($identifier) && !\is_numeric($identifier)) ||
+				(\is_array($identifier) && !isset($identifier['type']))
+			)
+		) {
+			$meta_key .= ',id';
+		}
+
+		// add content_privacy field so that privacy filter can be used
+		if ($privacy_filter && $meta_key && !\strpos($meta_key, 'content_privacy')) {
+			$meta_key .= ',content_privacy';
+		}
+
 		$sql = new MySQL();
-		$currentUser = self::$currentUser;
+		$db_rows = $sql->select($meta_key)->getRows($identifier);
 
-		if (is_numeric($identifier)) {
-			$q = $sql->executeSQL("SELECT * from data
-                where id = '{$identifier}'
-                order by id desc
-            ");
+		// if no sql rows could be fetched, return a 0
+        if (!$db_rows) return 0;
+
+		if (\sizeof($db_rows) == 1) {
+			$final_response = $sql->cleanUpQueryResponse($db_rows, $privacy_filter, $do_expand_all);
 		} else {
-			$q = $sql->executeSQL("SELECT * from data
-                where
-                    slug = '{$identifier['slug']}' and
-                    type = '{$identifier['type']}'
-                order by id desc
-                limit 0,1
-            ");
-		}
+			// storing data as $final_response['id'] = $decoded_record;
+			foreach ($db_rows as $_result) {
+				$_temp = $sql->cleanUpQueryResponse($_result, $privacy_filter, $do_expand_all);
 
-        if (!$q[0]['id']) {
-            return 0;
-        }
+				if (!$_temp) continue;
 
-        $q = $q[0];
-		$final_response = json_decode($q['content'], true);
-		$final_response['id'] = $q['id'];
-		$final_response['updated_on'] = $q['updated_on'];
-		$final_response['created_on'] = $q['created_on'];
-
-		if ($final_response['content_privacy'] == 'draft') {
-			if ($currentUser['user_id'] != $final_response['user_id']) {
-				return 0;
+				$final_response[$_temp['id']] = $_temp;
 			}
-
-			return $final_response;
-		} else if ($final_response['content_privacy'] == 'pending') {
-			if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $final_response['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-            ) {
-				return $final_response;
-			}
-
-			return 0;
 		}
-
 		return $final_response;
 	}
 
-    /**
-     * Fetch db record based on id
-     * @param  int    $id id of record in database
-     * @return array     empty or non-empty (depening on status)
-     */
-    public function findById(int $id)
-    {
-        $sql = new MySQL();
-		return $sql->getId($id);
-    }
+	/**
+	 * (Deprecated) cherry pick key(s) from content based on match condition
+	 *
+	 * @param integer|array $search can either be an id or associative array with 'type' and 'slug' keys
+	 * @param string $meta_key csv to select from table
+	 */
+	public function get_content_meta($identifier, string $meta_key = null)
+	{
+		trigger_error("'get_content_meta' deprecated, use 'get_content' instead", E_USER_NOTICE);
+		$db_rows = $this->get_content($identifier, $meta_key, false, false);
+
+		if ((\sizeof($db_rows) == 1) && !\strpos($meta_key, ',')) {
+			return $db_rows[$meta_key];
+		}
+
+		return $db_rows;
+	}
 
 	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
 	{
@@ -885,15 +913,25 @@ class Dash extends Init {
 		}
 	}
 
-	public function writeLog(int $id, array $user, string $msg = null)
+	/**
+	 * Undocumented function
+	 *
+	 * @param integer $id
+	 * @param array $user requires 'id', 'name' and 'slug'
+	 * @param string|null $msg
+	 * @param array $log_meta requires 'created/updated_on', 'created/updated_by', 'user_id'
+	 * @return void
+	 */
+	public function pushLog(int $id, array $user, string $msg = null, array $log_meta)
 	{
 		$sql = new MySQL;
 
 		$data = json_encode([
 			'user_name' => $user['name'],
 			'user_id' => $user['id'],
-			'time' => date('Y-m-d H:i:s'),
-			'message' => $msg
+			'time' => date('d/m/Y H:i:s'),
+			'message' => $msg,
+			'log_meta' => $log_meta
 		]);
 
 		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_activity_log', '$data') WHERE id=$id");

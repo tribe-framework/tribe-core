@@ -2,17 +2,16 @@
 
 namespace Wildfire\Core;
 
-class MySQL
-{
-    public $lastError; // Holds the last error
-    public $lastQuery; // Holds the last query
-    public $result; // Holds the MySQL query result
-    public $records; // Holds the total number of records returned
-    public $affected; // Holds the total number of records affected
-    public $arrayedResult; // Holds an array of the result
-    public $databaseLink; // Database Connection Link
-    private $sqlQuery;
-    private $schema;
+class MySQL {
+	public $lastError; // Holds the last error
+	public $lastQuery; // Holds the last query
+	public $result; // Holds the MySQL query result
+	public $records; // Holds the total number of records returned
+	public $affected; // Holds the total number of records affected
+	public $arrayedResult; // Holds an array of the result
+	public $databaseLink; // Database Connection Link
+	private $sqlQuery;
+	public $schema;
 
     public function __construct()
     {
@@ -84,117 +83,111 @@ class MySQL
         }
     }
 
-    public function unstrip_array($variable)
+	public function unstrip_array($variable) {
+		if (is_string($variable)) {
+			if (json_decode($variable) === null) {
+				return stripslashes($variable);
+			} else {
+				return $variable;
+			}
+		}
+		if (is_array($variable)) {
+			foreach ($variable as $i => $value) {
+				$variable[$i] = $this->unstrip_array($value);
+			}
+		}
+
+		return $variable;
+	}
+
+	public function arrayResults() {
+		if ($this->records == 1) {
+			return $this->arrayResult();
+		}
+
+		$this->arrayedResult = array();
+		while ($data = mysqli_fetch_assoc($this->result)) {
+			$this->arrayedResult[] = $data;
+		}
+		return $this->arrayedResult;
+	}
+
+	public function arrayResult() {
+		$this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
+		return $this->arrayedResult;
+	}
+
+	/**
+	 * flattens database query result and organizes it (also respects privacy)
+	 *
+	 * @param array $queryResponse db query result array
+	 * @param boolean $respect_privacy default:true
+	 * @param boolean $do_expand_recurrsive
+	 * @return array|null array, or null if validation fails
+	 */
+    public function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true, bool $do_expand_recurrsive = false)
     {
-        if (is_string($variable)) {
-            if (json_decode($variable) === null) {
-                return stripslashes($variable);
-            } else {
-                return $variable;
-            }
-        }
-        if (is_array($variable)) {
-            foreach ($variable as $i => $value) {
-                $variable[$i] = $this->unstrip_array($value);
-            }
-        }
+		foreach($queryResponse as $key => $value) {
+			try {
+				if (\gettype($value) != 'array') {
+					if (!$value) {
+						$finalResponse[$key] = $value;
+						continue;
+					}
 
-        return $variable;
-    }
-
-    public function arrayResults()
-    {
-        if ($this->records == 1) {
-            return $this->arrayResult();
-        }
-
-        $this->arrayedResult = array();
-        while ($data = mysqli_fetch_assoc($this->result)) {
-            $this->arrayedResult[] = $data;
-        }
-        return $this->arrayedResult;
-    }
-
-    public function arrayResult()
-    {
-        $this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
-        return $this->arrayedResult;
-    }
-
-    /**
-    * Fetch db record based on id
-    * @param  int    $id id of record in database
-    * @param  bool   $respect_privacy default:true
-    * @return array|null	array or null if nothing is found
-    */
-    public function getId(int $id, bool $respect_privacy = true)
-    {
-        try {
-            $q = $this->executeSQL("SELECT `content` FROM data WHERE id = '{$id}' limit 1");
-
-            if ($q[0]['content']) {
-                return $this->cleanUpQueryResponse($q[0], $respect_privacy);
-            }
-        } catch (\Error $e) {
-            return array();
-        }
-    }
-
-    /**
-    * flattens database query result and organizes it (also respects privacy)
-    * @param  array  $queryResponse db query result array
-    * @param  bool   $respect_privacy default:true
-    * @return array|none	array, or null if validation fails
-    */
-    private function cleanUpQueryResponse(array $queryResponse, bool $respect_privacy = true)
-    {
-        foreach ($queryResponse as $key => $value) {
-            if (\gettype($value) != 'array') {
-                if ($key == 'content') {
-                    $finalResponse = $this->jsonDecode($value);
-                } else {
-                    $finalResponse[$key] = $this->jsonDecode($value);
-                }
-            }
-        }
+					if ($key == 'content') {
+						$finalResponse = $do_expand_recurrsive ? $this->jsonDecode($value) : \json_decode($value, 1);
+					} else {
+						$finalResponse[$key] = $this->jsonDecode($value);
+					}
+				} else {
+					$finalResponse = $this->cleanUpQueryResponse($value, $respect_privacy, $do_expand_recurrsive);
+				}
+			} catch (\TypeError $e) {
+				$finalResponse = $value;
+				continue;
+			}
+		}
 
         if (!$respect_privacy) {
             return $finalResponse;
         }
 
-        if ($finalResponse['content_privacy'] == 'draft') {
-            if ($currentUser['user_id'] != $finalResponse['user_id']) {
-                return null;
-            }
+		$auth = new \Wildfire\Auth\Auth;
+		$currentUser = $auth->getCurrentUser() ?? ['user_id' => null];
 
-            return $finalResponse;
-        } elseif ($queryResponse['content_privacy'] == 'pending') {
-            if (
-                $currentUser['role'] == 'admin' ||
-                $currentUser['user_id'] == $finalResponse['user_id'] ||
-                $_ENV['SKIP_CONTENT_PRIVACY']
-                ) {
-                return $finalResponse;
-            }
-
-            return null;
-        }
+		switch ($finalResponse['content_privacy']) {
+			case 'draft':
+				if ($currentUser['user_id'] != $finalResponse['user_id']) {
+					$finalResponse = null;
+				}
+				break;
+			case 'pending':
+				if (
+					$currentUser['role'] != 'admin' ||
+					$currentUser['user_id'] != $finalResponse['user_id'] ||
+					!($_ENV['SKIP_CONTENT_PRIVACY'] ?? false)
+				) {
+					$finalResponse = null;
+				}
+				break;
+		}
 
         return $finalResponse;
     }
 
-    /**
-    * request column/keys from database
-    *
-    * @param string|null $column_keys comma separated list of keys or empty for all
-    */
-    public function select($column_keys = null)
-    {
-        if (!$column_keys) {
-            $select_columns = 'content';
-        } else {
-            $keys = \explode(',', $column_keys);
-            $select_columns = '';
+	/**
+	 * request column/keys from database
+	 *
+	 * @param string|null $column_keys comma separated list of keys or empty for all
+	 */
+	public function select($column_keys = null)
+	{
+		if (!$column_keys) {
+			$select_columns = '*';
+		} else {
+			$keys = \explode(',', $column_keys);
+			$select_columns = '';
 
             foreach ($keys as $i => $key) {
                 $select_columns .= ($i != 0) ? ',' : ''; // add comma to separate fields
@@ -206,6 +199,73 @@ class MySQL
         $this->sqlQuery = "SELECT $select_columns FROM data";
         return $this;
     }
+
+	/**
+	 * accepts a set of identifiers, prepares and runs sql query and returns response
+	 *
+	 * @param array|string|int $identifier can be [[type=>$type, slug=>$slug], ...], [type=>$type,slug=>$slug], 'id1,id2,id3', or [[id=>$id],...]
+	 */
+	public function getRows ($identifier)
+	{
+		$sqlQuery = "$this->sqlQuery WHERE";
+
+		// if $identifier is a csv of ids
+		if (is_string($identifier) && strpos($identifier, ',')) {
+			$_ids = \explode(',', $identifier);
+			$_ids = array_map('trim', $_ids);
+		}
+
+		if (isset($identifier['type'])) {
+			/**
+			 * interface to handle $identifier['type' && 'slug']
+			 */
+			$_where = "`slug` = '{$identifier['slug']}' AND `type` = '{$identifier['type']}'";
+			// returns single row matching type and slug
+			$sqlQuery .= "$_where ORDER BY id DESC LIMIT 0,1";
+		} else if ((\is_array($identifier) && !isset($identifier[0]['type'])) || isset($_ids)) {
+			/**
+			 * interface to handle $q[*]['id] from get_all_ids
+			 * or a csv containing ids
+			 */
+
+			// extracting ids and preparing them for sql "where in"
+			if (!isset($_ids)) {
+				$_ids = \array_column($identifier, 'id');
+			}
+
+			$_ids = json_encode($_ids);
+			$_ids = \str_replace('[', '(', $_ids);
+			$_ids = \str_replace(']', ')', $_ids);
+
+			// returns multiple rows
+			$sqlQuery .= "`id` IN $_ids ORDER BY `id` DESC";
+		} else if (\is_array($identifier) && isset($identifier[0]['type'])) {
+			// extract type & slug columns
+			$_slugs = \array_column($identifier, 'slug');
+			$_types = \array_column($identifier, 'type');
+
+			// convert values to string
+			$_slugs = json_encode($_slugs);
+			$_types = json_encode($_types);
+
+			// replace '[]' with '()'
+			$_slugs = \str_replace('[', '(', $_slugs);
+			$_slugs = \str_replace(']', ')', $_slugs);
+			$_types = \str_replace('[', '(', $_types);
+			$_types = \str_replace(']', ')', $_types);
+
+			// returns multiple rows
+			$sqlQuery .= "`slug` IN $_slugs AND `type` IN $_types ORDER BY `id` DESC";
+		} else if (is_numeric($identifier)) {
+			// return single row matching id
+			$sqlQuery .= "`id`='$identifier' ORDER BY `id` DESC LIMIT 0,1";
+		}
+
+		$this->sqlQuery = $sqlQuery;
+		$sql_rows = $this->executeSQL($sqlQuery);
+
+		return $sql_rows;
+	}
 
     public function count()
     {
@@ -316,35 +376,49 @@ class MySQL
         return $this;
     }
 
-    /**
-    * run the query
-    * @param  bool $respect_privacy    default:true
-    */
-    public function get(bool $respect_privacy = true)
-    {
-        $options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR;
-        $q = $this->executeSQL($this->sqlQuery);
+	/**
+	 * Fetch db record based on id or run the query
+	 *
+	 * @param  int $id id of record in database
+	 * @param  bool $respect_privacy    default:true
+	 * @return array|null	array or null if nothing is found
+	 */
+	public function get(int $id = null, bool $respect_privacy = true)
+	{
+		if (!$id) {
+			$q = $this->executeSQL($this->sqlQuery);
 
-        if ($q && \sizeof($q) > 0) {
-            foreach ($q as $r) {
-                $tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
-                if ($tmp) {
-                    $queryResponse[] = $tmp;
-                }
-            }
+			if ($q && \sizeof($q) > 0) {
+				foreach($q as $r) {
+					$tmp = $this->cleanUpQueryResponse($r, $respect_privacy);
+					if ($tmp) {
+						$queryResponse[] = $tmp;
+					}
+				}
+			}
+
+			return $queryResponse;
+		}
+
+		try {
+            $q = $this->executeSQL("SELECT * FROM data WHERE id = '{$id}' limit 1");
+
+			if ($q[0]['content']) {
+				return $this->cleanUpQueryResponse($q[0], $respect_privacy);
+			}
+        } catch (\Error $e) {
+            return 0;
         }
+	}
 
-        return $queryResponse;
-    }
-
-    /**
-    * Debug function: prints prepared query on screen
-    */
-    public function print()
-    {
-        echo $this->sqlQuery;
-        return $this;
-    }
+	/**
+	 * Debug function: prints prepared query on screen
+	 */
+	public function print()
+	{
+		echo $this->sqlQuery;
+		return $this;
+	}
 
     private function whereClause(string $filter, string $condition = ''): string
     {
@@ -379,55 +453,61 @@ class MySQL
 			}
         }
 
-        $filter = \explode(' ', $filter);
-        $filter[0] = $this->validateKeyWithSchema($filter[0]);
-        $filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
+		$filter = \explode(' ', $filter);
+		$filter[0] = $this->validateKeyWithSchema($filter[0]);
+		$filter[2] = \is_numeric($filter[2]) ? (int) $filter[2] : "'$filter[2]'";
 
-        $query .= "$filter[0] $filter[1] $filter[2]";
-        return $query;
-    }
+		$query .= "$filter[0] $filter[1] $filter[2]";
+		return $query;
+	}
 
-    /**
-    * validates key/column names with db schema and prepends `content` if required
-    *
-    * @param string $key
-    * @return string
-    */
-    private function validateKeyWithSchema(string $key, bool $rename = false): string
-    {
-        if (\in_array($key, $this->schema)) {
-            return "`$key`";
-        } else {
-            return $rename ? "`content`->>'$.$key' AS '$key'" : "`content`->>'$.$key'";
-        }
-    }
+	/**
+	 * validates key/column names with db schema and prepends `content` if required
+	 *
+	 * @param string $key
+	 * @return string
+	 */
+	public function validateKeyWithSchema(string $key): string
+	{
+		if (\in_array($key, $this->schema)) {
+			return "`$key`";
+		} else {
+			return "`content`->>'$.$key' AS '$key'";
+		}
+	}
 
-    /**
-    * takes a json string and returns deeply nested array decoded
-    *
-    * @param string $data
-    * @return void
-    */
-    public function jsonDecode(string $data)
-    {
-        $decoded_data =  \json_decode($data, 1);
+	/**
+	 * takes a json string and returns deeply nested array decoded
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function jsonDecode($data)
+	{
+		if (\is_string($data)) {
+			$decoded_data =  \json_decode($data, 1);
+		}
 
-        if (!$decoded_data) {
-            return $data;
-        }
+		if (!$decoded_data) {
+			return $data;
+		}
 
-        foreach ($decoded_data as $key => $value) {
-            if (\gettype($value) == 'string') {
-                $decoded_data[$key] = $this->jsonDecode($value);
-            } elseif (\gettype($value) == 'array') {
-                foreach ($value as $value_key => $value_value) {
-                    $value[$value_key] = $this->jsonDecode($value_value);
-                }
+		if (!\is_array($decoded_data)) {
+			return $decoded_data;
+		}
 
-                $decoded_data[$key] = $value;
-            }
-        }
+		foreach ($decoded_data as $key => $value) {
+			if (\is_string($value)) {
+				$decoded_data[$key] = $this->jsonDecode($value);
+			} else if (\is_array($value)) {
+				foreach ($value as $value_key => $value_value) {
+					$value[$value_key] = $this->jsonDecode($value_value);
+				}
 
-        return $decoded_data;
-    }
+				$decoded_data[$key] = $value;
+			}
+		}
+
+		return $decoded_data;
+	}
 }
