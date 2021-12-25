@@ -372,7 +372,7 @@ class Dash extends Init {
         return $this->doContentCleanup($q);
 	}
 
-	public function getObjects($identifier)
+	public function getObjects($identifier, $attributes_array=array())
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
@@ -412,10 +412,11 @@ class Dash extends Init {
 			return 0;
 		}
 
-        return $this->doContentCleanup($q);
+        return $this->doContentCleanup($q, $attributes_array);
 	}
 
-	public function doContentCleanup($rows) {
+	public function doContentCleanup($rows, $attributes_array=array()) 
+	{
 
         if (!$rows[0]['id']) {
             return 0;
@@ -444,6 +445,11 @@ class Dash extends Init {
 					$final_response[$id] = 0;
 				}
 			}
+
+			if ($attributes_array[0]) {
+				$final_response[$id] = array_intersect_key($final_response[$id], $attributes_array);
+			}
+
 		}
 
 		return (count($final_response)>1 ? $final_response : $final_response[$id]);
