@@ -446,7 +446,7 @@ class Dash extends Init {
 				}
 			}
 
-			if ($attributes_array[0]) {
+			if (array_keys($attributes_array)) {
 				$final_response[$id] = array_intersect_key($final_response[$id], $attributes_array);
 			}
 
