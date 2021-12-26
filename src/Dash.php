@@ -340,7 +340,7 @@ class Dash extends Init {
 		return $q[0];
 	}
 
-	public function getObject ($identifier) 
+	public function getObject ($identifier, $object_structure=array()) 
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
@@ -369,7 +369,7 @@ class Dash extends Init {
 			return 0;
 		}
 
-        return $this->doContentCleanup($q);
+        return $this->doContentCleanup($q, $object_structure);
 	}
 
 	public function getObjects($identifier, $object_structure=array())
