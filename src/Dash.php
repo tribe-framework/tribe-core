@@ -640,7 +640,7 @@ class Dash extends Init {
 			$i++;
 		}
 
-		$qry = "SELECT `id` FROM `data` WHERE `content_privacy`='public' AND " . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? "`content_privacy`='public' AND ":"") . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 		$r = $sql->executeSQL($qry);
 		if ($debug_show_sql_statement) {
 			echo $qry;
