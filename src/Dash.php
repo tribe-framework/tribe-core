@@ -614,10 +614,10 @@ class Dash extends Init {
 	public function get_ids($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
 	{
 		$sql = new MySQL();
-		if ($priority_field == 'id') {
+		if ($priority_field != 'content' && in_array($priority_field, $sql->schema) ) {
 			$priority = "`" . $priority_field . "` " . $priority_order;
 		} else {
-			$priority = "`content`->'$." . $priority_field . "' IS NULL, `content`->'$." . $priority_field . "' " . $priority_order . ", `id` DESC";
+			$priority = "`content`->>'$." . $priority_field . "' IS NULL, `content`->>'$." . $priority_field . "' " . $priority_order . ", `id` DESC";
 		}
 
 		$frechr = array();
