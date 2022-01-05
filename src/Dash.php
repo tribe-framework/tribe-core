@@ -69,6 +69,24 @@ class Dash extends Init {
 		return ($q[0]['id'] + 1);
 	}
 
+	public function doMultiDelete(array $ids, string $type) {
+		$sql = new MySQL;
+		$types = Init::$types;
+		$ids = implode(',', $ids);
+
+		if ($types['webapp']['soft_delete_records']) {
+			// soft delete
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids)");
+		} else {
+			// perma delete
+			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
+		}
+
+		self::$last_redirect = "/admin/list?type={$type}";
+
+		return true;
+	}
+
 	public function do_delete(array $post = []): bool
 	{
 		$sql = new MySQL();
@@ -121,7 +139,7 @@ class Dash extends Init {
 		return $this->getAttribute($identifier, $meta_key);
 	}
 
-	public function pushObject($post) 
+	public function pushObject($post)
 	{
 
 		$sql = new MySQL();
@@ -229,7 +247,7 @@ class Dash extends Init {
 		}
 
 		dash::$last_info[] = 'Content saved.';
-		
+
 		dash::$last_data[] = array(
 			'id' => $id,
 			'slug' => $post['slug'],
@@ -307,7 +325,7 @@ class Dash extends Init {
 		return 1;
 	}
 
-	public function getAttribute ($identifier, $meta_key) 
+	public function getAttribute ($identifier, $meta_key)
 	{
 		$attr = $this->getAttributes($identifier, $meta_key);
 		return $attr[$meta_key];
@@ -340,7 +358,7 @@ class Dash extends Init {
 		return $q[0];
 	}
 
-	public function getObject ($identifier, $object_structure=array()) 
+	public function getObject ($identifier, $object_structure=array())
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
@@ -384,7 +402,7 @@ class Dash extends Init {
                 order by id desc
                 limit 0,".count(explode(',', $identifier))
             );
-		} 
+		}
 
 		//IF KEY IS ARRAY AS IN get_ids
 		else if ($identifier[0]['id']) {
@@ -415,7 +433,7 @@ class Dash extends Init {
         return $this->doContentCleanup($q, $object_structure);
 	}
 
-	public function doContentCleanup($rows, $object_structure=array()) 
+	public function doContentCleanup($rows, $object_structure=array())
 	{
 
         if (!$rows[0]['id']) {
