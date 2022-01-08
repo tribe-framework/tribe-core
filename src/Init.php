@@ -104,6 +104,10 @@ class Init {
 
         }
 
+        if (!self::$slug) {
+            self::$slug = 'index';
+        }
+
         $this->init();
     }
 
@@ -221,10 +225,6 @@ class Init {
     private function loadAdmin() {
         $type = self::$type;
         $slug = self::$slug;
-
-        if (!$slug) {
-            $slug = 'index';
-        }
 
         // whitelisted type/slug path for admin
         $admin_file = ABSOLUTE_PATH . "/vendor/wildfire/$type/theme/pages/$slug.php";
