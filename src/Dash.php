@@ -143,7 +143,7 @@ class Dash extends Init {
 	{
 
 		$sql = new MySQL();
-		$auth = new \Wildfire\Auth\Auth;
+		$auth = new \Wildfire\Auth;
 		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
 		$types = self::$types;
 		$updated_on = time();
@@ -295,7 +295,7 @@ class Dash extends Init {
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
-		$auth = new \Wildfire\Auth\Auth;
+		$auth = new \Wildfire\Auth;
 		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null ];
 
 		if (!($id && $meta_key)) {

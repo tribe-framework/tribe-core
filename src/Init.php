@@ -2,7 +2,7 @@
 
 namespace Wildfire\Core;
 
-use \Wildfire\Auth\Auth as Auth;
+use \Wildfire\Auth;
 use \Wildfire\Api\Api as Api;
 
 class Init {
