@@ -3,7 +3,7 @@
 namespace Wildfire\Core;
 
 use \Wildfire\Auth;
-use \Wildfire\Api\Api as Api;
+use \Wildfire\Api as Api;
 
 class Init {
     // properties
