@@ -119,7 +119,7 @@ class Init {
         define('AUTH_URL', BASE_URL . '/vendor/wildfire/auth');
 
         define('ADMIN_PATH', ABSOLUTE_PATH . '/vendor/wildfire/admin');
-        define('ADMIN_URL', BASE_URL . '/vendor/wildfire/admin');
+        define('ADMIN_URL', BASE_URL . '/vendor/wildfire/admin/theme/assets');
 
         /**
          * load theme functions if it exists
@@ -226,10 +226,14 @@ class Init {
             $slug = 'index';
         }
 
-        // load the search file from theme
-        $admin_file = ABSOLUTE_PATH . '/vendor/wildfire/' . $type . '/' . $slug . '.php';
+        // whitelisted type/slug path for admin
+        $admin_file = ABSOLUTE_PATH . "/vendor/wildfire/$type/theme/pages/$slug.php";
+        $admin_api = ABSOLUTE_PATH . "/vendor/wildfire/$type/theme/api/$slug.php";
+
         if (file_exists($admin_file)) {
             include_once $admin_file;
+        } else if (file_exists($admin_api)) {
+            include_once $admin_api;
         } else {
             include_once THEME_PATH . '/pages/404.php';
         }
