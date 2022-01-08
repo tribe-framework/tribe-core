@@ -125,17 +125,23 @@ class Dash extends Init {
 	}
 
     /**
+	 * @deprecated
      * Method to get content from database in a flattened structure
      * @param  integer|array $identifier id of record or named array with type & slug keys
      * @return integer|array      returns either 0 (for fail) or array of data
      */
 	public function get_content($identifier)
 	{
+		trigger_error(__METHOD__ . " deprecated, must use 'getObject'", E_USER_DEPRECATED);
 		return $this->getObject($identifier);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function get_content_meta($identifier, $meta_key)
 	{
+		trigger_error("'get_content_meta' deprecated, must use 'getAttribute'", E_USER_DEPRECATED);
 		return $this->getAttribute($identifier, $meta_key);
 	}
 

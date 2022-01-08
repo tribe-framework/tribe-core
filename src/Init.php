@@ -22,15 +22,15 @@ class Init {
         $auth = new Auth();
         self::$currentUser = $auth->getCurrentUser();
 
+        error_reporting(E_ALL);
+
         // browser debugging
         if (defined('ENV') && (ENV == 'dev')) {
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);
-            error_reporting(E_ALL);
         } else {
             ini_set('display_errors', 0);
             ini_set('display_startup_errors', 0);
-            error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
         }
 
         $dash = new Dash();
