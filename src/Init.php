@@ -250,19 +250,18 @@ class Init {
         $type = self::$type;
         $slug = self::$slug;
 
-        if (!$slug) {
-            $slug = 'index';
-        }
-
         // load the search file from theme
-        $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/{$slug}.php";
+        $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
+        $auth_api = ABSOLUTE_PATH . "/vendor/wildfire/$type/api/$slug.php";
         $alternate_file = THEME_PATH . "/pages/user/{$slug}.php";
         if (file_exists($auth_file)) {
-            include_once $auth_file;
+            require_once $auth_file;
+        } else if (file_exists($auth_api)) {
+            require_once $auth_api;
         } else if (\file_exists($alternate_file)) {
-            include_once $alternate_file;
+            require_once $alternate_file;
         } else {
-            include_once AUTH_PATH . '/404.php';
+            require_once AUTH_PATH . '/theme/pages/404.php';
         }
 
         unset($auth_file);
