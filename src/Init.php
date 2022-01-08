@@ -254,6 +254,7 @@ class Init {
         $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
         $auth_api = ABSOLUTE_PATH . "/vendor/wildfire/$type/api/$slug.php";
         $alternate_file = THEME_PATH . "/pages/user/{$slug}.php";
+
         if (file_exists($auth_file)) {
             require_once $auth_file;
         } else if (file_exists($auth_api)) {
