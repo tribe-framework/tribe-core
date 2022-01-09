@@ -52,7 +52,6 @@ class Init {
         }
 
         // for theme
-
         if (
             $_SERVER['SERVER_NAME'] == $_ENV['WEB_BARE_URL'] ||
             $_SERVER['SERVER_NAME'] == "www.{$_ENV['WEB_BARE_URL']}" ||
@@ -101,11 +100,6 @@ class Init {
             if (trim($ext[0])) {
                 self::$slug = $dash->do_unslugify($ext[0]);
             }
-
-        }
-
-        if (!self::$slug) {
-            self::$slug = 'index';
         }
 
         $this->init();
@@ -248,7 +242,7 @@ class Init {
      */
     private function loadAuth() {
         $type = self::$type;
-        $slug = self::$slug;
+        $slug = self::$slug ?? 'index';
 
         // load the search file from theme
         $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
@@ -323,7 +317,7 @@ class Init {
                 $key = $a['type'];
                 $value = $a['slug'];
 
-                $append_phrase .= ' ' . $typedata['headmeta_title_glue'] . ' ' . $types[$key][$value];
+                $append_phrase .= " {$typedata['headmeta_title_glue']} {$types[$key][$value]}";
             }
         }
 
@@ -331,7 +325,7 @@ class Init {
             foreach ($typedata['head_title_prepend'] as $p) {
                 $key = $p['type'];
                 $val = $p['slug'];
-                $prepend_phrase .= $typedata[$key][$val] . ' ' . $typedata['headmeta_title_glue'] . ' ';
+                $prepend_phrase .= "{$typedata[$key][$val]} {$typedata['headmeta_title_glue']} ";
             }
         }
 
@@ -375,7 +369,7 @@ class Init {
          */
 
         // checking for "/theme/pages/$type/$slug.php"
-        $file_path = THEME_PATH . '/pages/' . $type . '/' . $slug . '.php';
+        $file_path = THEME_PATH . "/pages/$type/$slug.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -384,7 +378,7 @@ class Init {
         }
 
         // checking for "/theme/pages/$type-$slug.php"
-        $file_path = THEME_PATH . '/pages/' . $type . '-' . $slug . '.php';
+        $file_path = THEME_PATH . "/pages/$type-$slug.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -393,7 +387,7 @@ class Init {
         }
 
         // checking for "/theme/$type-$slug.php"
-        $file_path = THEME_PATH . '/' . $type . '-' . $slug . '.php';
+        $file_path = THEME_PATH . "/$type-$slug.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -402,7 +396,7 @@ class Init {
         }
 
         // checking for "/theme/pages/single-ID.php"
-        $file_path = THEME_PATH . '/pages/single-' . $postdata['id'] . '.php';
+        $file_path = THEME_PATH . "/pages/single-{$postdata['id']}.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -411,7 +405,7 @@ class Init {
         }
 
         // checking for "/theme/single-ID.php"
-        $file_path = THEME_PATH . '/single-' . $postdata['id'] . '.php';
+        $file_path = THEME_PATH . "/single-{$postdata['id']}.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -420,7 +414,7 @@ class Init {
         }
 
         // checking for "/theme/includes/$type/_$slug.php"
-        $file_path = THEME_PATH . '/includes/' . $type . '/_' . $slug . '.php';
+        $file_path = THEME_PATH . "/includes/$type/_$slug.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -429,7 +423,7 @@ class Init {
         }
 
         // checking for "/theme/includes/_$type-$slug.php"
-        $file_path = THEME_PATH . '/includes/_' . $type . '-' . $slug . '.php';
+        $file_path = THEME_PATH . "/includes/_$type-$slug.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -438,7 +432,7 @@ class Init {
         }
 
         // checking for "/theme/includes/_single-ID.php"
-        $file_path = THEME_PATH . '/includes/_single-' . $postdata['id'] . '.php';
+        $file_path = THEME_PATH . "/includes/_single-{$postdata['id']}.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -447,7 +441,7 @@ class Init {
         }
 
         // checking for "/theme/pages/single-$type.php"
-        $file_path = THEME_PATH . '/pages/single-' . $type . '.php';
+        $file_path = THEME_PATH . "/pages/single-$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -456,7 +450,7 @@ class Init {
         }
 
         // checking for "/theme/single-$type.php"
-        $file_path = THEME_PATH . '/single-' . $type . '.php';
+        $file_path = THEME_PATH . "/single-$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -482,9 +476,7 @@ class Init {
             return true;
         }
 
-        // if none of $type files exist, just load "/theme/index.php"
         unset($file_path);
-        return $this->loadIndex();
 
         // if loading a file fails, just load a 404 page
         return $this->errorNotFound();
@@ -498,12 +490,6 @@ class Init {
         $types = self::$types;
         $type = self::$type;
         $typedata = $types[$type];
-        $error404_file = $this->error404_file;
-
-        // if typedata isn't available then load the 404 page
-        if (!$typedata) {
-            return $this->errorNotFound();
-        }
 
         $dash = new Dash();
 
@@ -538,7 +524,7 @@ class Init {
          */
 
         // checking for "type/index.php" under "/theme/pages"
-        $file_path = THEME_PATH . '/pages/' . $type . '/index.php';
+        $file_path = THEME_PATH . "/pages/$type/index.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -547,7 +533,7 @@ class Init {
         }
 
         // checking for "type.php" under "/theme/pages"
-        $file_path = THEME_PATH . '/pages/' . $type . '.php';
+        $file_path = THEME_PATH . "/pages/$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -555,8 +541,12 @@ class Init {
             return true;
         }
 
+        if (!$typedata) {
+            return $this->errorNotFound();
+        }
+
         // checking for "$type.php" under "/theme"
-        $file_path = THEME_PATH . '/' . $type . '.php';
+        $file_path = THEME_PATH . "/$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -565,7 +555,7 @@ class Init {
         }
 
         // checking for "archive-$type.php" under "/theme/pages"
-        $file_path = THEME_PATH . '/pages/archive-' . $type . '.php';
+        $file_path = THEME_PATH . "/pages/archive-$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -574,7 +564,7 @@ class Init {
         }
 
         // checking for "archive-$type.php" under "/theme"
-        $file_path = THEME_PATH . '/archive-' . $type . '.php';
+        $file_path = THEME_PATH . "/archive-$type.php";
 
         if (file_exists($file_path)) {
             include_once $file_path;
@@ -600,9 +590,7 @@ class Init {
             return true;
         }
 
-        // if none of the archive files are found, load index
         unset($file_path);
-        return $this->loadIndex($types);
 
         // show 404 if everything above fails
         return $this->errorNotFound();
