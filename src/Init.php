@@ -218,7 +218,7 @@ class Init {
      */
     private function loadAdmin() {
         $type = self::$type;
-        $slug = self::$slug;
+        $slug = self::$slug ?? 'index';
 
         // whitelisted type/slug path for admin
         $admin_file = ABSOLUTE_PATH . "/vendor/wildfire/$type/theme/pages/$slug.php";
@@ -229,7 +229,7 @@ class Init {
         } else if (file_exists($admin_api)) {
             include_once $admin_api;
         } else {
-            include_once THEME_PATH . '/pages/404.php';
+            $this->errorNotFound();
         }
 
         unset($admin_file);
