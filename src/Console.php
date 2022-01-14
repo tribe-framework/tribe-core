@@ -60,8 +60,6 @@ class Console {
             debug_print_backtrace();
             $data = ob_get_clean();
             self::debug($data);
-        } else {
-            trigger_error($msg, E_USER_DEPRECATED);
         }
     }
 }
