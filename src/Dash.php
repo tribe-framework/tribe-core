@@ -454,13 +454,13 @@ class Dash extends Init {
 			$final_response[$id]['updated_on'] = $q['updated_on'];
 			$final_response[$id]['created_on'] = $q['created_on'];
 
-			if ($final_response[$id]['content_privacy'] == 'draft') {
+			if (($final_response[$id]['content_privacy'] ?? null) == 'draft') {
 
 				if ($currentUser['user_id'] != $final_response[$id]['user_id']) {
 					$final_response[$id] = 0;
 				}
 
-			} else if ($final_response[$id]['content_privacy'] == 'pending') {
+			} else if (($final_response[$id]['content_privacy'] ?? null) == 'pending') {
 				if ( ! (
 	                $currentUser['role'] == 'admin' ||
 	                $currentUser['user_id'] == $final_response[$id]['user_id'] ||
