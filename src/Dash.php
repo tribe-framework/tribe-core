@@ -132,7 +132,7 @@ class Dash extends Init {
      */
 	public function get_content($identifier)
 	{
-		trigger_error(__METHOD__ . " deprecated, must use 'getObject'", E_USER_DEPRECATED);
+		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'getObject'");
 		return $this->getObject($identifier);
 	}
 
@@ -141,7 +141,7 @@ class Dash extends Init {
 	 */
 	public function get_content_meta($identifier, $meta_key)
 	{
-		trigger_error("'get_content_meta' deprecated, must use 'getAttribute'", E_USER_DEPRECATED);
+		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'getAttribute'");
 		return $this->getAttribute($identifier, $meta_key);
 	}
 
