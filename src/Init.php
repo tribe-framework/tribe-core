@@ -218,7 +218,7 @@ class Init {
      */
     private function loadAdmin() {
         $type = self::$type;
-        $slug = self::$slug ?? 'index';
+        $slug = (self::$slug ?? 'index') ?: 'index';
 
         // whitelisted type/slug path for admin
         $admin_file = ABSOLUTE_PATH . "/vendor/wildfire/$type/theme/pages/$slug.php";
@@ -242,7 +242,7 @@ class Init {
      */
     private function loadAuth() {
         $type = self::$type;
-        $slug = self::$slug ?? 'index';
+        $slug = (self::$slug ?? 'index') ?: 'index';
 
         // load the search file from theme
         $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
