@@ -218,7 +218,7 @@ class Dash extends Init {
 		if ($title_unique) {
 			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
 
-			if ($q[0]['id'] && $post['id'] != $q[0]['id']) {
+			if (is_array($q) && $q[0]['id'] && $post['id'] != $q[0]['id']) {
 				dash::$last_error[] = 'Either the title is left empty or the same title already exists in ' . $types[$posttype]['plural'];
 				return 0;
 			}
