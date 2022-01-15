@@ -302,7 +302,7 @@ class Init {
 
         // get postdata from db using type and slug
         $search_param = ['type' => $type, 'slug' => $slug];
-        $postdata = $dash->get_content($search_param);
+        $postdata = $dash->getObject($search_param);
         unset($search_param);
 
         $postdata_modified = $postdata;
@@ -312,15 +312,19 @@ class Init {
         $headmeta_description = $typedata['headmeta_description'];
         $headmeta_img_url = $typedata['headmeta_image_url'];
 
+        $append_phrase = '';
         if ($typedata['headmeta_title_append']) {
             foreach ($typedata['headmeta_title_append'] as $a) {
                 $key = $a['type'];
                 $value = $a['slug'];
 
-                $append_phrase .= " {$typedata['headmeta_title_glue']} {$types[$key][$value]}";
+                $_glue = $typedata['headmeta_title_glue'] ?? '';
+                $_typeKey = $types[$key][$value] ?? '';
+                $append_phrase .= " {$_glue} {$_typeKey}";
             }
         }
 
+        $prepend_phrase = '';
         if ($typedata['headmeta_title_prepend']) {
             foreach ($typedata['head_title_prepend'] as $p) {
                 $key = $p['type'];
@@ -331,7 +335,7 @@ class Init {
 
         if ($append_phrase || $prepend_phrase) {
             $postdata_modified[$headmeta_title] = $prepend_phrase . $postdata[$headmeta_title] . $append_phrase;
-            $postdata_modified[$headmeta_description] = trim(strip_tags($postdata_modified[$headmeta_description]));
+            $postdata_modified[$headmeta_description] = trim(strip_tags($postdata_modified[$headmeta_description] ?? ''));
         }
 
         if (strlen($postdata_modified[$headmeta_description]) > 160) {
@@ -351,7 +355,7 @@ class Init {
 
         }
 
-        if (!($meta_image_url = $postdata_modified[$headmeta_image_url][0] ?? null)) {
+        if (isset($headmeta_image_url) && !($meta_image_url = $postdata_modified[$headmeta_image_url][0] ?? null)) {
             if (!($meta_image_url = $postdata_modified[$headmeta_image_url] ?? null)) {
                 if (!($meta_image_url = $types['webapp']['headmeta_image_url'] ?? null)) {
                     $meta_image_url = '';
