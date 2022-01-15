@@ -6,24 +6,8 @@ class Console {
     // pretty print raw data
     public static function debug($data, bool $halt = false)
     {
-        echo '<div
-            style="
-                background-color:#f3f3f3;
-                padding: 0.5rem 1rem;
-                border-radius: 0;
-                box-shadow: 0 0 0 4px #f3f3f3, inset 0 0 0 2px #000;
-                margin: 1rem 0;
-            "
-            ><pre
-                style="
-                    white-space:pre-wrap;
-                    color:#000;
-                    font-family: sans-serif;
-                    font-size: 0.9rem;
-                "
-                >'.print_r($data, 1).
-            '</pre>
-        </div>';
+        $console = new \Wildfire\Core\Console;
+        echo $console->prettyPrint(print_r($data, 1));
 
         if ($halt) {
             die();
@@ -33,33 +17,48 @@ class Console {
     // pretty print json for debugging
     public static function json($data, bool $halt = false)
     {
-        echo '<div
-            class="container my-2"
-            style="
-                background-color:black;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                box-shadow: 0 0 0 4px #000, inset 0 0 0 2px purple;
-            "
-            ><pre
-                class="small col-md-10 mx-auto text-white"
-                style="
-                    white-space:pre-wrap;
-                    color:#fff;
-                "
-                >'.json_encode($data, JSON_PRETTY_PRINT).
-            '</pre>
-        </div>';
+        $console = new \Wildfire\Core\Console;
+        echo $console->prettyPrint(json_encode($data, JSON_PRETTY_PRINT));
+
+        if ($halt) {
+            die();
+        }
     }
 
     // used to display custom deprecation notice
     public static function deprecate($msg) {
         if ('dev' == strtolower($_ENV['ENV'])) {
             ob_start();
+            echo "<div style='border: 1px solid #000; padding: 0 1rem;'>";
             trigger_error($msg, E_USER_DEPRECATED);
+            echo "<br/></div>";
+            echo "<b style='margin:1rem 0 0.5rem 0; display:inline-block'>Stack Trace:</b>";
+            echo "<div style='border: 1px solid #000; padding:1rem 1.5rem; background-color:beige'>";
             debug_print_backtrace();
+            echo "</div>";
             $data = ob_get_clean();
             self::debug($data);
         }
+    }
+
+    private function prettyPrint($message) {
+        return '<div
+            style="
+                background-color:#f3f3f3;
+                padding: 0.5rem 0.8rem;
+                border-radius: 0;
+                box-shadow: 0 0 0 4px #f3f3f3, inset 0 0 0 1px #000;
+                margin: 1rem 0;
+            "
+            ><pre
+                style="
+                    white-space:pre-wrap;
+                    color:#000;
+                    font-family: sans-serif;
+                    font-size: 0.9rem;
+                "
+                >'.$message.
+            '</pre>
+        </div>';
     }
 }
