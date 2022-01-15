@@ -192,7 +192,7 @@ class Dash extends Init {
 				}
 			}
 
-			if ($module['view_searchable'] && in_array($post['type'], $types['webapp']['searchable_types']) && $post['content_privacy'] == 'public') {
+			if (($module['view_searchable'] ?? null) && in_array($post['type'], $types['webapp']['searchable_types']) && $post['content_privacy'] == 'public') {
 				$slug = $module['input_slug'];
 				if (is_array($post[$slug])) {
 					$post['view_searchable_data'] .= implode(' ', array_map('strip_tags', $post[$slug])) . ' ';
@@ -202,7 +202,7 @@ class Dash extends Init {
 			}
 
 			//change var_type if available, before saving to database
-			if ($module['var_type']) {
+			if ($module['var_type'] ?? false) {
 				$slug = $module['input_slug'];
 				if ($module['var_type'] == 'int') {
 					$post[$slug] = (int) $post[$slug];
@@ -224,7 +224,7 @@ class Dash extends Init {
 			}
 		}
 
-		if (!trim($post['slug']) || $post['slug_update']) {
+		if (!trim($post['slug']) || ($post['slug_update'] ?? false)) {
 			$post['slug'] = dash::do_slugify($post[$title_slug], $title_unique);
 			unset($post['slug_update']);
 		}
@@ -241,7 +241,7 @@ class Dash extends Init {
 			$diff = \array_diff($post, $old_record);
 		}
 
-		if ($post['wp_import']) {
+		if ($post['wp_import'] ?? false) {
 			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`) VALUES ('" . $post['id'] . "', '$updated_on')");
 		}
 
@@ -828,7 +828,7 @@ class Dash extends Init {
 			$title = array();
 			if ($module['input_primary']) {
 				$title_id = $i;
-				$title['slug'] = $module['input_slug'] . (is_array($module['input_lang']) ? '_' . $module['input_lang'][0]['slug'] : '');
+				$title['slug'] = $module['input_slug'] . (is_array($module['input_lang'] ?? null) ? '_' . $module['input_lang'][0]['slug'] : '');
 				$title['primary'] = $module['input_primary'];
 				$title['unique'] = $module['input_unique'];
 				break;
