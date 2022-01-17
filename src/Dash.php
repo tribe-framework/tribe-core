@@ -71,13 +71,13 @@ class Dash extends Init {
 
 	public function doMultiDelete(array $ids, string $type) {
 		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObjects'";
-		\Wildfire\Console\deprecate($deprecate_msg);
+		\Wildfire\Core\Console::deprecate($deprecate_msg);
 		return $this->doDeleteObjects($ids, $type);
 	}
 
 	public function do_delete(array $post): bool {
 		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObject'";
-		\Wildfire\Console\deprecate($deprecate_msg);
+		\Wildfire\Core\Console::deprecate($deprecate_msg);
 		return $this->doDeleteObject($post);
 	}
 
