@@ -70,6 +70,18 @@ class Dash extends Init {
 	}
 
 	public function doMultiDelete(array $ids, string $type) {
+		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObjects'";
+		\Wildfire\Console\deprecate($deprecate_msg);
+		return $this->doDeleteObjects($ids, $type);
+	}
+
+	public function do_delete(array $post): bool {
+		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObject'";
+		\Wildfire\Console\deprecate($deprecate_msg);
+		return $this->doDeleteObject($post);
+	}
+
+	public function doDeleteObjects(array $ids, string $redirect_type): bool {
 		$sql = new MySQL;
 		$types = Init::$types;
 		$ids = implode(',', $ids);
@@ -82,25 +94,29 @@ class Dash extends Init {
 			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
 		}
 
-		self::$last_redirect = "/admin/list?type={$type}";
+		self::$last_redirect = "/admin/list?type={$redirect_type}";
 
 		return true;
 	}
 
-	public function do_delete(array $post = []): bool
+	public function doDeleteObject(array $post): bool
 	{
 		$sql = new MySQL();
 		$types = Init::$types;
 
-		$role_slug = $this->get_content_meta($post['id'], 'role_slug');
+		$role_slug = $this->getAttribute($post['id'], 'role_slug');
 		$role_slug = $role_slug ? "&role=$role_slug" : '';
 
+		$_id = $post['id'] ?? null;
+
+		if (!$_id) {
+			return false;
+		}
+
 		if ($types['webapp']['soft_delete_records']) {
-			$type = $this->get_content_meta($post['id'], 'type');
-			$this->push_content_meta($post['id'], 'deleted_type', $type);
-			$this->push_content_meta($post['id'], 'type', 'deleted_record');
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$_id}");
 		} else {
-			$q = $sql->executeSQL("DELETE FROM data WHERE id={$post['id']}");
+			$q = $sql->executeSQL("DELETE FROM data WHERE id={$_id}");
 		}
 
 		dash::$last_redirect = "/admin/list?type={$post['type']}$role_slug";
