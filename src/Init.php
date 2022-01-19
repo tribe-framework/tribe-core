@@ -16,6 +16,8 @@ class Init {
     protected static $currentUser;
 
     public function __construct() {
+        // enable http only cookie to prevent misuse by xss
+        ini_set( 'session.cookie_httponly', 1 );
         session_save_path('/tmp');
         session_start();
 
