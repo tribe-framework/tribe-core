@@ -24,17 +24,17 @@ class Init {
         $auth = new Auth();
         self::$currentUser = $auth->getCurrentUser();
 
-        if (\file_exists(THEME_PATH . '/error_pages/error_404.php')) {
-            $this->error404_file = THEME_PATH . '/error_pages/error_404.php';
-        } else {
-            $this->error404_file = THEME_PATH . '/pages/404.php';
-        }
+        $this->error404_file = THEME_PATH . '/pages/404.php';
 
         error_reporting(E_ALL);
 
-        // disable browser debugging
-        ini_set('display_errors', 0);
-        ini_set('display_startup_errors', 0);
+        if ('dev' == strtolower($_ENV['ENV'])) {
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+        } else {
+            ini_set('display_errors', 0);
+            ini_set('display_startup_errors', 0);
+        }
 
         $dash = new Dash();
 
@@ -253,8 +253,6 @@ class Init {
             require_once TRIBE_ROOT . "/vendor/wildfire/$type/api/$slug.php";
         } else if (\file_exists(THEME_PATH . "/pages/user/{$slug}.php")) {
             require_once THEME_PATH . "/pages/user/{$slug}.php";
-        } else if (\file_exists(AUTH_PATH . '/theme/error_pages/error_404.php')) {
-            require_once AUTH_PATH . '/theme/error_pages/error_404.php';
         } else if (\file_exists(AUTH_PATH . '/theme/pages/404.php')) {
             require_once AUTH_PATH . '/theme/pages/404.php';
         } else {
