@@ -7,7 +7,7 @@ use \Wildfire\Api as Api;
 
 class Init {
     // properties
-    protected $error404_file = THEME_PATH . '/pages/404.php';
+    protected $error404_file;
     protected $defaultPagesDir = THEME_PATH . "/pages";
     protected static $types;
     protected static $type;
@@ -23,6 +23,12 @@ class Init {
 
         $auth = new Auth();
         self::$currentUser = $auth->getCurrentUser();
+
+        if (\file_exists(THEME_PATH . '/error_pages/error_404.php')) {
+            $this->error404_file = THEME_PATH . '/error_pages/error_404.php';
+        } else {
+            $this->error404_file = THEME_PATH . '/pages/404.php';
+        }
 
         error_reporting(E_ALL);
 
@@ -241,19 +247,18 @@ class Init {
         $type = self::$type;
         $slug = (self::$slug ?? 'index') ?: 'index';
 
-        // load the search file from theme
-        $auth_file = ABSOLUTE_PATH . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
-        $auth_api = ABSOLUTE_PATH . "/vendor/wildfire/$type/api/$slug.php";
-        $alternate_file = THEME_PATH . "/pages/user/{$slug}.php";
-
-        if (file_exists($auth_file)) {
-            require_once $auth_file;
-        } else if (file_exists($auth_api)) {
-            require_once $auth_api;
-        } else if (\file_exists($alternate_file)) {
-            require_once $alternate_file;
-        } else {
+        if (file_exists(TRIBE_ROOT . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php")) {
+            require_once TRIBE_ROOT . "/vendor/wildfire/{$type}/theme/pages/{$slug}.php";
+        } else if (file_exists(TRIBE_ROOT . "/vendor/wildfire/$type/api/$slug.php")) {
+            require_once TRIBE_ROOT . "/vendor/wildfire/$type/api/$slug.php";
+        } else if (\file_exists(THEME_PATH . "/pages/user/{$slug}.php")) {
+            require_once THEME_PATH . "/pages/user/{$slug}.php";
+        } else if (\file_exists(AUTH_PATH . '/theme/error_pages/error_404.php')) {
+            require_once AUTH_PATH . '/theme/error_pages/error_404.php';
+        } else if (\file_exists(AUTH_PATH . '/theme/pages/404.php')) {
             require_once AUTH_PATH . '/theme/pages/404.php';
+        } else {
+            echo "404 / Resource not found";
         }
 
         unset($auth_file);
