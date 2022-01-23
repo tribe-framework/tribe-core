@@ -12,6 +12,7 @@ namespace Wildfire\Core;
 
 use Wildfire\Core\Init;
 use Wildfire\Core\MySQL;
+use \Wildfire\Auth;
 
 class Dash extends Init {
 	public static $last_error = null; //array of error messages
@@ -132,6 +133,7 @@ class Dash extends Init {
 
 	public function push_content($post)
 	{
+		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'pushObject'");
 		return $this->pushObject($post);
 	}
 
@@ -161,9 +163,8 @@ class Dash extends Init {
 		return $this->getAttribute($identifier, $meta_key);
 	}
 
-	public function pushObject($post)
+	public function pushObject(array $post)
 	{
-
 		$sql = new MySQL();
 		$auth = new \Wildfire\Auth;
 		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
@@ -171,40 +172,44 @@ class Dash extends Init {
 		$updated_on = time();
 		$posttype = $post['type'];
 
-		$is_new_record = false;
+		$is_new_record = !isset($post['id']);
 		$do_write_log = $types['webapp']['display_activity_log'] ?? false;
 
-		$title_data = $this->get_type_title_data($post);
-		$title_slug = $title_data['slug'];
-		$title_unique = $title_data['unique'];
+		if (!$is_new_record) {
+			$title_data = $this->get_type_title_data($post);
+			$title_slug = $title_data['slug'];
+			$title_unique = $title_data['unique'];
+		}
+
+		if (!$is_new_record) {
+			$_id = (int) $post['id'];
+
+			$old_post = $sql->executeSQL("SELECT * FROM data WHERE id={$_id} ORDER BY id DESC LIMIT 0,1");
+			$old_post = $old_post ? json_decode($old_post[0]['content'], 1) : false;
+			unset($_id);
+		}
 
 		$post['view_searchable_data'] = '';
 		foreach ($types[$posttype]['modules'] as $module) {
-			//password md5 handling is a tricky game
-			//connected to admin/edit.php
-			//$this->get_content can mess up passwords
+			if ($module['input_type'] == 'password' && substr_count($module['input_slug'], 'confirm_')) {
+				if (isset($post[$module['input_slug']])) {
+					unset($post[$module['input_slug']]);
+				}
+				continue;
+			}
+
+			// handle password updates or new passwords
 			if ($module['input_type'] == 'password') {
 				$password_slug = $module['input_slug'];
-				$password_slug_md5 = $module['input_slug'] . '_md5';
 
-				if ($post[$password_slug] && !$post[$password_slug_md5]) {
-					if ($post['id']) {
-						//while importing from get_content function
-						$post[$password_slug] = $post[$password_slug];
-						$post[$password_slug_md5] = $post[$password_slug];
-					} else {
-						//for new entries
-						$post[$password_slug] = md5($post[$password_slug]);
-						$post[$password_slug_md5] = $post[$password_slug];
-					}
-				} elseif ($post[$password_slug] && (md5($post[$password_slug]) != $post[$password_slug_md5])) {
-					//post edit, password changed
-					$post[$password_slug] = md5($post[$password_slug]);
-					$post[$password_slug_md5] = $post[$password_slug];
-				} elseif ($post[$password_slug_md5]) {
-					//post edit, when password unchanged
-					$post[$password_slug] = $post[$password_slug_md5];
-					$post[$password_slug_md5] = $post[$password_slug_md5];
+				$auth = new Auth;
+
+				if ($is_new_record) {
+					$post[$password_slug] = $auth->secure_password($post[$password_slug]);
+				} else {
+					$post[$password_slug] = trim($post[$password_slug]) ?
+						$auth->secure_password($post[$password_slug]) :
+						$old_post[$password_slug];
 				}
 			}
 
@@ -231,7 +236,7 @@ class Dash extends Init {
 			}
 		}
 
-		if ($title_unique) {
+		if ($title_unique ?? false) {
 			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
 
 			if (is_array($q) && $q[0]['id'] && $post['id'] != $q[0]['id']) {
@@ -240,12 +245,15 @@ class Dash extends Init {
 			}
 		}
 
-		if (!trim($post['slug']) || ($post['slug_update'] ?? false)) {
-			$post['slug'] = dash::do_slugify($post[$title_slug], $title_unique);
+		if (!trim($post['slug'] ?? null) || ($post['slug_update'] ?? false)) {
+			$_title_slug = isset($title_slug) ? $post[$title_slug] : '';
+			$_title_uniqie = $title_unique ?? '';
+
+			$post['slug'] = dash::do_slugify($_title_slug, $_title_uniqie);
 			unset($post['slug_update']);
 		}
 
-		if (!trim($post['id'])) {
+		if (!trim($post['id'] ?? null)) {
 			$sql->executeSQL("INSERT INTO `data` (`created_on`) VALUES ('$updated_on')");
 			$post['id'] = $sql->lastInsertID();
 			$is_new_record = true;
