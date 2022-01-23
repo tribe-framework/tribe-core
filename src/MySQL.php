@@ -14,21 +14,24 @@ class MySQL {
 
     public function __construct()
     {
-        $this->schema = ['id', 'content', 'updated_on', 'created_on', 'user_id', 'role_slug', 'slug', 'content_privacy', 'type'];
+        $_schema = 'id,content,updated_on,created_on,user_id,role_slug,slug,content_privacy,type';
+        $this->schema = explode(',', $_schema);
 
 		$this->CloseConnection();
 
-        $database = isset($_ENV['DB_NAME']) ? $_ENV['DB_NAME'] : null;
-        $username = isset($_ENV['DB_USER']) ? $_ENV['DB_USER'] : null;
-        $password = isset($_ENV['DB_PASS']) ? $_ENV['DB_PASS'] : null;
-        $hostname = isset($_ENV['DB_HOST']) ? $_ENV['DB_HOST'] : 'localhost';
-        $port = isset($_ENV['DB_PORT']) ? $_ENV['DB_PORT'] : 3306;
+        $db_name = $_ENV['DB_NAME'] ?? null;
+        $db_user = $_ENV['DB_USER'] ?? null;
+        $db_pass = $_ENV['DB_PASS'] ?? null;
+        $db_host = $_ENV['DB_HOST'] ?? 'localhost';
+        $db_port = $_ENV['DB_PORT'] ?? 3306;
 
-        $this->databaseLink = mysqli_connect($hostname, $username, $password, $database, (int) $port);
+        $this->databaseLink = mysqli_connect($db_host, $db_user, $db_pass, $db_name, (int) $db_port);
         if (!$this->databaseLink) {
             $this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
             $this->lastError = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
             $this->lastError = "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+
+            throw new \Exception($this->lastError, 1);
             return false;
         }
 

@@ -26,14 +26,9 @@ class Init {
 
         error_reporting(E_ALL);
 
-        // browser debugging
-        if (defined('ENV') && (ENV == 'dev')) {
-            ini_set('display_errors', 1);
-            ini_set('display_startup_errors', 1);
-        } else {
-            ini_set('display_errors', 0);
-            ini_set('display_startup_errors', 0);
-        }
+        // disable browser debugging
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
 
         $dash = new Dash();
 
@@ -495,7 +490,7 @@ class Init {
     private function loadTypeFile() {
         $types = self::$types;
         $type = self::$type;
-        $typedata = $types[$type];
+        $typedata = $types[$type] ?? null;
 
         $dash = new Dash();
 
