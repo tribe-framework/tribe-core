@@ -236,7 +236,7 @@ class Init {
         $type = $url_parts[0];
         $slug = $url_parts[1];
 
-        if (file_exists($admin_file))
+        if (file_exists(THEME_PATH . "/api/index.php"))
             require_once THEME_PATH . "/api/index.php";
 
         return;
