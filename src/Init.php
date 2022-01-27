@@ -160,7 +160,10 @@ class Init {
         }
 
         if (isset($type) && isset($slug)) {
-            return $this->loadTypeSlugFile();
+            if ($type=='theme' && $slug=='api')
+                return $this->loadThemeApi();
+            else
+                return $this->loadTypeSlugFile();
         }
 
         if ($type ?? false) {
@@ -211,6 +214,30 @@ class Init {
 
         $api = new Api;
         $api->exposeTribeApi($url_parts, array_keys(self::$types));
+
+        return;
+    }
+
+    /**
+     * @name loadThemeApi
+     * @desc loads theme/api/index.php file for api requests
+     */
+    private function loadThemeApi() {
+        $url_parts = array_values(
+            array_filter(
+                explode('/', $_SERVER['REQUEST_URI'])
+            )
+        );
+
+        unset($url_parts[0]);
+        unset($url_parts[1]);
+        $url_parts = array_values($url_parts);
+
+        $type = $url_parts[0];
+        $slug = $url_parts[1];
+
+        if (file_exists(THEME_PATH . "/api/index.php"))
+            require_once THEME_PATH . "/api/index.php";
 
         return;
     }
