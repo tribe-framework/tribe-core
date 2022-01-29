@@ -417,7 +417,7 @@ class Dash extends Init {
 			return 0;
 		}
 
-        return $this->doContentCleanup($q, $object_structure);
+        return $this->doContentCleanup($q, $object_structure, 0);
 	}
 
 	public function getObjects($identifier, $object_structure=array())
@@ -463,7 +463,7 @@ class Dash extends Init {
         return $this->doContentCleanup($q, $object_structure);
 	}
 
-	public function doContentCleanup($rows, $object_structure=array())
+	public function doContentCleanup($rows, $object_structure=array(), $return_multi_array=1)
 	{
 
         if (!$rows[0]['id']) {
@@ -500,7 +500,12 @@ class Dash extends Init {
 
 		}
 
-		return (count($final_response)>1 ? $final_response : $final_response[$id]);
+		if ($return_multi_array && count($final_response))
+			return $final_response;
+		else if ($id)
+			return $final_response[$id];
+		else
+			return false;
 	}
 
     /**
