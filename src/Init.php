@@ -26,9 +26,12 @@ class Init {
 
         $this->error404_file = THEME_PATH . '/pages/404.php';
 
-        error_reporting(E_ALL);
-
-        if ('dev' == strtolower($_ENV['ENV'])) {
+        if ('staging' == strtolower($_ENV['ENV'])) {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 0);
+            ini_set('display_startup_errors', 0);
+        } else if ('dev' == strtolower($_ENV['ENV'])) {
+            error_reporting(E_ALL);
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);
         } else {
