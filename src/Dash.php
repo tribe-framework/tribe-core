@@ -82,7 +82,8 @@ class Dash extends Init {
 		return $this->doDeleteObject($post);
 	}
 
-	public function doDeleteObjects(array $ids, string $redirect_type): bool {
+	public function doDeleteObjects(array $ids, string $redirect_type): bool
+	{
 		$sql = new MySQL;
 		$types = Init::$types;
 		$ids = implode(',', $ids);
@@ -100,27 +101,23 @@ class Dash extends Init {
 		return true;
 	}
 
-	public function doDeleteObject(array $post): bool
+	public function doDeleteObject(int $id): bool
 	{
 		$sql = new MySQL();
 		$types = Init::$types;
 
-		$role_slug = $this->getAttribute($post['id'], 'role_slug');
+		$role_slug = $this->getAttribute($id, 'role_slug');
 		$role_slug = $role_slug ? "&role=$role_slug" : '';
 
-		$_id = $post['id'] ?? null;
-
-		if (!$_id) {
+		if (!$id) {
 			return false;
 		}
 
 		if ($types['webapp']['soft_delete_records']) {
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$_id}");
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
 		} else {
-			$q = $sql->executeSQL("DELETE FROM data WHERE id={$_id}");
+			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
 		}
-
-		dash::$last_redirect = "/admin/list?type={$post['type']}$role_slug";
 
 		return true;
 	}
