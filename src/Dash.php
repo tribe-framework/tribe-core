@@ -806,7 +806,7 @@ class Dash extends Init {
 					          {"slug":"pending", "title":"Submit for moderation"},
 					          {"slug":"draft", "title":"Draft"}
 					        ],
-					        "list_field": true,
+					        "list_field": false,
 					        "input_unique": false
 					    }';
 					} else {
@@ -818,7 +818,7 @@ class Dash extends Init {
 					          {"slug":"pending", "title":"Submit for moderation"},
 					          {"slug":"draft", "title":"Draft"}
 					        ],
-					        "list_field": true,
+					        "list_field": false,
 					        "input_unique": false
 					    }';
 					}
