@@ -462,6 +462,8 @@ class Dash extends Init {
 
 	public function doContentCleanup($rows, $object_structure=array(), $return_multi_array=1)
 	{
+		$auth = new Auth;
+		$currentUser = $auth->getCurrentUser();
 
         if (!$rows[0]['id']) {
             return 0;
