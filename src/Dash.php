@@ -464,6 +464,7 @@ class Dash extends Init {
 	{
 		$auth = new Auth;
 		$currentUser = $auth->getCurrentUser();
+		$types = self::$types;
 
         if (!$rows[0]['id']) {
             return 0;
@@ -485,7 +486,8 @@ class Dash extends Init {
 
 			} else if (($final_response[$id]['content_privacy'] ?? null) == 'pending') {
 				if ( ! (
-	                $currentUser['role'] == 'admin' ||
+	                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' ||
+	                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew' ||
 	                $currentUser['user_id'] == $final_response[$id]['user_id'] ||
 	                $_ENV['SKIP_CONTENT_PRIVACY']
 	            ) ) {
@@ -535,11 +537,12 @@ class Dash extends Init {
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
+		$types = self::$types;
 
 		//user
 		if (is_array($type)) {
 			//accessible only to admins
-			if ($currentUser['role'] != 'admin') {
+			if ($types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' && $types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew') {
 				return 0;
 			} else {
 				$role_slug = $type['role_slug'];
@@ -551,10 +554,10 @@ class Dash extends Init {
 		//content
 		else {
 			$role_slug = '';
-			if ($currentUser['role'] == 'admin') {
+			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin') {
 				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content_privacy`!='draft' && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
 			} else {
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content_privacy`='public' OR `user_id`='" . $currentUser['user_id'] . "') && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
+				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content_privacy`='public' OR `content_privacy`='private' OR `user_id`='" . $currentUser['user_id'] . "') && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
 			}
 		}
 
@@ -580,6 +583,7 @@ class Dash extends Init {
 	{
 		$sql = new MySQL();
 		$currentUser = self::$currentUser;
+		$types = self::$types;
 
 		if ($priority_field == 'id') {
 			$priority = "$priority_field $priority_order";
@@ -590,7 +594,7 @@ class Dash extends Init {
 		//user
 		if (is_array($type)) {
 			//accessible only to admins
-			if ($currentUser['role'] != 'admin') {
+			if ($types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' && !$types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew') {
 				return 0;
 			}
 
@@ -622,7 +626,7 @@ class Dash extends Init {
 				'@limit' => $limit ? " LIMIT $limit" : "",
 			];
 
-			if (($currentUser['role'] ?? false) == 'admin') {
+			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin') {
 				$query = "SELECT id FROM data
                     WHERE
                         content_privacy!='draft'
@@ -641,7 +645,7 @@ class Dash extends Init {
 
 				$query = "SELECT id FROM data
                     WHERE
-                        content_privacy='public'
+                        (content_privacy='public' OR content_privacy='private')
                         AND
                         type='$type'
                         @userId
@@ -797,7 +801,7 @@ class Dash extends Init {
 				$type_key_modules = $types[$key]['modules'] ?? [];
 
 				if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
-					if (($currentUser['role'] ?? false) == 'admin') {
+					if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin') {
 						$content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
