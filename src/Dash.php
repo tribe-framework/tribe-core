@@ -626,7 +626,7 @@ class Dash extends Init {
 				'@limit' => $limit ? " LIMIT $limit" : "",
 			];
 
-			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin') {
+			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' || $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew') {
 				$query = "SELECT id FROM data
                     WHERE
                         content_privacy!='draft'
@@ -645,7 +645,7 @@ class Dash extends Init {
 
 				$query = "SELECT id FROM data
                     WHERE
-                        (content_privacy='public' OR content_privacy='private')
+                        content_privacy='public'
                         AND
                         type='$type'
                         @userId
