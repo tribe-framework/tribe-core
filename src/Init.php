@@ -338,9 +338,9 @@ class Init {
         $postdata_modified = $postdata;
 
         $typedata = $types[$type];
-        $headmeta_title = $typedata['headmeta_title'];
-        $headmeta_description = $typedata['headmeta_description'];
-        $headmeta_img_url = $typedata['headmeta_image_url'];
+        $headmeta_title = $typedata['headmeta_title'] ?? '';
+        $headmeta_description = $typedata['headmeta_description'] ?? '';
+        $headmeta_img_url = $typedata['headmeta_image_url'] ?? '';
 
         $append_phrase = '';
         if ($typedata['headmeta_title_append']) {
