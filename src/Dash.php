@@ -172,8 +172,8 @@ class Dash extends Init {
 		$is_new_record = !isset($post['id']);
 		$do_write_log = $types['webapp']['display_activity_log'] ?? false;
 
-		if (!$is_new_record) {
-			$title_data = $this->get_type_title_data($post);
+		if ($posttype) {
+			$title_data = $this->get_type_title_data($posttype);
 			$title_slug = $title_data['slug'];
 			$title_unique = $title_data['unique'];
 		}
@@ -844,16 +844,11 @@ class Dash extends Init {
 		return $types;
 	}
 
-	public function get_type_title_data($post)
+	public function get_type_title_data($posttype)
 	{
 		$sql = new MySQL();
 		$types = self::$types;
-		$posttype = $post['type'];
 
-		if (!($post_id = $post['id'])) {
-			$last_id = $sql->executeSQL("SELECT `id` FROM `data` ORDER BY `id` DESC LIMIT 0,1");
-			$post_id = $last_id[0]['id'] + 1;
-		}
 		//foreach loop that breaks
 		$i = 0;
 		foreach ($types[$posttype]['modules'] as $module) {
