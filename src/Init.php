@@ -338,9 +338,9 @@ class Init {
         $postdata_modified = $postdata;
 
         $typedata = $types[$type];
-        $headmeta_title = $typedata['headmeta_title'];
-        $headmeta_description = $typedata['headmeta_description'];
-        $headmeta_img_url = $typedata['headmeta_image_url'];
+        $headmeta_title = $typedata['headmeta_title'] ?? '';
+        $headmeta_description = $typedata['headmeta_description'] ?? '';
+        $headmeta_img_url = $typedata['headmeta_image_url'] ?? '';
 
         $append_phrase = '';
         if ($typedata['headmeta_title_append']) {
@@ -363,12 +363,16 @@ class Init {
             }
         }
 
-        if ($append_phrase || $prepend_phrase) {
-            $postdata_modified[$headmeta_title] = $prepend_phrase . $postdata[$headmeta_title] . $append_phrase;
-            $postdata_modified[$headmeta_description] = trim(strip_tags($postdata_modified[$headmeta_description] ?? ''));
+        if ($postdata_modified && ($append_phrase || $prepend_phrase)) {
+            if (!empty($headmeta_title)) {
+                $postdata_modified[$headmeta_title] = $prepend_phrase . $postdata[$headmeta_title] . $append_phrase;
+            }
+            if (!empty($headmeta_description)) {
+                $postdata_modified[$headmeta_description] = trim(strip_tags($postdata_modified[$headmeta_description] ?? ''));
+            }
         }
 
-        if (strlen($postdata_modified[$headmeta_description]) > 160) {
+        if ($postdata_modified && (strlen($postdata_modified[$headmeta_description]) > 160)) {
             $postdata_modified[$headmeta_description] = substr($postdata_modified[$headmeta_description], 0, 154) . '[...]';
         }
 

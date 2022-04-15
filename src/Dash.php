@@ -466,7 +466,7 @@ class Dash extends Init {
 		$currentUser = $auth->getCurrentUser();
 		$types = self::$types;
 
-        if (!$rows[0]['id']) {
+        if (!($rows[0]['id'] ?? null)) {
             return 0;
         }
 
