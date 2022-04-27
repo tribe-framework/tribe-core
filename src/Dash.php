@@ -720,7 +720,9 @@ class Dash extends Init {
 
 	public function do_unslugify($url_part)
 	{
-		return strtolower(trim(rawurlencode($url_part)));
+        if (strstr($url_part, '?') != NULL)
+            $url_part = explode('?', $url_part)[0];
+        return strtolower(trim(rawurlencode($url_part)));
 	}
 
 	public static function get_types($json_path)
