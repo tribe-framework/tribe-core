@@ -226,6 +226,8 @@ class Init {
      * @desc loads theme/api/index.php file for api requests
      */
     private function loadThemeApi() {
+        $dash = new Dash;
+        
         $url_parts = array_values(
             array_filter(
                 explode('/', $_SERVER['REQUEST_URI'])
@@ -236,8 +238,8 @@ class Init {
         unset($url_parts[1]);
         $url_parts = array_values($url_parts);
 
-        $type = $url_parts[0];
-        $slug = $url_parts[1];
+        $type = $dash->do_unslugify($url_parts[0]);
+        $slug = $dash->do_unslugify($url_parts[1]);
 
         if (file_exists(THEME_PATH . "/api/index.php"))
             require_once THEME_PATH . "/api/index.php";
