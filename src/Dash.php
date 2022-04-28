@@ -834,7 +834,7 @@ class Dash extends Init {
 				}
 
 				foreach ($types[$key]['modules'] as $module) {
-					if (!isset($module['input_primary'])) {
+					if (!isset($module['input_primary']) || $module['input_primary']!=true) {
 						continue;
 					}
 
