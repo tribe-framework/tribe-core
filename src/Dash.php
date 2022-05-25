@@ -846,7 +846,7 @@ class Dash extends Init {
 		return $types;
 	}
 
-	public function get_type_title_data($posttype)
+	public function get_type_title_data(string $posttype)
 	{
 		$sql = new MySQL();
 		$types = self::$types;
