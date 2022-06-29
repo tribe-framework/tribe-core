@@ -35,7 +35,7 @@ class MySQL {
             return false;
         }
 
-        mysqli_set_charset($this->databaseLink, 'utf8');
+        mysqli_set_charset($this->databaseLink, 'utf8mb4');
 
         return $this;
     }
