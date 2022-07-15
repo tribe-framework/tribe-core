@@ -570,13 +570,13 @@ class Dash extends Init {
 	 * @param string $priority_order
 	 * @param int $limit
 	 * @param boolean $debug_show_sql_statement
-	 * @return array
+	 * @return array|int
 	 * @return int status
 	 */
 	public function get_all_ids(
 		$type,
-		$priority_field = 'id',
-		$priority_order = 'DESC',
+		string $priority_field = 'id',
+		string $priority_order = 'DESC',
 		$limit = '',
 		$debug_show_sql_statement = 0
 	)
@@ -588,13 +588,16 @@ class Dash extends Init {
 		if ($priority_field == 'id') {
 			$priority = "$priority_field $priority_order";
 		} else {
-			$priority = "content->'$.$priority_field' IS NULL, content->'$.$priority_field' $priority_order, id DESC";
+			$priority = "content->'$.{$priority_field}' IS NULL, content->'$.{$priority_field}' {$priority_order}, id DESC";
 		}
 
 		//user
 		if (is_array($type)) {
 			//accessible only to admins
-			if ($types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' && !$types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew') {
+			if (
+			    $types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' &&
+                !$types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew'
+            ){
 				return 0;
 			}
 
@@ -613,11 +616,8 @@ class Dash extends Init {
                     ORDER BY $priority
                     @limit
             ";
-
-			$query = strtr($query, $trans);
-
-			$q = $sql->executeSQL($query);
-		} else {
+        }
+		else {
 			//content
 			$role_slug = '';
 
@@ -626,41 +626,36 @@ class Dash extends Init {
 				'@limit' => $limit ? " LIMIT $limit" : "",
 			];
 
-			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' || $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew') {
+            // if user's role is either admin or crew, list all with any privacy
+			if (
+			    $types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' ||
+                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew'
+            ) {
 				$query = "SELECT id FROM data
                     WHERE
-                        content_privacy!='draft'
-                        AND
-                        type='$type'
+                        type = '{$type}'
                         @roleSlug
-                        ORDER BY $priority
-                        @limit
-                ";
-
-				$query = strtr($query, $trans);
-
-				$q = $sql->executeSQL($query);
-			} else {
-				$trans['@userId'] = isset($currentUser['user_id']) ? $currentUser['user_id'] : '';
+                    ORDER BY {$priority}
+                    @limit";
+            }
+			else {
+				$trans['@userId'] = $currentUser['user_id'] ?? '';
 
 				$query = "SELECT id FROM data
                     WHERE
-                        content_privacy='public'
-                        AND
-                        type='$type'
+                        content_privacy='public' AND
+                        type = '{$type}'
                         @userId
                         @roleSlug
-                        ORDER BY $priority
-                        @limit
-                ";
+                    ORDER BY {$priority}
+                    @limit";
+            }
+        }
 
-				$query = strtr($query, $trans);
+        $query = strtr($query, $trans);
+        $q = $sql->executeSQL($query);
 
-				$q = $sql->executeSQL($query);
-			}
-		}
-
-		if ($debug_show_sql_statement) {
+        if ($debug_show_sql_statement) {
 			echo $query;
 		}
 
