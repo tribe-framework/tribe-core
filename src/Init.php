@@ -321,7 +321,6 @@ class Init {
     }
 
     /**
-     * @name loadTypeSlugFile
      * @desc loads files by parsing type & slug in URL
      */
     private function loadTypeSlugFile() {
@@ -523,7 +522,6 @@ class Init {
     }
 
     /**
-     * @name loadTypeFile
      * @desc loads files for a particular type
      */
     private function loadTypeFile() {
