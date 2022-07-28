@@ -595,6 +595,7 @@ class Dash extends Init {
 		if (is_array($type)) {
 			//accessible only to admins
 			if (
+                isset($currentUser['role_slug']) &&
 			    $types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' &&
                 !$types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew'
             ){
@@ -628,8 +629,8 @@ class Dash extends Init {
 
             // if user's role is either admin or crew, list all with any privacy
 			if (
-			    $types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' ||
-                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew'
+			    isset($currentUser['role_slug']) &&
+                in_array($types['user']['roles'][$currentUser['role_slug']]['role'], ['admin', 'crew'])
             ) {
 				$query = "SELECT id FROM data
                     WHERE
