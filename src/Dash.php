@@ -258,8 +258,23 @@ class Dash extends Init {
 
 		// get keys which were updated during this operation
 		if ($do_write_log) {
-			$old_record = $this->get_content($post['id'], 'content');
-			$diff = \array_diff($post, $old_record);
+			$old_record = $this->getObject($post['id'], 'content');
+			$temp_post = $post;
+			$temp_modules = $types[$temp_post['type']]['modules'] ?? null;
+
+            // remove data belonging to editorjs
+            if ($temp_modules) {
+                foreach ($temp_modules as $mod) {
+                    if ($mod['input_type'] === 'editorjs') {
+                        unset($temp_post[$mod['input_slug']]);
+                    }
+                }
+            }
+
+			$diff = \array_diff($temp_post, $old_record);
+
+            // free up memory
+            unset($temp_modules, $temp_post, $old_record);
 		}
 
 		if ($post['wp_import'] ?? false) {
