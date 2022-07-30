@@ -385,6 +385,14 @@ class Dash extends Init {
 		return $q[0];
 	}
 
+	public function getTypeSchema ($type)
+	{
+		$types = self::$types;
+		$modules = array_column($types[$type]['modules'], 'input_slug');
+		$modules[] = 'id';
+		return array_fill_keys($modules, '');
+	}
+
 	public function getObject ($identifier, $object_structure=array())
 	{
 		$sql = new MySQL();
