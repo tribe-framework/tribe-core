@@ -463,6 +463,19 @@ class Dash extends Init {
             );
 		}
 
+		//IF ARRAY HAS type and slugs
+		else if ($identifier['type'] && $identifier['slugs'][0]) {
+			foreach ($identifier['slugs'] as $idn) {
+				$_where[] = "(`type`='".$identifier['type']."' AND `slug`='".$idn."')";
+			}
+
+			$q = $sql->executeSQL("SELECT * from data
+                where ".implode(' OR ', $_where)."
+                order by id desc
+                limit 0,".count($identifier['slugs'])
+            );
+		}
+
 		//IF ARRAY HAS multiple type-slug pairs
 		else if ($identifier[0]['type'] && $identifier[0]['slug']) {
 			foreach ($identifier as $idn) {
