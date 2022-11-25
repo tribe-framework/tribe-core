@@ -154,9 +154,14 @@ class Init {
             return $this->loadSearch();
         }
 
+        if (($type ?? '') == 'feed') {
+            return $this->loadRSSFeed();
+        }
+
         if (($type ?? '') == 'sitemap.xml') {
             return $this->loadSitemap();
         }
+
 
         if (($type ?? '') == 'backup') {
             return $this->loadBackup();
@@ -174,6 +179,17 @@ class Init {
         }
 
         return $this->loadIndex();
+    }
+
+    private function loadRSSFeed() {
+        $file_path = ABSOLUTE_PATH . '/vendor/wildfire/sitemap/feed.php';
+
+        if (file_exists($file_path)) {
+            include_once $file_path;
+            return true;
+        }
+
+        $this->errorNotFound();
     }
 
     private function loadSitemap() {
