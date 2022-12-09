@@ -531,7 +531,7 @@ class Dash extends Init {
 				}
 			}
 
-			if (array_keys($object_structure)) {
+			if (is_array($object_structure ?? false) && array_keys($object_structure)) {
 				$final_response[$id] = array_intersect_key($final_response[$id], $object_structure);
 			}
 
