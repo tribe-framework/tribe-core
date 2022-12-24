@@ -1,9 +1,4 @@
 {
     "name": "tribe/core",
-    "description": "Offers classes for various functions of tribe core (v4)",
-    "autoload": {
-        "psr-4": {
-            "Wildfire\\Core\\": "src/"
-        }
-    }
+    "description": "Offers classes for various functions of Tribe (v3)",
 }
