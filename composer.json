@@ -1,4 +1,9 @@
 {
     "name": "tribe/core",
-    "description": "Offers classes for various functions of Tribe (v3)"
+    "description": "Offers classes for various functions of Tribe (v3)",
+    "autoload": {
+        "psr-4": {
+            "Tribe\\": "src/"
+        }
+    }
 }

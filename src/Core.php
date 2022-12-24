@@ -7,10 +7,9 @@
  * do_ is for action that doesn't have a database push or pull
  * is_ is for a yes/no answer
  */
+namespace Tribe;
 
-namespace Tribe\Core;
-
-use \Tribe\Core\MySQL;
+use \Tribe\MySQL;
 use \Tribe\Auth;
 
 class Core {

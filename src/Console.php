@@ -1,6 +1,5 @@
 <?php
-
-namespace Wildfire\Core;
+namespace Tribe;
 
 class Console {
     // pretty print raw data

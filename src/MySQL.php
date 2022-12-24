@@ -1,6 +1,6 @@
 <?php
 
-namespace Wildfire\Core;
+namespace Tribe;
 
 class MySQL {
 	public $lastError; // Holds the last error
