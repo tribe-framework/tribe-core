@@ -8,84 +8,59 @@
  * is_ is for a yes/no answer
  */
 
-namespace Wildfire\Core;
+namespace Tribe\Core;
 
-use Wildfire\Core\Init;
-use Wildfire\Core\MySQL;
-use \Wildfire\Auth;
+use \Tribe\Core\MySQL;
+use \Tribe\Auth;
 
-class Dash extends Init {
-	public static $last_error = null; //array of error messages
-	public static $last_info = null; //array of info messages
-	public static $last_data = null; //array of data to be sent for display
-	public static $last_redirect = null; //redirection url
-	public $statusCode = null; // to set server response code
+class Core {
 	public static $ignored_keys;
+    public static $types;
+    public static $type;
+    public static $slug;
+    public static $menus;
+    protected static $currentUser;
 
 	public function __construct()
 	{
+        // enable http only cookie to prevent misuse by xss
+        ini_set( 'session.cookie_httponly', 1 );
+        session_save_path('/tmp');
+        session_start();
+
 		self::$ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_access_log', 'mysql_activity_log'];
+
+        $auth = new Auth();
+        self::$currentUser = $auth->getCurrentUser();
+
+        if ('dev' == strtolower($_ENV['ENV'])) {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+        } else {
+            ini_set('display_errors', 0);
+            ini_set('display_startup_errors', 0);
+        }
+
+        self::$types = $this->getTypes(ABSOLUTE_PATH . '/config/types.json');
+        self::$menus = json_decode(file_get_contents(ABSOLUTE_PATH . '/config/menus.json'), true);
+
+        if (!isset($this->types['webapp']['lang'])) {
+            self::$types['webapp']['lang'] = 'en';
+        }
 	}
 
-	public function get_last_error()
-	{
-		if (count(dash::$last_error ?? [])) {
-			$op = implode('<br>', dash::$last_error);
-			dash::$last_error = array();
-			return $op;
-		} else {
-			return '';
-		}
-	}
-
-	public function get_last_info()
-	{
-		if (count(dash::$last_info ?? [])) {
-			$op = implode('<br>', dash::$last_info);
-			dash::$last_info = array();
-			return $op;
-		} else {
-			return '';
-		}
-	}
-
-	public function get_last_data()
-	{
-		$arr = dash::$last_data;
-		dash::$last_data = array();
-		return $arr;
-	}
-
-	public function get_last_redirect()
-	{
-		$r = dash::$last_redirect;
-		dash::$last_redirect = '';
-		return $r;
-	}
-
-	public function get_next_id()
+	public function getNextID()
 	{
 		$sql = new MySQL();
 		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 0,1");
 		return ($q[0]['id'] + 1);
 	}
 
-	public function doMultiDelete(array $ids, string $type) {
-		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObjects'";
-		\Wildfire\Core\Console::deprecate($deprecate_msg);
-		return $this->doDeleteObjects($ids, $type);
-	}
-
-	public function do_delete(array $post): bool {
-		$deprecate_msg = __METHOD__."deprecated, instead use 'doDeleteObject'";
-		\Wildfire\Core\Console::deprecate($deprecate_msg);
-		return $this->doDeleteObject($post);
-	}
-
 	public function doDeleteObjects(array $ids, string $redirect_type): bool
 	{
 		$sql = new MySQL;
-		$types = Init::$types;
+		$types = self::$types;
 		$ids = implode(',', $ids);
 
 		if ($types['webapp']['soft_delete_records']) {
@@ -104,7 +79,7 @@ class Dash extends Init {
 	public function doDeleteObject(int $id): bool
 	{
 		$sql = new MySQL();
-		$types = Init::$types;
+		$types = self::$types;
 
 		$role_slug = $this->getAttribute($id, 'role_slug');
 		$role_slug = $role_slug ? "&role=$role_slug" : '';
@@ -122,48 +97,10 @@ class Dash extends Init {
 		return true;
 	}
 
-	public function get_ids_by_search_query($query)
-	{
-		$sql = new MySQL();
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE LOWER(`content`->'$.view_searchable_data') LIKE '%" . strtolower(urldecode($query)) . "%' && `content_privacy`='public' GROUP BY `id` LIMIT 0,25");
-	}
-
-	public function push_content($post)
-	{
-		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'pushObject'");
-		return $this->pushObject($post);
-	}
-
-	public function push_content_meta($id, $meta_key, $meta_value = '')
-	{
-		return $this->pushAttribute($id, $meta_key, $meta_value);
-	}
-
-    /**
-	 * @deprecated
-     * Method to get content from database in a flattened structure
-     * @param  integer|array $identifier id of record or named array with type & slug keys
-     * @return integer|array      returns either 0 (for fail) or array of data
-     */
-	public function get_content($identifier)
-	{
-		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'getObject'");
-		return $this->getObject($identifier);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function get_content_meta($identifier, $meta_key)
-	{
-		\Wildfire\Core\Console::deprecate(__METHOD__ . " deprecated, must use 'getAttribute'");
-		return $this->getAttribute($identifier, $meta_key);
-	}
-
 	public function pushObject(array $post)
 	{
 		$sql = new MySQL();
-		$auth = new \Wildfire\Auth;
+		$auth = new \Tribe\Auth;
 		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
 		$types = self::$types;
 		$updated_on = time();
@@ -237,7 +174,6 @@ class Dash extends Init {
 			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
 
 			if (is_array($q) && $q[0]['id'] && $post['id'] != $q[0]['id']) {
-				dash::$last_error[] = 'Either the title is left empty or the same title already exists in ' . $types[$posttype]['plural'];
 				return 0;
 			}
 		}
@@ -246,7 +182,7 @@ class Dash extends Init {
 			$_title_slug = isset($title_slug) ? $post[$title_slug] : '';
 			$_title_uniqie = $title_unique ?? '';
 
-			$post['slug'] = dash::do_slugify($_title_slug, $_title_uniqie);
+			$post['slug'] = $this->do_slugify($_title_slug, $_title_uniqie);
 			unset($post['slug_update']);
 		}
 
@@ -288,15 +224,6 @@ class Dash extends Init {
 			$this->push_content_meta($post['id'], 'view_searchable_data');
 		}
 
-		dash::$last_info[] = 'Content saved.';
-
-		dash::$last_data[] = array(
-			'id' => $id,
-			'slug' => $post['slug'],
-			'updated_on' => $updated_on,
-			'url' => BASE_URL . "/{$post['type']}/{$post['slug']}"
-		);
-
 		// write log for this operation
 		if ($do_write_log) {
 			$skip_log = false;
@@ -337,7 +264,7 @@ class Dash extends Init {
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
-		$auth = new \Wildfire\Auth;
+		$auth = new \Tribe\Auth;
 		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null ];
 
 		if (!($id && $meta_key)) {
@@ -545,61 +472,6 @@ class Dash extends Init {
 			return false;
 	}
 
-    /**
-     * Fetch db record based on id
-     * @param  int    $id id of record in database
-     * @return array     empty or non-empty (depening on status)
-     */
-    public function findById(int $id)
-    {
-        $sql = new MySQL();
-		return $sql->getId($id);
-    }
-
-	public function fetch_content_title_array($slug, $column_key, $with_link = 1)
-	{
-		$sql = new MySQL();
-		$types = self::$types;
-
-		$q = $sql->executeSQL("SELECT `content`->'$.title' `title` FROM `data` WHERE `slug`='$slug' && `type`='$column_key'");
-		if ($with_link) {
-			return '<a href="' . BASE_URL . '/' . $column_key . '/' . $slug . '">' . json_decode($q[0]['title']) . '</a>';
-		} else {
-			return json_decode($q[0]['title']);
-		}
-	}
-
-	public static function get_all_ids_count($type)
-	{
-		$sql = new MySQL();
-		$currentUser = self::$currentUser;
-		$types = self::$types;
-
-		//user
-		if (is_array($type)) {
-			//accessible only to admins
-			if ($types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' && $types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew') {
-				return 0;
-			} else {
-				$role_slug = $type['role_slug'];
-				$type = $type['type'];
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
-			}
-		}
-
-		//content
-		else {
-			$role_slug = '';
-			if ($types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin') {
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `content_privacy`!='draft' && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
-			} else {
-				$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE (`content_privacy`='public' OR `content_privacy`='private' OR `user_id`='" . $currentUser['user_id'] . "') && `type`='$type' " . ($role_slug ? "&& `role_slug`='$role_slug'" : ""));
-			}
-		}
-
-		return $sql->records;
-	}
-
 	/**
 	 * @param mixed $type
 	 * @param string $priority_field
@@ -609,7 +481,7 @@ class Dash extends Init {
 	 * @return array|int
 	 * @return int status
 	 */
-	public function get_all_ids(
+	public function getAllIDs(
 		$type,
 		string $priority_field = 'id',
 		string $priority_order = 'DESC',
@@ -699,7 +571,7 @@ class Dash extends Init {
 		return $q;
 	}
 
-	public function get_ids($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
+	public function getIDs($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
 	{
 		$sql = new MySQL();
 		if ($priority_field != 'content' && in_array($priority_field, $sql->schema) ) {
@@ -737,27 +609,21 @@ class Dash extends Init {
 		return $r;
 	}
 
-	public function get_date_ids($publishing_date)
-	{
-		$sql = new MySQL();
-		return $sql->executeSQL("SELECT `id` FROM `data` WHERE `content`->'$.publishing_date'='$publishing_date'");
-	}
-
-	public function do_slugify($string, $input_itself_is_unique = 0)
+	public function doSlugify($string, $input_itself_is_unique = 0)
 	{
 		//size of slug should be less than 255 characters because of DB field, so 230 + length of uniqid()
 		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 230) . ($input_itself_is_unique ? '' : '-' . uniqid());
 		return $slug;
 	}
 
-	public function do_unslugify($url_part)
+	public function doUnslugify($url_part)
 	{
         if (strstr($url_part, '?') != NULL)
             $url_part = explode('?', $url_part)[0];
         return strtolower(trim(rawurlencode($url_part)));
 	}
 
-	public static function get_types($json_path)
+	public static function getTypes($json_path)
 	{
 		$currentUser = self::$currentUser;
 
@@ -878,29 +744,7 @@ class Dash extends Init {
 		return $types;
 	}
 
-	public function get_type_title_data(string $posttype)
-	{
-		$sql = new MySQL();
-		$types = self::$types;
-
-		//foreach loop that breaks
-		$i = 0;
-		foreach ($types[$posttype]['modules'] as $module) {
-			$title = array();
-			if ($module['input_primary']) {
-				$title_id = $i;
-				$title['slug'] = $module['input_slug'] . (is_array($module['input_lang'] ?? null) ? '_' . $module['input_lang'][0]['slug'] : '');
-				$title['primary'] = $module['input_primary'];
-				$title['unique'] = $module['input_unique'];
-				break;
-			}
-
-			$i++;
-		}
-		return $title;
-	}
-
-	public function get_unique_user_id()
+	public function getUniqueUserID()
 	{
 		$sql = new MySQL();
 		$bytes = strtoupper(bin2hex(random_bytes(3)));
@@ -914,7 +758,7 @@ class Dash extends Init {
 		}
 	}
 
-	public function do_shell_command($cmd)
+	public function doShellCommand($cmd)
 	{
 		ob_start();
 		passthru($cmd);
@@ -923,17 +767,17 @@ class Dash extends Init {
 		return $tml;
 	}
 
-	public function get_upload_dir_path()
+	public function getUploadDirPath()
 	{
 		return TRIBE_ROOT . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
-	public function get_upload_dir_url()
+	public function getUploadDirURL()
 	{
 		return BASE_URL . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
-	public function get_uploader_path()
+	public function getUploaderPath()
 	{
 		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 		if (!is_dir(TRIBE_ROOT . '/' . $folder_path)) {
@@ -943,7 +787,7 @@ class Dash extends Init {
 		return array('upload_dir' => TRIBE_ROOT . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
 	}
 
-	public function get_uploaded_image_in_size($file_url, $thumbnail = 'md')
+	public function getUploadedImageInSize($file_url, $thumbnail = 'md')
 	{
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
 			$file_arr = array();
@@ -976,7 +820,7 @@ class Dash extends Init {
 		}
 	}
 
-	public function get_uploaded_file_versions($file_url, $thumbnail = 'xs')
+	public function getUploadedFileVersions($file_url, $thumbnail = 'xs')
 	{
 
 		$file_arr = array();
@@ -1024,15 +868,15 @@ class Dash extends Init {
 		return $file_arr;
 	}
 
-	public function get_dir_url()
+	public function getDirURL()
 	{
 		return str_replace(TRIBE_ROOT, BASE_URL, getcwd());
 	}
 
-	public function do_upload_file_from_url($url)
+	public function doUploadFileFromURL($url)
 	{
 		if ($url ?? false) {
-			$path = $this->get_uploader_path();
+			$path = $this->getUploaderPath();
 
 			$file_name = time() . '-' . basename($url);
 			$wf_uploads_path = $path['upload_dir'] . '/' . $file_name;
@@ -1070,15 +914,5 @@ class Dash extends Init {
 		]);
 
 		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_activity_log', '$data') WHERE id=$id");
-	}
-
-	public function checkFileUploadName(string $filename): bool
-	{
-		return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i", $filename)) ? true : false);
-	}
-
-	public function checkFileUploadNameLength(string $filename): bool
-	{
-		return (bool) ((mb_strlen($filename,"UTF-8") > 225) ? true : false);
 	}
 }
