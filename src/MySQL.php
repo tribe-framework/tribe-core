@@ -1,5 +1,4 @@
 <?php
-
 namespace Tribe;
 
 class MySQL {
@@ -67,9 +66,9 @@ class MySQL {
             if ($this->records > 0) {
                 $this->arrayResults();
                 if ($this->records == 1) {
-                    return array($this->unstrip_array($this->arrayedResult));
+                    return array($this->unstripArray($this->arrayedResult));
                 } else {
-                    return $this->unstrip_array($this->arrayedResult);
+                    return $this->unstripArray($this->arrayedResult);
                 }
             } else {
                 return 0;
@@ -80,7 +79,7 @@ class MySQL {
         }
     }
 
-	public function unstrip_array($variable)
+	public function unstripArray($variable)
 	{
 		if (is_string($variable)) {
 			if (json_decode($variable) === null) {
@@ -91,7 +90,7 @@ class MySQL {
 		}
 		if (is_array($variable)) {
 			foreach ($variable as $i => $value) {
-				$variable[$i] = $this->unstrip_array($value);
+				$variable[$i] = $this->unstripArray($value);
 			}
 		}
 

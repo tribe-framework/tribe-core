@@ -1,10 +1,4 @@
-# wildfire
-
-## minimum requirements
-apache, nginx, php7.4, mysql8 (LAMP server), wildfire/tribe on ubuntu 20.04
+# tribe core
 
 ## installation
-include using composer, in wildfire/tribe
-
-## contact
-write to tech@connect.wf if you face any issues or have suggestions 
+auto-installed with tribe (v3)

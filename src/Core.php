@@ -1,36 +1,15 @@
 <?php
-/*
- * functions start with push_, pull_, get_, do_ or is_
- * push_ is to save to database
- * pull_ is to pull from database, returns 1 or 0, saves the output array in $last_data
- * get_ is to get usable values from functions
- * do_ is for action that doesn't have a database push or pull
- * is_ is for a yes/no answer
- */
 namespace Tribe;
 
 use \Tribe\MySQL;
-use \Tribe\Auth;
+use \Tribe\Config;
 
 class Core {
 	public static $ignored_keys;
-    public static $types;
-    public static $type;
-    public static $slug;
-    public static $menus;
-    protected static $currentUser;
 
 	public function __construct()
 	{
-        // enable http only cookie to prevent misuse by xss
-        ini_set( 'session.cookie_httponly', 1 );
-        session_save_path('/tmp');
-        session_start();
-
 		self::$ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_access_log', 'mysql_activity_log'];
-
-        $auth = new Auth();
-        self::$currentUser = $auth->getCurrentUser();
 
         if ('dev' == strtolower($_ENV['ENV'])) {
             error_reporting(E_ALL);
@@ -40,120 +19,56 @@ class Core {
             ini_set('display_errors', 0);
             ini_set('display_startup_errors', 0);
         }
-
-        self::$types = $this->getTypes(ABSOLUTE_PATH . '/config/types.json');
-        self::$menus = json_decode(file_get_contents(ABSOLUTE_PATH . '/config/menus.json'), true);
-
-        if (!isset($this->types['webapp']['lang'])) {
-            self::$types['webapp']['lang'] = 'en';
-        }
 	}
 
-	public function getNextID()
+	public function executeShellCommand($cmd)
+	{
+		ob_start();
+		passthru($cmd);
+		$tml = ob_get_contents();
+		ob_end_clean();
+		return $tml;
+	}
+
+	public function slugify($string, $input_itself_is_unique = 0)
+	{
+		//size of slug should be less than 255 characters because of DB field, so 230 + length of uniqid()
+		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 230) . ($input_itself_is_unique ? '' : '-' . uniqid());
+		return $slug;
+	}
+
+	public function unslugify($url_part)
+	{
+        if (strstr($url_part, '?') != NULL)
+            $url_part = explode('?', $url_part)[0];
+        return strtolower(trim(rawurlencode($url_part)));
+	}
+
+	public function pushObject(array $post, bool $overwrite_post = false)
 	{
 		$sql = new MySQL();
-		$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE 1 ORDER BY `id` DESC LIMIT 0,1");
-		return ($q[0]['id'] + 1);
-	}
+		$config = new Config();
 
-	public function doDeleteObjects(array $ids, string $redirect_type): bool
-	{
-		$sql = new MySQL;
-		$types = self::$types;
-		$ids = implode(',', $ids);
-
-		if ($types['webapp']['soft_delete_records']) {
-			// soft delete
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids)");
-		} else {
-			// perma delete
-			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
-		}
-
-		self::$last_redirect = "/admin/list?type={$redirect_type}";
-
-		return true;
-	}
-
-	public function doDeleteObject(int $id): bool
-	{
-		$sql = new MySQL();
-		$types = self::$types;
-
-		$role_slug = $this->getAttribute($id, 'role_slug');
-		$role_slug = $role_slug ? "&role=$role_slug" : '';
-
-		if (!$id) {
-			return false;
-		}
-
-		if ($types['webapp']['soft_delete_records']) {
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
-		} else {
-			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
-		}
-
-		return true;
-	}
-
-	public function pushObject(array $post)
-	{
-		$sql = new MySQL();
-		$auth = new \Tribe\Auth;
-		$currentUser = $auth->getCurrentUser() ?: [ 'name' => null, 'id' => null];
-		$types = self::$types;
+		$types = $config->getTypes();
 		$updated_on = time();
 		$posttype = $post['type'];
 
 		$is_new_record = !isset($post['id']);
-		$do_write_log = $types['webapp']['display_activity_log'] ?? false;
 
+		//Get title/primary module structure to understand if uniqueness of title has to be checked and to get what's the title called in that type.
 		if ($posttype) {
-			$title_data = $this->get_type_title_data($posttype);
-			$title_slug = $title_data['slug'];
-			$title_unique = $title_data['unique'];
+			$title_module = $config->getTypePrimaryModule($posttype, $types);
+			$title_slug = $title_module['slug'];
+			$title_unique = $title_module['unique'];
 		}
 
-		if (!$is_new_record) {
-			$_id = (int) $post['id'];
-
-			$old_post = $sql->executeSQL("SELECT * FROM data WHERE id={$_id} ORDER BY id DESC LIMIT 0,1");
-			$old_post = $old_post ? json_decode($old_post[0]['content'], 1) : false;
-			unset($_id);
+		//ID Type correction
+		if ($post['id'] ?? false) {
+			$post['id'] = (int) $post['id'];
 		}
 
-		$post['view_searchable_data'] = '';
+		//Checking / using variable type if it is given with modules
 		foreach ($types[$posttype]['modules'] as $module) {
-			if ($module['input_type'] == 'password' && substr_count($module['input_slug'], 'confirm_')) {
-				if (isset($post[$module['input_slug']])) {
-					unset($post[$module['input_slug']]);
-				}
-				continue;
-			}
-
-			// handle password updates or new passwords
-			if ($module['input_type'] == 'password') {
-				$password_slug = $module['input_slug'];
-
-				$auth = new Auth;
-
-				if ($is_new_record) {
-					$post[$password_slug] = $auth->secure_password($post[$password_slug]);
-				} else {
-					$post[$password_slug] = trim($post[$password_slug]) ?
-						$auth->secure_password($post[$password_slug]) :
-						$old_post[$password_slug];
-				}
-			}
-
-			if (($module['view_searchable'] ?? null) && in_array($post['type'], $types['webapp']['searchable_types']) && $post['content_privacy'] == 'public') {
-				$slug = $module['input_slug'];
-				if (is_array($post[$slug])) {
-					$post['view_searchable_data'] .= implode(' ', array_map('strip_tags', $post[$slug])) . ' ';
-				} else {
-					$post['view_searchable_data'] .= strip_tags($post[$slug]) . ' ';
-				}
-			}
 
 			//change var_type if available, before saving to database
 			if ($module['var_type'] ?? false) {
@@ -167,8 +82,10 @@ class Core {
 				}
 
 			}
+
 		}
 
+		//Title uniqueness if title_unique is set, function stops and returns 0 if a conflict is found
 		if ($title_unique ?? false) {
 			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
 
@@ -177,85 +94,29 @@ class Core {
 			}
 		}
 
+		//Setting a slug if required (when new post or when slug update is demanded)
 		if (!trim($post['slug'] ?? null) || ($post['slug_update'] ?? false)) {
 			$_title_slug = isset($title_slug) ? $post[$title_slug] : '';
 			$_title_uniqie = $title_unique ?? '';
 
-			$post['slug'] = $this->do_slugify($_title_slug, $_title_uniqie);
+			$post['slug'] = $this->slugify($_title_slug, $_title_uniqie);
 			unset($post['slug_update']);
 		}
 
-		if (!trim($post['id'] ?? null)) {
+		
+		if (!($post['id'] ?? null)) {
+			//If it's a new post, first generate an ID
 			$sql->executeSQL("INSERT INTO `data` (`created_on`) VALUES ('$updated_on')");
 			$post['id'] = $sql->lastInsertID();
 			$is_new_record = true;
 		}
-
-		// get keys which were updated during this operation
-		if ($do_write_log) {
-			$old_record = $this->getObject($post['id'], 'content');
-			$temp_post = $post;
-			$temp_modules = $types[$temp_post['type']]['modules'] ?? null;
-
-            // remove data belonging to editorjs
-            if ($temp_modules) {
-                foreach ($temp_modules as $mod) {
-                    if ($mod['input_type'] === 'editorjs') {
-                        unset($temp_post[$mod['input_slug']]);
-                    }
-                }
-            }
-
-			$diff = \array_diff($temp_post, $old_record);
-
-            // free up memory
-            unset($temp_modules, $temp_post, $old_record);
-		}
-
-		if ($post['wp_import'] ?? false) {
-			$sql->executeSQL("INSERT INTO `data` (`id`, `created_on`) VALUES ('" . $post['id'] . "', '$updated_on')");
+		else if (!$overwrite_post) {
+			//Avoiding over-writing of entire array: If it is not a new record, then having the array already stored makes sure only fields provided are overwritten, not the whole array.
+			$post = array_merge($this->getObject($post['id']), $post);
 		}
 
 		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode($post)) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
-		$id = $post['id'];
-
-		if (!trim($post['view_searchable_data'])) {
-			$this->push_content_meta($post['id'], 'view_searchable_data');
-		}
-
-		// write log for this operation
-		if ($do_write_log) {
-			$skip_log = false;
-
-			if ($is_new_record) {
-				$log_message = "created this record";
-				$log_meta = [
-					'created_on' => $updated_on,
-					'created_by' => $currentUser['slug'],
-					'user_id' => $currentUser['slug']
-				];
-			} else if (\sizeof($diff)) {
-				$log_meta = [
-					'updated_on' => $updated_on,
-					'updated_by' => $currentUser['slug'],
-					'user_id' => $currentUser['slug']
-				];
-				$log_message = "updated";
-
-				$i = 0;
-				foreach ($diff as $key => $value) {
-					$log_message .= $i ? ',' : '';
-					$log_message .= " &#39;$key&#39; to &#39;$value&#39;";
-					$i++;
-				}
-			} else {
-				$skip_log = true;
-			}
-
-			if (!$skip_log) {
-				$this->pushLog($id, $currentUser, $log_message, $log_meta);
-			}
-		}
+		$id = (int) $post['id'];
 
 		return $id;
 	}
@@ -263,8 +124,6 @@ class Core {
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
-		$auth = new \Tribe\Auth;
-		$currentUser = $auth->getCurrentUser() ?: [ 'user' => null, 'id' => null ];
 
 		if (!($id && $meta_key)) {
 			return 0;
@@ -272,28 +131,15 @@ class Core {
 
 		if (!trim($meta_value)) { // to delete a key, when left empty
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_REMOVE(content, '$.$meta_key') WHERE id='$id'");
-			$log_message = "deleted key $meta_key";
 		} else {
 			$meta_value = $sql->databaseLink->real_escape_string($meta_value);
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
-			$log_message = "updated key &#39;$meta_key&#39; to &#39;$meta_value&#39;";
-		}
-
-		if (($types['webapp']['display_activity_log'] ?? false) && $meta_key != "view_searchable_data") {
-			$timestamp = time();
-			$log_meta = [
-				'updated_on' => $timestamp,
-				'updated_by' => $currentUser['slug'],
-				'user_id' => $currentUser['slug']
-			];
-
-			$this->pushLog($id, $currentUser, $log_message, $log_meta);
 		}
 
 		return 1;
 	}
 
-	public function getAttribute ($identifier, $meta_key)
+	public function getAttribute($identifier, $meta_key)
 	{
 		$attr = $this->getAttributes($identifier, $meta_key);
 		return $attr[$meta_key];
@@ -326,18 +172,9 @@ class Core {
 		return $q[0];
 	}
 
-	public function getTypeSchema ($type)
-	{
-		$types = self::$types;
-		$modules = array_column($types[$type]['modules'], 'input_slug');
-		$modules[] = 'id';
-		return array_fill_keys($modules, '');
-	}
-
-	public function getObject ($identifier, $object_structure=array())
+	public function getObject($identifier, $object_structure=array())
 	{
 		$sql = new MySQL();
-		$currentUser = self::$currentUser;
 
 		//IF KEY IS NUMBERIC, IT MEANS SINGLE ID
 		if (is_numeric($identifier)) {
@@ -363,13 +200,12 @@ class Core {
 			return 0;
 		}
 
-        return $this->doContentCleanup($q, $object_structure, 0);
+        return $this->contentCleanup($q, $object_structure, 0);
 	}
 
 	public function getObjects($identifier, $object_structure=array())
 	{
 		$sql = new MySQL();
-		$currentUser = self::$currentUser;
 
 		//IF CSV, COMMA SEPARATED IDS
 		if (is_string($identifier)) {
@@ -419,14 +255,13 @@ class Core {
 			return 0;
 		}
 
-        return $this->doContentCleanup($q, $object_structure);
+        return $this->contentCleanup($q, $object_structure);
 	}
 
-	public function doContentCleanup($rows, $object_structure=array(), $return_multi_array=1)
+	public function contentCleanup($rows, $object_structure=array(), $return_multi_array=1)
 	{
-		$auth = new Auth;
-		$currentUser = $auth->getCurrentUser();
-		$types = self::$types;
+		$config = new Config();
+		$types = $config->getTypes();
 
         if (!($rows[0]['id'] ?? null)) {
             return 0;
@@ -439,23 +274,6 @@ class Core {
 			$final_response[$id]['id'] = $q['id'];
 			$final_response[$id]['updated_on'] = $q['updated_on'];
 			$final_response[$id]['created_on'] = $q['created_on'];
-
-			if (($final_response[$id]['content_privacy'] ?? null) == 'draft') {
-
-				if ($currentUser['user_id'] != $final_response[$id]['user_id']) {
-					$final_response[$id] = 0;
-				}
-
-			} else if (($final_response[$id]['content_privacy'] ?? null) == 'pending') {
-				if ( ! (
-	                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'admin' ||
-	                $types['user']['roles'][$currentUser['role_slug']]['role'] == 'crew' ||
-	                $currentUser['user_id'] == $final_response[$id]['user_id'] ||
-	                $_ENV['SKIP_CONTENT_PRIVACY']
-	            ) ) {
-					$final_response[$id] = 0;
-				}
-			}
 
 			if (is_array($object_structure ?? false) && array_keys($object_structure)) {
 				$final_response[$id] = array_intersect_key($final_response[$id], $object_structure);
@@ -471,103 +289,46 @@ class Core {
 			return false;
 	}
 
-	/**
-	 * @param mixed $type
-	 * @param string $priority_field
-	 * @param string $priority_order
-	 * @param int $limit
-	 * @param boolean $debug_show_sql_statement
-	 * @return array|int
-	 * @return int status
-	 */
-	public function getAllIDs(
-		$type,
-		string $priority_field = 'id',
-		string $priority_order = 'DESC',
-		$limit = '',
-		$debug_show_sql_statement = 0
-	)
+	public function deleteObject(int $id): bool
 	{
 		$sql = new MySQL();
-		$currentUser = self::$currentUser;
-		$types = self::$types;
+		$config = new Config();
 
-		if ($priority_field == 'id') {
-			$priority = "$priority_field $priority_order";
+		$types = $config->getTypes();
+
+		$role_slug = $this->getAttribute($id, 'role_slug');
+		$role_slug = $role_slug ? "&role=$role_slug" : '';
+
+		if (!$id) {
+			return false;
+		}
+
+		if ($types['webapp']['soft_delete_records']) {
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
 		} else {
-			$priority = "content->'$.{$priority_field}' IS NULL, content->'$.{$priority_field}' {$priority_order}, id DESC";
+			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
 		}
 
-		//user
-		if (is_array($type)) {
-			//accessible only to admins
-			if (
-                isset($currentUser['role_slug']) &&
-			    $types['user']['roles'][$currentUser['role_slug']]['role'] != 'admin' &&
-                !$types['user']['roles'][$currentUser['role_slug']]['role'] != 'crew'
-            ){
-				return 0;
-			}
+		return true;
+	}
 
-			$role_slug = $type['role_slug'];
-			$type = $type['type'];
+	public function deleteObjects(array $ids, string $redirect_type): bool
+	{
+		$sql = new MySQL;
+		$config = new Config();
 
-			$trans = [
-				'@roleSlug' => $role_slug ? " AND role_slug='$role_slug'" : "",
-				'@limit' => $limit ? " LIMIT $limit" : "",
-			];
+		$types = $config->getTypes();
+		$ids = implode(',', $ids);
 
-			$query = "SELECT id FROM data
-                WHERE
-                    type='$type'
-                    @roleSlug
-                    ORDER BY $priority
-                    @limit
-            ";
-        }
-		else {
-			//content
-			$role_slug = '';
-
-			$trans = [
-				'@roleSlug' => $role_slug ? " AND role_slug='$role_slug'" : "",
-				'@limit' => $limit ? " LIMIT $limit" : "",
-			];
-
-            // if user's role is either admin or crew, list all with any privacy
-			if (
-			    isset($currentUser['role_slug']) &&
-                in_array($types['user']['roles'][$currentUser['role_slug']]['role'], ['admin', 'crew'])
-            ) {
-				$query = "SELECT id FROM data
-                    WHERE
-                        type = '{$type}'
-                        @roleSlug
-                    ORDER BY {$priority}
-                    @limit";
-            }
-			else {
-				$trans['@userId'] = $currentUser['user_id'] ?? '';
-
-				$query = "SELECT id FROM data
-                    WHERE
-                        content_privacy='public' AND
-                        type = '{$type}'
-                        @userId
-                        @roleSlug
-                    ORDER BY {$priority}
-                    @limit";
-            }
-        }
-
-        $query = strtr($query, $trans);
-        $q = $sql->executeSQL($query);
-
-        if ($debug_show_sql_statement) {
-			echo $query;
+		if ($types['webapp']['soft_delete_records']) {
+			// soft delete
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids)");
+		} else {
+			// perma delete
+			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
 		}
 
-		return $q;
+		return true;
 	}
 
 	public function getIDs($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
@@ -606,312 +367,5 @@ class Core {
 		}
 
 		return $r;
-	}
-
-	public function doSlugify($string, $input_itself_is_unique = 0)
-	{
-		//size of slug should be less than 255 characters because of DB field, so 230 + length of uniqid()
-		$slug = substr(strtolower(trim(preg_replace('/[^A-Za-z0-9_-]+/', '-', ($string ? $string : 'untitled')))), 0, 230) . ($input_itself_is_unique ? '' : '-' . uniqid());
-		return $slug;
-	}
-
-	public function doUnslugify($url_part)
-	{
-        if (strstr($url_part, '?') != NULL)
-            $url_part = explode('?', $url_part)[0];
-        return strtolower(trim(rawurlencode($url_part)));
-	}
-
-	public static function getTypes($json_path)
-	{
-		$currentUser = self::$currentUser;
-
-		$meta_types = json_decode('{
-          "key_value_pair": {
-            "slug": "key_value_pair",
-            "name": "key-value pair",
-            "plural": "key-value pairs",
-            "description": "List of key-value pairs.",
-            "disallow_editing": false,
-            "modules": [
-              {
-                "input_slug": "title",
-                "input_primary": true,
-                "input_type": "text",
-                "input_placeholder": "Enter remarks",
-                "input_unique": false,
-                "list_field": true,
-                "list_searchable": true,
-                "list_sortable": true
-              },
-              {
-                "input_slug": "meta_key",
-                "input_type": "text",
-                "input_placeholder": "Meta Key"
-              },
-              {
-                "input_slug": "meta_value",
-                "input_type": "text",
-                "input_placeholder": "Meta Value"
-              }
-            ]
-          },
-          "api_key_secret": {
-            "slug": "key_value_pair",
-            "name": "API key-secret pair",
-            "plural": "API key-secret pairs",
-            "description": "List of API key-secret pairs.",
-            "disallow_editing": false,
-            "modules": [
-              {
-                "input_slug": "title",
-                "input_primary": true,
-                "input_type": "text",
-                "input_placeholder": "Enter remarks",
-                "input_unique": false,
-                "list_field": true,
-                "list_searchable": true,
-                "list_sortable": true
-              },
-              {
-                "input_slug": "api_key",
-                "input_type": "text",
-                "input_placeholder": "API Key"
-              },
-              {
-                "input_slug": "api_secret",
-                "input_type": "text",
-                "input_placeholder": "API Secret"
-              }
-            ]
-          }
-        }', true);
-
-		$types_json = \json_decode(\file_get_contents($json_path), true);
-		if (!$types_json) {
-			die("<em><b>Error:</b> types</em> validation failed");
-		}
-
-		$types = array_merge($types_json, $meta_types);
-		foreach ($types as $key => $type) {
-			$type_slug = $type['slug'] ?? 'undefined';
-
-			if (!($type_slug == 'user' || $type_slug == 'webapp')) {
-				$type_key_modules = $types[$key]['modules'] ?? [];
-
-				if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
-					if (($currentUser['role'] ?? false) == 'admin') {
-						$content_privacy_json = '{
-					        "input_slug": "content_privacy",
-					        "input_placeholder": "Content privacy",
-					        "input_type": "select",
-					        "input_options": [
-					          {"slug":"public", "title":"Public link"},
-					          {"slug":"private", "title":"Private link"},
-					          {"slug":"pending", "title":"Submit for moderation"},
-					          {"slug":"draft", "title":"Draft"}
-					        ],
-					        "list_field": false,
-					        "input_unique": false
-					    }';
-					} else {
-						$content_privacy_json = '{
-					        "input_slug": "content_privacy",
-					        "input_placeholder": "Content privacy",
-					        "input_type": "select",
-					        "input_options": [
-					          {"slug":"pending", "title":"Submit for moderation"},
-					          {"slug":"draft", "title":"Draft"}
-					        ],
-					        "list_field": false,
-					        "input_unique": false
-					    }';
-					}
-					$types[$key]['modules'][] = json_decode($content_privacy_json, true);
-				}
-
-				foreach ($types[$key]['modules'] as $module) {
-					if (!isset($module['input_primary']) || $module['input_primary']!=true) {
-						continue;
-					}
-
-					$types[$key]['primary_module'] = $module['input_slug'];
-					break;
-				}
-			}
-		}
-		return $types;
-	}
-
-	public function getUniqueUserID()
-	{
-		$sql = new MySQL();
-		$bytes = strtoupper(bin2hex(random_bytes(3)));
-
-		$q = $sql->executeSQL("SELECT id FROM data WHERE user_id='$bytes' ORDER BY id DESC LIMIT 0,1");
-
-		if ($q && $q[0]['id']) {
-			return $this->get_unique_user_id();
-		} else {
-			return $bytes;
-		}
-	}
-
-	public function doShellCommand($cmd)
-	{
-		ob_start();
-		passthru($cmd);
-		$tml = ob_get_contents();
-		ob_end_clean();
-		return $tml;
-	}
-
-	public function getUploadDirPath()
-	{
-		return TRIBE_ROOT . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-	}
-
-	public function getUploadDirURL()
-	{
-		return BASE_URL . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-	}
-
-	public function getUploaderPath()
-	{
-		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-		if (!is_dir(TRIBE_ROOT . '/' . $folder_path)) {
-			mkdir(TRIBE_ROOT . '/' . $folder_path, 0755, true);
-		}
-
-		return array('upload_dir' => TRIBE_ROOT . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
-	}
-
-	public function getUploadedImageInSize($file_url, $thumbnail = 'md')
-	{
-		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
-			$file_arr = array();
-			$file_parts = explode('/', $file_url);
-			$file_parts = array_reverse($file_parts);
-			$filename = urldecode($file_parts[0]);
-			if (strlen($file_parts[1]) == 2) {
-				$year = $file_parts[4];
-				$month = $file_parts[3];
-				$day = $file_parts[2];
-				$size = $file_parts[1];
-			} else {
-				$year = $file_parts[3];
-				$month = $file_parts[2];
-				$day = $file_parts[1];
-			}
-
-			if (file_exists(TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1))) {
-				$file_arr['path'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1);
-				$file_arr['url'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . rawurlencode($filename);
-			}
-			else {
-				$file_arr['path'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
-				$file_arr['url'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
-			}
-
-			return $file_arr;
-		} else {
-			return false;
-		}
-	}
-
-	public function getUploadedFileVersions($file_url, $thumbnail = 'xs')
-	{
-
-		$file_arr = array();
-		$file_parts = explode('/', $file_url);
-		$file_parts = array_reverse($file_parts);
-		$filename = urldecode($file_parts[0]);
-
-		if (strlen($file_parts[1]) == 2) {
-			$year = $file_parts[4];
-			$month = $file_parts[3];
-			$day = $file_parts[2];
-			$size = $file_parts[1];
-		} else {
-			$year = $file_parts[3];
-			$month = $file_parts[2];
-			$day = $file_parts[1];
-		}
-
-		$file_arr['path']['source'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
-		$file_arr['url']['source'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
-
-		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
-			$sizes = array('xl', 'lg', 'md', 'sm', 'xs');
-
-			foreach ($sizes as $size) {
-				if (file_exists(TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
-					$file_arr['path'][$size] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . substr(escapeshellarg($filename), 1, -1);
-					$file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
-				}
-				else {
-					$file_arr['path'][$size] = $file_arr['path']['source'];
-					$file_arr['url'][$size] = $file_arr['url']['source'];
-				}
-			}
-
-			if (file_exists($file_arr['path'][$thumbnail])) {
-				$file_arr['url']['thumbnail'] = $file_arr['url'][$thumbnail];
-				$file_arr['path']['thumbnail'] = $file_arr['path'][$thumbnail];
-			} else {
-				$file_arr['url']['thumbnail'] = $file_arr['url']['source'];
-				$file_arr['path']['thumbnail'] = $file_arr['path']['source'];
-			}
-		}
-
-		return $file_arr;
-	}
-
-	public function getDirURL()
-	{
-		return str_replace(TRIBE_ROOT, BASE_URL, getcwd());
-	}
-
-	public function doUploadFileFromURL($url)
-	{
-		if ($url ?? false) {
-			$path = $this->getUploaderPath();
-
-			$file_name = time() . '-' . basename($url);
-			$wf_uploads_path = $path['upload_dir'] . '/' . $file_name;
-			$wf_uploads_url = $path['upload_url'] . '/' . $file_name;
-
-			if (copy($url, $wf_uploads_path)) {
-				return $wf_uploads_url;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Undocumented function
-	 *
-	 * @param integer $id
-	 * @param array $user requires 'id', 'name' and 'slug'
-	 * @param string|null $msg
-	 * @param array $log_meta requires 'created/updated_on', 'created/updated_by', 'user_id'
-	 * @return void
-	 */
-	public function pushLog(int $id, array $user, string $msg = null, array $log_meta)
-	{
-		$sql = new MySQL;
-
-		$data = json_encode([
-			'user_name' => $user['name'],
-			'user_id' => $user['id'],
-			'time' => date('d/m/Y H:i:s'),
-			'message' => $msg,
-			'log_meta' => $log_meta
-		]);
-
-		$sql->executeSQL("UPDATE data SET content = JSON_ARRAY_APPEND(content, '$.mysql_activity_log', '$data') WHERE id=$id");
 	}
 }
