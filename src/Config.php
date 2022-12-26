@@ -47,7 +47,7 @@ class Config {
 		$types = array_merge($types_json);
 		
 		foreach ($types as $key => $type) {
-			$type_slug = $type['slug'] ?? 'undefined';
+			$type_slug = $type['slug'] ?? ($key ?? 'undefined');
 
 			if (!($type_slug == 'user' || $type_slug == 'webapp')) {
 				$type_key_modules = $types[$key]['modules'] ?? [];
@@ -68,15 +68,15 @@ class Config {
 					    }';
 					$types[$key]['modules'][] = json_decode($content_privacy_json, true);
 				}
+			}
 
-				foreach ($types[$key]['modules'] as $module) {
-					if (!isset($module['input_primary']) || $module['input_primary']!=true) {
-						continue;
-					}
-
-					$types[$key]['primary_module'] = $module['input_slug'];
-					break;
+			foreach ($types[$key]['modules'] as $module) {
+				if (!isset($module['input_primary']) || $module['input_primary']!=true) {
+					continue;
 				}
+
+				$types[$key]['primary_module'] = $module['input_slug'];
+				break;
 			}
 		}
 		return $types;

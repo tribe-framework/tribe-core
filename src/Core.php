@@ -258,6 +258,12 @@ class Core {
         return $this->contentCleanup($q, $object_structure);
 	}
 
+	public function getTypeObjectsCount($type) {
+		$sql = new MySQL();
+		$q = $sql->executeSQL("SELECT COUNT(`id`) AS `total` FROM `data` WHERE `type`='$type'");
+		return (int) $q[0]['total'];
+	}
+
 	public function contentCleanup($rows, $object_structure=array(), $return_multi_array=1)
 	{
 		$config = new Config();
