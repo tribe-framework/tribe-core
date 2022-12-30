@@ -70,13 +70,15 @@ class Config {
 				}
 			}
 
-			foreach ($types[$key]['modules'] as $module) {
-				if (!isset($module['input_primary']) || $module['input_primary']!=true) {
-					continue;
-				}
+			if ($types[$key]['modules'] ?? false) {
+				foreach ($types[$key]['modules'] as $module) {
+					if (!isset($module['input_primary']) || $module['input_primary']!=true) {
+						continue;
+					}
 
-				$types[$key]['primary_module'] = $module['input_slug'];
-				break;
+					$types[$key]['primary_module'] = $module['input_slug'];
+					break;
+				}
 			}
 		}
 		return $types;
