@@ -337,7 +337,7 @@ class Core {
 		return true;
 	}
 
-	public function getIDs($search_arr, $comparison = 'LIKE', $between = '||', $priority_field = 'id', $priority_order = 'DESC', $limit = '', $debug_show_sql_statement = 0)
+	public function getIDs(array $search_arr, string $comparison = 'LIKE', string $between = '||', string $priority_field = 'id', string $priority_order = 'DESC', int $limit = 0, bool $show_public_objects_only = true, bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
 		if ($priority_field != 'content' && in_array($priority_field, $sql->schema) ) {
@@ -366,7 +366,7 @@ class Core {
 			$i++;
 		}
 
-		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? "`content_privacy`='public' AND ":"") . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only ? "`content_privacy`='public' AND " : ""):"") . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 		$r = $sql->executeSQL($qry);
 		if ($debug_show_sql_statement) {
 			echo $qry;
