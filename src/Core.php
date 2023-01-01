@@ -78,7 +78,7 @@ class Core {
 				} else if ($module['var_type'] == 'float') {
 					$post[$slug] = (float) $post[$slug];
 				} else if ($module['var_type'] == 'bool') {
-					$post[$slug] = (bool) $post[$slug];
+					$post[$slug] = (bool) ($post[$slug] ?? false);
 				}
 
 			}
@@ -95,8 +95,8 @@ class Core {
 		}
 
 		//Setting a slug if required (when new post or when slug update is demanded)
-		if (!trim($post['slug'] ?? null) || ($post['slug_update'] ?? false)) {
-			$_title_slug = isset($title_slug) ? $post[$title_slug] : '';
+		if (!trim($post['slug'] ?? '') || ($post['slug_update'] ?? '')) {
+			$_title_slug = isset($title_slug) ? ($post[$title_slug] ?? '') : '';
 			$_title_uniqie = $title_unique ?? '';
 
 			$post['slug'] = $this->slugify($_title_slug, $_title_uniqie);
