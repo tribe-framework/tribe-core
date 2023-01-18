@@ -337,7 +337,7 @@ class Core {
 		return true;
 	}
 
-	public function getIDs(array $search_arr, string $comparison = 'LIKE', string $between = '||', string $priority_field = 'id', string $priority_order = 'DESC', int $limit = 0, bool $show_public_objects_only = true, bool $debug_show_sql_statement = false)
+	public function getIDs(array $search_arr, string $comparison = 'LIKE', string $between = '||', string $priority_field = 'id', string $priority_order = 'DESC', string $limit = "0, 25", bool $show_public_objects_only = true, bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
 		if ($priority_field != 'content' && in_array($priority_field, $sql->schema) ) {
