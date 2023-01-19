@@ -345,7 +345,7 @@ class Core {
 		bool $show_public_objects_only = true,
 		bool $show_partial_search_results = false,
 		bool $show_case_sensitive_search_results = false,
-		string|array $comparison_between_modules = 'LIKE',
+		string|array $comparison_within_module_phrase = 'LIKE',
 		string|array $inbetween_same_module_phrases = 'OR',
 		string $between_different_module_phrases = 'AND',
 		bool $debug_show_sql_statement = false)
@@ -359,10 +359,10 @@ class Core {
 
 		$query_phrases = array();
 		$i = 0;
-		if (!is_array($comparison_between_modules)) {
-			$comparison_between_modules_arr = array_fill(0, count($search_arr), $comparison_between_modules);
+		if (!is_array($comparison_within_module_phrase)) {
+			$comparison_within_module_phrase_arr = array_fill(0, count($search_arr), $comparison_within_module_phrase);
 		} else {
-			$comparison_between_modules_arr = $comparison_between_modules;
+			$comparison_within_module_phrase_arr = $comparison_within_module_phrase;
 		}
 
 		if (!is_array($inbetween_same_module_phrases)) {
@@ -376,16 +376,16 @@ class Core {
 				$query_phrases_temp = array();
 				foreach ($value as $kv => $vv) {
 					if ($show_case_sensitive_search_results)
-						$query_phrases_temp[] = "`content`->>'$." . $kv . "' " . $comparison_between_modules_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . $vv . ($show_partial_search_results?"%":"") . "'" : "");
+						$query_phrases_temp[] = "`content`->>'$." . $kv . "' " . $comparison_within_module_phrase_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . $vv . ($show_partial_search_results?"%":"") . "'" : "");
 					else
-						$query_phrases_temp[] = "LOWER(`content`->>'$." . $kv . "') " . $comparison_between_modules_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . strtolower($vv) . ($show_partial_search_results?"%":"") . "'" : "");
+						$query_phrases_temp[] = "LOWER(`content`->>'$." . $kv . "') " . $comparison_within_module_phrase_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . strtolower($vv) . ($show_partial_search_results?"%":"") . "'" : "");
 				}
 				$query_phrases[] = join(' ' . $inbetween_same_module_phrases_arr[$i] . ' ', $query_phrases_temp);
 			} else {
 				if ($show_case_sensitive_search_results)
-					$query_phrases[] = "`content`->>'$." . $key . "' " . $comparison_between_modules_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . $value . ($show_partial_search_results?"%":"") . "'" : "");
+					$query_phrases[] = "`content`->>'$." . $key . "' " . $comparison_within_module_phrase_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . $value . ($show_partial_search_results?"%":"") . "'" : "");
 				else
-					$query_phrases[] = "LOWER(`content`->>'$." . $key . "') " . $comparison_between_modules_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . strtolower($value) . ($show_partial_search_results?"%":"") . "'" : "");
+					$query_phrases[] = "LOWER(`content`->>'$." . $key . "') " . $comparison_within_module_phrase_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . strtolower($value) . ($show_partial_search_results?"%":"") . "'" : "");
 			}
 
 			$i++;
