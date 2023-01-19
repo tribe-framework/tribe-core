@@ -337,37 +337,64 @@ class Core {
 		return true;
 	}
 
-	public function getIDs(array $search_arr, string $comparison = 'LIKE', string $between = '||', string $priority_field = 'id', string $priority_order = 'DESC', string $limit = "0, 25", bool $show_public_objects_only = true, bool $debug_show_sql_statement = false)
+	public function getIDs(
+		array $search_arr,
+		string $limit = "0, 25",
+		string|array $sort_field = 'id',
+		string|array $sort_order = 'DESC',
+		bool $show_public_objects_only = true,
+		bool $show_partial_search_results = false,
+		bool $show_case_sensitive_search_results = false,
+		string|array $comparison_between_modules = 'LIKE',
+		string|array $inbetween_same_module_phrases = 'OR',
+		string $between_different_module_phrases = 'AND',
+		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
-		if ($priority_field != 'content' && in_array($priority_field, $sql->schema) ) {
-			$priority = "`" . $priority_field . "` " . $priority_order;
+		if ($sort_field != 'content' && in_array($sort_field, $sql->schema) ) {
+			$priority = "`" . $sort_field . "` " . $sort_order;
 		} else {
-			$priority = "`content`->>'$." . $priority_field . "' IS NULL, `content`->>'$." . $priority_field . "' " . $priority_order . ", `id` DESC";
+			$priority = "`content`->>'$." . $sort_field . "' IS NULL, `content`->>'$." . $sort_field . "' " . $sort_order . ", `id` DESC";
 		}
 
-		$frechr = array();
+		$query_phrases = array();
 		$i = 0;
-		if (!is_array($comparison)) {
-			$comparisonr = array_fill(0, count($search_arr), $comparison);
+		if (!is_array($comparison_between_modules)) {
+			$comparison_between_modules_arr = array_fill(0, count($search_arr), $comparison_between_modules);
 		} else {
-			$comparisonr = $comparison;
+			$comparison_between_modules_arr = $comparison_between_modules;
+		}
+
+		if (!is_array($inbetween_same_module_phrases)) {
+			$inbetween_same_module_phrases_arr = array_fill(0, count($search_arr), $inbetween_same_module_phrases);
+		} else {
+			$inbetween_same_module_phrases_arr = $inbetween_same_module_phrases;
 		}
 
 		foreach ($search_arr as $key => $value) {
 			if (is_array($value)) {
+				$query_phrases_temp = array();
 				foreach ($value as $kv => $vv) {
-					$frechr[] = "`content`->'$." . $kv . "' " . $comparisonr[$i] . " " . (trim($vv) ? "'" . $vv . "'" : "");
+					if ($show_case_sensitive_search_results)
+						$query_phrases_temp[] = "`content`->>'$." . $kv . "' " . $comparison_between_modules_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . $vv . ($show_partial_search_results?"%":"") . "'" : "");
+					else
+						$query_phrases_temp[] = "LOWER(`content`->>'$." . $kv . "') " . $comparison_between_modules_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . strtolower($vv) . ($show_partial_search_results?"%":"") . "'" : "");
 				}
+				$query_phrases[] = join(' ' . $inbetween_same_module_phrases_arr[$i] . ' ', $query_phrases_temp);
 			} else {
-				$frechr[] = "`content`->'$." . $key . "' " . $comparisonr[$i] . " " . (trim($value) ? "'" . $value . "'" : "");
+				if ($show_case_sensitive_search_results)
+					$query_phrases[] = "`content`->>'$." . $key . "' " . $comparison_between_modules_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . $value . ($show_partial_search_results?"%":"") . "'" : "");
+				else
+					$query_phrases[] = "LOWER(`content`->>'$." . $key . "') " . $comparison_between_modules_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . strtolower($value) . ($show_partial_search_results?"%":"") . "'" : "");
 			}
 
 			$i++;
 		}
 
-		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only ? "`content_privacy`='public' AND " : ""):"") . join(' ' . $between . ' ', $frechr) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only ? "`content_privacy`='public' AND " : ""):"") . join(' ' . $between_different_module_phrases . ' ', $query_phrases) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		
 		$r = $sql->executeSQL($qry);
+
 		if ($debug_show_sql_statement) {
 			echo $qry;
 		}
