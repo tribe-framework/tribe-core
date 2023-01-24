@@ -1,6 +1,7 @@
 {
     "name": "tribe/core",
     "description": "Offers classes for various functions of Tribe (v3)",
+    "license": "GPL-3.0-or-later",
     "autoload": {
         "psr-4": {
             "Tribe\\": "src/"
