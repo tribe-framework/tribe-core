@@ -351,10 +351,26 @@ class Core {
 		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
-		if ($sort_field != 'content' && in_array($sort_field, $sql->schema) ) {
-			$priority = "`" . $sort_field . "` " . $sort_order;
-		} else {
-			$priority = "`content`->>'$." . $sort_field . "' IS NULL, `content`->>'$." . $sort_field . "' " . $sort_order . ", `id` DESC";
+		if (is_array($sort_field)) {
+			$k = 0;
+			$priorities = [];
+			foreach ($sort_field as $val) {
+				if ($val != 'content' && in_array($val, $sql->schema) ) {
+					$priorities[] = "`" . $val . "` " . $sort_order[$k];
+				} else {
+					$priorities[] = "`content`->>'$." . $val . "' " . $sort_order[$k];
+				}
+				$k++;
+			}
+			$priorities[] = "`id` DESC";
+			$priority = implode(', ', $priorities);
+		}
+		else {
+			if ($sort_field != 'content' && in_array($sort_field, $sql->schema) ) {
+				$priority = "`" . $sort_field . "` " . $sort_order;
+			} else {
+				$priority = "`content`->>'$." . $sort_field . "' " . $sort_order . ", `id` DESC";
+			}
 		}
 
 		$query_phrases = array();
@@ -392,6 +408,8 @@ class Core {
 		}
 
 		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only ? "`content_privacy`='public' AND " : ""):"") . join(' ' . $between_different_module_phrases . ' ', $query_phrases) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+
+		error_log($qry);
 		
 		$r = $sql->executeSQL($qry);
 
