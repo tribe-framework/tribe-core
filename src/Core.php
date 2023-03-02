@@ -406,8 +406,8 @@ class Core {
 
 			$i++;
 		}
-
-		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only ===  true ? "" : ""):"") . join(' ' . $between_different_module_phrases . ' ', $query_phrases) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		
+		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND " : ""):"") . join(' ' . $between_different_module_phrases . ' ', $query_phrases) . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 		
 		$r = $sql->executeSQL($qry);
 
