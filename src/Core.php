@@ -351,6 +351,51 @@ class Core {
 		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
+		
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry = $this->getIDsResultsQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority'], $qry_vars['limit'], $qry_vars['debug_show_sql_statement']);
+
+		$r = $sql->executeSQL($qry);
+		return $r;
+	}
+
+	public function getIDsTotalCount(
+		array $search_arr,
+		string $limit = "0, 25",
+		string|array $sort_field = 'id',
+		string|array $sort_order = 'DESC',
+		bool $show_public_objects_only = true,
+		bool $show_partial_search_results = false,
+		bool $show_case_sensitive_search_results = false,
+		string|array $comparison_within_module_phrase = 'LIKE',
+		string|array $inbetween_same_module_phrases = 'OR',
+		string $between_different_module_phrases = 'AND',
+		bool $debug_show_sql_statement = false)
+	{
+		$sql = new MySQL();
+
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry = $this->getIDsTotalCountQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority']);
+
+		$r = $sql->executeSQL($qry);
+		return $r[0]['count'];
+	}
+
+	private function getIDsQueryVars(
+		array $search_arr,
+		string $limit = "0, 25",
+		string|array $sort_field = 'id',
+		string|array $sort_order = 'DESC',
+		bool $show_public_objects_only = true,
+		bool $show_partial_search_results = false,
+		bool $show_case_sensitive_search_results = false,
+		string|array $comparison_within_module_phrase = 'LIKE',
+		string|array $inbetween_same_module_phrases = 'OR',
+		string $between_different_module_phrases = 'AND',
+		bool $debug_show_sql_statement = false)
+	{
+		$sql = new MySQL();
+
 		if (is_array($sort_field)) {
 			$k = 0;
 			$priorities = [];
@@ -412,15 +457,31 @@ class Core {
 		}
 
 		$joint_modules_and_filters = trim(join(' ' . $between_different_module_phrases . ' ', $query_phrases));
-		
+
+		return array(
+			'search_arr'=>$search_arr,
+			'show_public_objects_only'=>$show_public_objects_only,
+			'joint_modules_and_filters'=>$joint_modules_and_filters,
+			'priority'=>$priority,
+			'limit'=>$limit,
+			'debug_show_sql_statement'=>$debug_show_sql_statement,
+		);
+	}
+
+	private function getIDsResultsQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority, $limit, $debug_show_sql_statement) {
 		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
-		
-		$r = $sql->executeSQL($qry);
 
 		if ($debug_show_sql_statement) {
 			echo $qry;
 		}
 
-		return $r;
+		return $qry;
+
+	}
+
+	private function getIDsTotalCountQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority) {
+		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority;
+
+		return $qry;
 	}
 }
