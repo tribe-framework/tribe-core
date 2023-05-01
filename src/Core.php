@@ -469,7 +469,7 @@ class Core {
 	}
 
 	private function getIDsResultsQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority, $limit, $debug_show_sql_statement) {
-		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
 
 		if ($debug_show_sql_statement) {
 			echo $qry;
@@ -480,7 +480,7 @@ class Core {
 	}
 
 	private function getIDsTotalCountQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority) {
-		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority;
+		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority;
 
 		return $qry;
 	}
