@@ -115,7 +115,7 @@ class Core {
 			$post = array_merge($this->getObject($post['id']), $post);
 		}
 
-		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode($post)) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
+		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode(array_filter($post))) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
 		$id = (int) $post['id'];
 
 		return $id;
@@ -436,7 +436,7 @@ class Core {
 			if (is_array($value)) {
 				$query_phrases_temp = array();
 				foreach ($value as $kv => $vv) {
-					if ($kv != 'type' && trim($vv) != "") {
+					if ($kv != 'type' && trim($vv) != "" && trim($vv) !== false) {
 						if ($show_case_sensitive_search_results)
 							$query_phrases_temp[] = "`content`->>'$." . $key . "' " . $comparison_within_module_phrase_arr[$i] . " " . (trim($vv) ? "'" . ($show_partial_search_results?"%":"") . $vv . ($show_partial_search_results?"%":"") . "'" : "");
 						else
@@ -445,7 +445,7 @@ class Core {
 				}
 				$query_phrases[] = '('.join(' ' . $inbetween_same_module_phrases_arr[$i] . ' ', $query_phrases_temp).')';
 			} else {
-				if ($key != 'type' && trim($value) != "") {
+				if ($key != 'type' && trim($value) != "" && trim($value) !== false) {
 					if ($show_case_sensitive_search_results)
 						$query_phrases[] = "`content`->>'$." . $key . "' " . $comparison_within_module_phrase_arr[$i] . " " . (trim($value) ? "'" . ($show_partial_search_results?"%":"") . $value . ($show_partial_search_results?"%":"") . "'" : "");
 					else
