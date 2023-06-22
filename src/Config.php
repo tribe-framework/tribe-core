@@ -53,6 +53,19 @@ class Config {
 				$type_key_modules = $types[$key]['modules'] ?? [];
 
 				if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
+					if ($types[$key]['sendable'] === true) {
+						$content_privacy_json = '{
+					        "input_slug": "content_privacy",
+					        "input_placeholder": "Content privacy",
+					        "input_type": "select",
+					        "input_options": [
+					          {"slug":"sent", "title":"Send now"},
+					          {"slug":"draft", "title":"Save draft"}
+					        ],
+					        "list_field": false,
+					        "input_unique": false
+					    }';
+					} else {
 						$content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
@@ -66,6 +79,7 @@ class Config {
 					        "list_field": false,
 					        "input_unique": false
 					    }';
+					}
 					$types[$key]['modules'][] = json_decode($content_privacy_json, true);
 				}
 			}
