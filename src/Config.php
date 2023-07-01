@@ -53,7 +53,7 @@ class Config {
 				$type_key_modules = $types[$key]['modules'] ?? [];
 
 				if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
-					if ($types[$key]['sendable'] === true) {
+					if (($types[$key]['sendable'] ?? false) === true) {
 						$content_privacy_json = '{
 					        "input_slug": "content_privacy",
 					        "input_placeholder": "Content privacy",
