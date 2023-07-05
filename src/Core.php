@@ -343,6 +343,7 @@ class Core {
 		string|array $sort_field = 'id',
 		string|array $sort_order = 'DESC',
 		bool $show_public_objects_only = true,
+		array $ignore_ids = [],
 		bool $show_partial_search_results = false,
 		bool $show_case_sensitive_search_results = false,
 		string|array $comparison_within_module_phrase = 'LIKE',
@@ -352,8 +353,8 @@ class Core {
 	{
 		$sql = new MySQL();
 		
-		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
-		$qry = $this->getIDsResultsQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority'], $qry_vars['limit'], $qry_vars['debug_show_sql_statement']);
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignored_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry = $this->getIDsResultsQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['ignored_ids'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority'], $qry_vars['limit'], $qry_vars['debug_show_sql_statement']);
 
 		$r = $sql->executeSQL($qry);
 		return $r;
@@ -365,6 +366,7 @@ class Core {
 		string|array $sort_field = 'id',
 		string|array $sort_order = 'DESC',
 		bool $show_public_objects_only = true,
+		array $ignore_ids = [],
 		bool $show_partial_search_results = false,
 		bool $show_case_sensitive_search_results = false,
 		string|array $comparison_within_module_phrase = 'LIKE',
@@ -374,8 +376,8 @@ class Core {
 	{
 		$sql = new MySQL();
 
-		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
-		$qry = $this->getIDsTotalCountQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority']);
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignored_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry = $this->getIDsTotalCountQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['ignored_ids'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority']);
 
 		$r = $sql->executeSQL($qry);
 		return $r[0]['count'];
@@ -387,6 +389,7 @@ class Core {
 		string|array $sort_field = 'id',
 		string|array $sort_order = 'DESC',
 		bool $show_public_objects_only = true,
+		array $ignore_ids = [],
 		bool $show_partial_search_results = false,
 		bool $show_case_sensitive_search_results = false,
 		string|array $comparison_within_module_phrase = 'LIKE',
@@ -461,6 +464,7 @@ class Core {
 		return array(
 			'search_arr'=>$search_arr,
 			'show_public_objects_only'=>$show_public_objects_only,
+			'ignored_ids'=>$ignored_ids,
 			'joint_modules_and_filters'=>$joint_modules_and_filters,
 			'priority'=>$priority,
 			'limit'=>$limit,
@@ -468,8 +472,13 @@ class Core {
 		);
 	}
 
-	private function getIDsResultsQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority, $limit, $debug_show_sql_statement) {
-		$qry = "SELECT `id` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority . ($limit ? " LIMIT " . $limit : "");
+	private function getIDsResultsQuery($search_arr, $show_public_objects_only, $ignored_ids, $joint_modules_and_filters, $priority, $limit, $debug_show_sql_statement) {
+		$qry = "SELECT `id` FROM `data` WHERE " . 
+			($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . 
+			($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . 
+			(($ignored_ids != [] && count($ignored_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", array_map('trim', explode(',', $ignored_ids)))."')" : "") . 
+			" ORDER BY " . $priority . 
+			($limit ? " LIMIT " . $limit : "");
 
 		if ($debug_show_sql_statement) {
 			echo $qry;
@@ -479,8 +488,12 @@ class Core {
 
 	}
 
-	private function getIDsTotalCountQuery($search_arr, $show_public_objects_only, $joint_modules_and_filters, $priority) {
-		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . ($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . ($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . " ORDER BY " . $priority;
+	private function getIDsTotalCountQuery($search_arr, $show_public_objects_only, $ignored_ids, $joint_modules_and_filters, $priority) {
+		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . 
+			($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . 
+			(($ignored_ids != [] && count($ignored_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", array_map('trim', explode(',', $ignored_ids)))."')" : "") . 
+			($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . 
+			" ORDER BY " . $priority;
 
 		return $qry;
 	}
