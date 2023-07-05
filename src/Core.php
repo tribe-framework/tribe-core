@@ -476,7 +476,7 @@ class Core {
 		$qry = "SELECT `id` FROM `data` WHERE " . 
 			($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . 
 			($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . 
-			(($ignore_ids != [] && count($ignore_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", array_map('trim', explode(',', $ignore_ids)))."')" : "") . 
+			(($ignore_ids != [] && count($ignore_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", $ignore_ids)."')" : "") . 
 			" ORDER BY " . $priority . 
 			($limit ? " LIMIT " . $limit : "");
 
@@ -491,7 +491,7 @@ class Core {
 	private function getIDsTotalCountQuery($search_arr, $show_public_objects_only, $ignore_ids, $joint_modules_and_filters, $priority) {
 		$qry = "SELECT COUNT(`id`) AS `count` FROM `data` WHERE " . 
 			($search_arr['type']!='user' ? ($show_public_objects_only !==  false ? "`content_privacy`='public' AND `type`='".$search_arr['type']."'" : "`type`='".$search_arr['type']."'"):"`type`='".$search_arr['type']."'") . 
-			(($ignore_ids != [] && count($ignore_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", array_map('trim', explode(',', $ignore_ids)))."')" : "") . 
+			(($ignore_ids != [] && count($ignore_ids) > 0) ? " AND `id` NOT IN ('".implode("', '", $ignore_ids)."')" : "") . 
 			($joint_modules_and_filters ? ' AND '.$joint_modules_and_filters : "") . 
 			" ORDER BY " . $priority;
 
