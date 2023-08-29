@@ -413,6 +413,9 @@ class Core {
 			$priorities[] = "`id` DESC";
 			$priority = implode(', ', $priorities);
 		}
+		else if ($sort_field == '(random)') {
+			$priority = "RAND()";
+		}
 		else {
 			if ($sort_field != 'content' && in_array($sort_field, $sql->schema) ) {
 				$priority = "`" . $sort_field . "` " . $sort_order;
