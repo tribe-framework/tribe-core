@@ -349,11 +349,12 @@ class Core {
 		string|array $comparison_within_module_phrase = 'LIKE',
 		string|array $inbetween_same_module_phrases = 'OR',
 		string $between_different_module_phrases = 'AND',
+		array $range = [],
 		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
 		
-		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignore_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignore_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $range, $debug_show_sql_statement);
 		$qry = $this->getIDsResultsQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['ignore_ids'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority'], $qry_vars['limit'], $qry_vars['debug_show_sql_statement']);
 
 		$r = $sql->executeSQL($qry);
@@ -372,11 +373,12 @@ class Core {
 		string|array $comparison_within_module_phrase = 'LIKE',
 		string|array $inbetween_same_module_phrases = 'OR',
 		string $between_different_module_phrases = 'AND',
+		array $range = [],
 		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
 
-		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignore_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $debug_show_sql_statement);
+		$qry_vars = $this->getIDsQueryVars($search_arr, $limit, $sort_field, $sort_order, $show_public_objects_only, $ignore_ids, $show_partial_search_results, $show_case_sensitive_search_results, $comparison_within_module_phrase, $inbetween_same_module_phrases, $between_different_module_phrases, $range, $debug_show_sql_statement);
 		$qry = $this->getIDsTotalCountQuery($qry_vars['search_arr'], $qry_vars['show_public_objects_only'], $qry_vars['ignore_ids'], $qry_vars['joint_modules_and_filters'], $qry_vars['priority']);
 
 		$r = $sql->executeSQL($qry);
@@ -395,6 +397,7 @@ class Core {
 		string|array $comparison_within_module_phrase = 'LIKE',
 		string|array $inbetween_same_module_phrases = 'OR',
 		string $between_different_module_phrases = 'AND',
+		array $range = [],
 		bool $debug_show_sql_statement = false)
 	{
 		$sql = new MySQL();
@@ -463,6 +466,20 @@ class Core {
 		}
 
 		$joint_modules_and_filters = trim(join(' ' . $between_different_module_phrases . ' ', $query_phrases));
+
+		if (count($range) >= 1) {
+			$range_statement_qrys = [];
+			foreach ($range as $key => $value) {
+				if ($value['from'] ?? false)
+					$range_statement_qrys[] = "LOWER(`content`->>'$." . $key . "') >= '" . $value['from'] . "'";
+				if ($value['to'] ?? false)
+					$range_statement_qrys[] = "LOWER(`content`->>'$." . $key . "') <= '" . $value['to'] . "'";
+			}
+
+			$range_statement = implode(' AND ', $range_statement_qrys );
+
+			$joint_modules_and_filters .= ' '.$between_different_module_phrases.' ( '.$range_statement.' ) ';
+		}
 
 		return array(
 			'search_arr'=>$search_arr,
