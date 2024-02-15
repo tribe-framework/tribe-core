@@ -85,15 +85,6 @@ class Core {
 
 		}
 
-		//Title uniqueness if title_unique is set, function stops and returns 0 if a conflict is found
-		if ($title_unique ?? false) {
-			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `content`->'$." . $title_slug . "'='" . mysqli_real_escape_string($sql->databaseLink, $post[$title_slug]) . "' ORDER BY `id` DESC LIMIT 0,1");
-
-			if (is_array($q) && $q[0]['id'] && $post['id'] != $q[0]['id']) {
-				return 0;
-			}
-		}
-
 		//Setting a slug if required (when new post or when slug update is demanded)
 		if (!trim($post['slug'] ?? '') || ($post['slug_update'] ?? '')) {
 			$_title_slug = isset($title_slug) ? ($post[$title_slug] ?? '') : '';
@@ -101,6 +92,15 @@ class Core {
 
 			$post['slug'] = $this->slugify($_title_slug, $_title_uniqie);
 			unset($post['slug_update']);
+		}
+
+		//Title uniqueness if title_unique is set, function stops and returns 0 if a conflict is found
+		if ($title_unique ?? false) {
+			$q = $sql->executeSQL("SELECT `id` FROM `data` WHERE `type`='" . $post['type'] . "' && `slug`='" . $post['slug'] . "' ORDER BY `id` DESC LIMIT 0,1");
+
+			if (is_array($q) && $q[0]['id'] && $post['id'] != $q[0]['id']) {
+				return 0;
+			}
 		}
 
 		
