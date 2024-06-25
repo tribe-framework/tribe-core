@@ -36,8 +36,16 @@ class Config {
 		return json_decode(file_get_contents($json_path), true);
 	}
 
-	public function getTypes($json_path = ABSOLUTE_PATH . '/config/types.json')
+	public function getTypes()
 	{
+		$folder_path = TRIBE_ROOT . '/uploads/types';
+		$files = scandir($folder_path, SCANDIR_SORT_DESCENDING);
+		$newest_file = $files[0];
+
+		if ($newest_file)
+			$json_path = $folder_path . '/' . $newest_file;
+		else
+			$json_path = ABSOLUTE_PATH . '/config/types.json';
 
 		$types_json = \json_decode(\file_get_contents($json_path), true);
 		if (!$types_json) {
