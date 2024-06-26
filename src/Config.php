@@ -54,7 +54,7 @@ class Config {
 			die("<em><b>Error:</b> types</em> validation failed");
 		}
 
-		$types = array_merge($types_json_tribe, $types_json);
+		$types = array_merge($types_json, $types_json_tribe);
 		
 		foreach ($types as $key => $type) {
 			$type_slug = $type['slug'] ?? ($key ?? 'undefined');
