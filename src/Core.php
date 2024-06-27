@@ -299,19 +299,29 @@ class Core {
 	{
 		$sql = new MySQL();
 		$config = new Config();
+		$uploads = new Uploads();
 
 		$types = $config->getTypes();
-
-		$role_slug = $this->getAttribute($id, 'role_slug');
-		$role_slug = $role_slug ? "&role=$role_slug" : '';
 
 		if (!$id) {
 			return false;
 		}
 
-		if ($types['webapp']['soft_delete_records']) {
+		$t = $this->getAttribute($id, 'type');
+		if ($t == 'deleted_record') {
+			if (($this->getAttribute($id, 'deleted_type') ?? '') == 'file_record') {
+				$uploads->deleteFileRecord($this->getObject($id));
+			}
+
+			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
+		}
+		else if ($types['webapp']['soft_delete_records'] ?? false) {
 			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
 		} else {
+			if ($t == 'file_record') {
+				$uploads->deleteFileRecord($this->getObject($id));
+			}
+
 			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
 		}
 
@@ -324,12 +334,28 @@ class Core {
 		$config = new Config();
 
 		$types = $config->getTypes();
+		$t = $this->getAttribute($ids[0], 'type');
 		$ids = implode(',', $ids);
 
-		if ($types['webapp']['soft_delete_records']) {
+		if ($t == 'deleted_record') {
+			if (($this->getAttribute($id, 'deleted_type') ?? '') == 'file_record') {
+				$objects = $this->getObjects($ids);
+				foreach ($objects as $object) {
+					$uploads->deleteFileRecord($object);
+				}
+			}
+			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
+		}
+		else if ($types['webapp']['soft_delete_records'] ?? false) {
 			// soft delete
 			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids)");
 		} else {
+			if ($t == 'file_record') {
+				$objects = $this->getObjects($ids);
+				foreach ($objects as $object) {
+					$uploads->deleteFileRecord($object);
+				}
+			}
 			// perma delete
 			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
 		}
