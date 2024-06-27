@@ -48,13 +48,13 @@ class Config {
 			$json_path = ABSOLUTE_PATH . '/config/types.json';
 
 		$types_json = \json_decode(\file_get_contents($json_path), true);
-		$types_json_tribe = \json_decode(\file_get_contents(ABSOLUTE_PATH . '/config/types.json'), true);
+		$types_json_junction = \json_decode(\file_get_contents('https://raw.githubusercontent.com/tribe-framework/types.json/master/junction.json'), true);
 
 		if (!$types_json) {
 			die("<em><b>Error:</b> types</em> validation failed");
 		}
 
-		$types = array_merge($types_json_tribe, $types_json);
+		$types = array_merge($types_json, $types_json_junction);
 		
 		foreach ($types as $key => $type) {
 			$type_slug = $type['slug'] ?? ($key ?? 'undefined');
