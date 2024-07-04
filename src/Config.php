@@ -46,6 +46,7 @@ class Config {
 		}
 
 		$files = scandir($folder_path, SCANDIR_SORT_DESCENDING);
+		$files = array_diff($files, array('..', '.'));
 		$newest_file = $files[0] ?? false;
 
 		if ($newest_file)
