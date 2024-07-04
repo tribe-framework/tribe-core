@@ -44,8 +44,10 @@ class Config {
 
 		if ($newest_file)
 			$json_path = $folder_path . '/' . $newest_file;
-		else
+		else if (file_exists(ABSOLUTE_PATH . '/config/types.json'))
 			$json_path = ABSOLUTE_PATH . '/config/types.json';
+		else
+			$json_path = 'https://raw.githubusercontent.com/tribe-framework/types.json/master/types.json';
 
 		$types_json = \json_decode(\file_get_contents($json_path), true);
 		$types_json_junction = \json_decode(\file_get_contents('https://raw.githubusercontent.com/tribe-framework/types.json/master/junction.json'), true);
