@@ -39,10 +39,14 @@ class Config {
 	public function getTypes()
 	{
 		$folder_path = TRIBE_ROOT . '/uploads/types';
-		$files = scandir($folder_path, SCANDIR_SORT_DESCENDING);
+		if (!is_dir($folder_path)) {
+			mkdir($folder_path, 0755, true);
+		}
+
+		$files = array_diff(scandir($folder_path, SCANDIR_SORT_DESCENDING), array('..', '.'));
 		$newest_file = $files[0];
 
-		if ($newest_file)
+		if ($newest_file ?? false)
 			$json_path = $folder_path . '/' . $newest_file;
 		else
 			$json_path = ABSOLUTE_PATH . '/config/types.json';
