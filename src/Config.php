@@ -38,18 +38,23 @@ class Config {
 
 	public function getTypes()
 	{
+
 		$folder_path = TRIBE_ROOT . '/uploads/types';
+
 		if (!is_dir($folder_path)) {
 			mkdir($folder_path, 0755, true);
 		}
 
-		$files = array_diff(scandir($folder_path, SCANDIR_SORT_DESCENDING), array('..', '.'));
-		$newest_file = $files[0];
+		$files = scandir($folder_path, SCANDIR_SORT_DESCENDING);
+		$files = array_diff($files, array('..', '.'));
+		$newest_file = $files[0] ?? false;
 
-		if ($newest_file ?? false)
+		if ($newest_file)
 			$json_path = $folder_path . '/' . $newest_file;
-		else
+		else if (file_exists(ABSOLUTE_PATH . '/config/types.json'))
 			$json_path = ABSOLUTE_PATH . '/config/types.json';
+		else
+			$json_path = 'https://raw.githubusercontent.com/tribe-framework/types.json/master/types.json';
 
 		$types_json = \json_decode(\file_get_contents($json_path), true);
 		$types_json_junction = \json_decode(\file_get_contents('https://raw.githubusercontent.com/tribe-framework/types.json/master/junction.json'), true);
