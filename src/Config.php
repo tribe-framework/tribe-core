@@ -36,9 +36,7 @@ class Config {
 		return json_decode(file_get_contents($json_path), true);
 	}
 
-	public function getTypes()
-	{
-
+	public function newestValidTypesInUploads() {
 		$folder_path = TRIBE_ROOT . '/uploads/types';
 
 		if (!is_dir($folder_path)) {
@@ -49,14 +47,37 @@ class Config {
 		$files = array_diff($files, array('..', '.'));
 		$newest_file = $files[0] ?? false;
 
-		if ($newest_file)
-			$json_path = $folder_path . '/' . $newest_file;
-		else if (file_exists(ABSOLUTE_PATH . '/config/types.json'))
-			$json_path = ABSOLUTE_PATH . '/config/types.json';
-		else
-			$json_path = 'https://raw.githubusercontent.com/tribe-framework/types.json/master/blueprints/junction-init.json';
+		if ($newest_file) {
+			$newest_path = $folder_path . '/' . $newest_file;
+			$newest_json = \json_decode(\file_get_contents($newest_path), true);
 
-		$types_json = \json_decode(\file_get_contents($json_path), true);
+			if (json_last_error() === JSON_ERROR_NONE) {
+			    return $newest_json;
+			} else {
+				unlink($newest_path);
+			    return $this->newestValidTypesInUploads();
+			}
+		}
+		else
+			return false;
+	}
+
+	public function getTypes()
+	{
+		$newest_json = $this->newestValidTypesInUploads();
+
+		if ($newest_json) {
+			$types_json = $newest_json;
+		}
+		else if (file_exists(ABSOLUTE_PATH . '/config/types.json')) {
+			$json_path = ABSOLUTE_PATH . '/config/types.json';
+			$types_json = \json_decode(\file_get_contents($json_path), true);
+		}
+		else {
+			$json_path = 'https://raw.githubusercontent.com/tribe-framework/types.json/master/blueprints/junction-init.json';
+			$types_json = \json_decode(\file_get_contents($json_path), true);
+		}
+
 		$types_json_junction = \json_decode(\file_get_contents('https://raw.githubusercontent.com/tribe-framework/types.json/master/junction.json'), true);
 
 		if (!$types_json) {
