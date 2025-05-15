@@ -31,6 +31,19 @@ class Config {
 		return $title;
 	}
 
+	public function getTypeLinkedModules(string $posttype)
+	{
+		$types = $this->newestValidTypesInUploads();
+		$or = [];
+		foreach ($types[$posttype]['modules'] as $module) {
+			if ($module['linked_type'] ?? false) {
+				$slug = $module['input_slug'];
+				$or[$slug] = $module['linked_type'];
+			}
+		}
+		return $or;
+	}
+
 	public function getMenus($json_path = ABSOLUTE_PATH . '/config/menus.json')
 	{
 		return json_decode(file_get_contents($json_path), true);

@@ -217,7 +217,7 @@ class Core {
 		}
 
 		//IF KEY IS ARRAY AS IN get_ids
-		else if ($identifier[0]['id']) {
+		else if ($identifier[0]['id'] ?? false) {
 			$q = $sql->executeSQL("SELECT * from data
                 where id IN (".implode( ",", array_column($identifier, 'id') ).")
                 order by id desc
@@ -226,7 +226,7 @@ class Core {
 		}
 
 		//IF ARRAY HAS type and slugs
-		else if ($identifier['type'] && $identifier['slugs'][0]) {
+		else if (($identifier['type'] ?? false) && ($identifier['slugs'][0] ?? false)) {
 			foreach ($identifier['slugs'] as $idn) {
 				$_where[] = "(`type`='".$identifier['type']."' AND `slug`='".$idn."')";
 			}
@@ -239,7 +239,7 @@ class Core {
 		}
 
 		//IF ARRAY HAS multiple type-slug pairs
-		else if ($identifier[0]['type'] && $identifier[0]['slug']) {
+		else if (($identifier[0]['type'] ?? false) && ($identifier[0]['slug'] ?? false)) {
 			foreach ($identifier as $idn) {
 				$_where[] = "(`type`='".$idn['type']."' AND `slug`='".$idn['slug']."')";
 			}
