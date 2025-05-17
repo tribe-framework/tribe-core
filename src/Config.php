@@ -102,7 +102,7 @@ class Config {
 		foreach ($types as $key => $type) {
 			$type_slug = $type['slug'] ?? ($key ?? 'undefined');
 
-			if (!($type_slug == 'user' || $type_slug == 'webapp')) {
+			if ($type_slug != 'webapp') {
 				$type_key_modules = $types[$key]['modules'] ?? [];
 
 				if (!in_array('content_privacy', array_column($type_key_modules, 'input_slug'))) {
