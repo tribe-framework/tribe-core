@@ -241,7 +241,11 @@ class Core {
 		//IF ARRAY HAS multiple type-slug pairs
 		else if (($identifier[0]['type'] ?? false) && ($identifier[0]['slug'] ?? false)) {
 			foreach ($identifier as $idn) {
-				$_where[] = "(`type`='".$idn['type']."' AND `slug`='".$idn['slug']."')";
+				if ($idn['slug'] ?? null) {
+					$_where[] = "(`type`='{$idn['type']}' AND `slug`='{$idn['slug']}')";
+				} else {
+					$_where[] = "(`type`='{$idn['type']}')";
+				}
 			}
 
 			$q = $sql->executeSQL("SELECT * from data
