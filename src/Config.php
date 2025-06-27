@@ -35,10 +35,12 @@ class Config {
 	{
 		$types = $this->newestValidTypesInUploads();
 		$or = [];
-		foreach ($types[$posttype]['modules'] as $module) {
-			if ($module['linked_type'] ?? false) {
-				$slug = $module['input_slug'];
-				$or[$slug] = $module['linked_type'];
+		if (isset($types[$posttype]['modules'])) {
+			foreach ($types[$posttype]['modules'] as $module) {
+				if ($module['linked_type'] ?? false) {
+					$slug = $module['input_slug'];
+					$or[$slug] = $module['linked_type'];
+				}
 			}
 		}
 		return $or;
