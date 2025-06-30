@@ -4,7 +4,10 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "verot/class.upload.php": "^2.1.3",
-        "tribe/upstream": "^0.1"
+        "tribe/upstream": "^0.1",
+        "ifsnop/mysqldump-php": "^2.9",
+        "tribe/core": "^4.0",
+        "tribe/auth": "^3.0"
      },
     "autoload": {
         "psr-4": {
