@@ -936,7 +936,7 @@ class API {
 
     public function exposeTribeApi(array $url_parts, array $all_types): void
     {
-        require __DIR__."/../v1/handler.php";
+        require __DIR__."/../API/v1/handler.php";
         return;
     }
 }
