@@ -7,7 +7,7 @@
         "ifsnop/mysqldump-php": "^2.9",
         "firebase/php-jwt": ">=5.2",
         "alsvanzelf/jsonapi": "^2.4",
-        "tribe/upstream": "^0.1"
+        "aminyazdanpanah/php-ffmpeg-video-streaming": "^1.2"
      },
     "autoload": {
         "psr-4": {
