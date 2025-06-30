@@ -1,0 +1,36 @@
+.copy_btn {cursor: pointer;}
+
+.bar {
+    height: 18px;
+    background: #993399;
+}
+
+.byline {display: none;}
+
+#map {
+	height:400px;
+	max-height: 100%;
+}
+
+#infowindow-content {
+	display: none;
+}
+
+#map #infowindow-content {
+	display: inline;
+}
+
+.dataTables_filter {float: left; margin-top:10px; margin-bottom: 10px;}
+.dt-buttons {float: left; margin-top:10px; margin-bottom: 10px;}
+.paging_simple_numbers {float:right; margin-top:10px; margin-bottom: 10px;}
+.dataTables_info {float:right; margin-top:10px; margin-bottom: 10px;}
+.dataTables_length {float:left; margin-left:20px; margin-top:10px; margin-bottom: 10px;}
+
+.multi_drop {height: 400px; overflow-y: scroll;}
+
+.stat-table {}
+
+.stat-row {
+	display: flex;
+	justify-content: space-between;
+}
