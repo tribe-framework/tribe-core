@@ -1,48 +1,42 @@
 <?php
+namespace Tribe;
 
-namespace Wildfire\Core;
-
-class MySQL
-{
-    public $lastError; // Holds the last error
-    public $lastQuery; // Holds the last query
-    public $result; // Holds the MySQL query result
-    public $records; // Holds the total number of records returned
-    public $affected; // Holds the total number of records affected
-    public $arrayedResult; // Holds an array of the result
-
-    public $hostname; // MySQL Hostname
-    public $username; // MySQL Username
-    public $password; // MySQL Password
-    public $database; // MySQL Database
-
-    public $databaseLink; // Database Connection Link
+class MySQL {
+	public $lastError; // Holds the last error
+	public $lastQuery; // Holds the last query
+	public $result; // Holds the MySQL query result
+	public $records; // Holds the total number of records returned
+	public $affected; // Holds the total number of records affected
+	public $arrayedResult; // Holds an array of the result
+	public $databaseLink; // Database Connection Link
+	public $schema;
 
     public function __construct()
     {
-        $this->Connect();
-    }
+        $_schema = 'id,content,updated_on,created_on,user_id,role_slug,slug,content_privacy,type';
+        $this->schema = explode(',', $_schema);
 
-    private function Connect()
-    {
-        $this->CloseConnection();
+		$this->CloseConnection();
 
-        $this->database = DB_NAME;
-        $this->username = DB_USER;
-        $this->password = DB_PASS;
-        $this->hostname = DB_HOST;
+        $db_name = $_ENV['DB_NAME'] ?? null;
+        $db_user = $_ENV['DB_USER'] ?? null;
+        $db_pass = $_ENV['DB_PASS'] ?? null;
+        $db_host = $_ENV['DB_HOST'] ?? 'localhost';
+        $db_port = $_ENV['DB_PORT'] ?? 3306;
 
-        $this->databaseLink = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
+        $this->databaseLink = mysqli_connect($db_host, $db_user, $db_pass, $db_name, (int) $db_port);
         if (!$this->databaseLink) {
             $this->lastError = "Error: Unable to connect to MySQL." . PHP_EOL;
             $this->lastError = "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
             $this->lastError = "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+
+            throw new \Exception($this->lastError, 1);
             return false;
         }
 
-        mysqli_set_charset($this->databaseLink, 'utf8');
+        mysqli_set_charset($this->databaseLink, 'utf8mb4');
 
-        return true;
+        return $this;
     }
 
     public function lastInsertID()
@@ -72,9 +66,9 @@ class MySQL
             if ($this->records > 0) {
                 $this->arrayResults();
                 if ($this->records == 1) {
-                    return array($this->unstrip_array($this->arrayedResult));
+                    return array($this->unstripArray($this->arrayedResult));
                 } else {
-                    return $this->unstrip_array($this->arrayedResult);
+                    return $this->unstripArray($this->arrayedResult);
                 }
             } else {
                 return 0;
@@ -85,40 +79,40 @@ class MySQL
         }
     }
 
-    public function unstrip_array($variable)
-    {
-        if (is_string($variable)) {
-            if (json_decode($variable) === null) {
-                return stripslashes($variable);
-            } else {
-                return $variable;
-            }
-        }
-        if (is_array($variable)) {
-            foreach ($variable as $i => $value) {
-                $variable[$i] = $this->unstrip_array($value);
-            }
-        }
+	public function unstripArray($variable)
+	{
+		if (is_string($variable)) {
+			if (json_decode($variable) === null) {
+				return stripslashes($variable);
+			} else {
+				return $variable;
+			}
+		}
+		if (is_array($variable)) {
+			foreach ($variable as $i => $value) {
+				$variable[$i] = $this->unstripArray($value);
+			}
+		}
 
-        return $variable;
-    }
+		return $variable;
+	}
 
-    public function arrayResults()
-    {
-        if ($this->records == 1) {
-            return $this->arrayResult();
-        }
+	public function arrayResults()
+	{
+		if ($this->records == 1) {
+			return $this->arrayResult();
+		}
 
-        $this->arrayedResult = array();
-        while ($data = mysqli_fetch_assoc($this->result)) {
-            $this->arrayedResult[] = $data;
-        }
-        return $this->arrayedResult;
-    }
+		$this->arrayedResult = array();
+		while ($data = mysqli_fetch_assoc($this->result)) {
+			$this->arrayedResult[] = $data;
+		}
+		return $this->arrayedResult;
+	}
 
-    public function arrayResult()
-    {
-        $this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
-        return $this->arrayedResult;
-    }
+	public function arrayResult()
+	{
+		$this->arrayedResult = mysqli_fetch_assoc($this->result) or die(mysqli_error($this->databaseLink));
+		return $this->arrayedResult;
+	}
 }
