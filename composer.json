@@ -1,6 +1,6 @@
 {
     "name": "tribe/core",
-    "description": "Offers classes for various functions of Tribe (v3)",
+    "description": "All classes to run Tribe",
     "license": "GPL-3.0-or-later",
     "require": {
         "verot/class.upload.php": "^2.1.3",
@@ -8,7 +8,7 @@
         "firebase/php-jwt": ">=5.2",
         "alsvanzelf/jsonapi": "^2.4",
         "aminyazdanpanah/php-ffmpeg-video-streaming": "^1.2"
-     },
+    },
     "autoload": {
         "psr-4": {
             "Tribe\\": "src/"
