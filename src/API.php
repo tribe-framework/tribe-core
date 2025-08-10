@@ -125,6 +125,8 @@ class API {
      */
     private function validateApiKey()
     {
+        global $_ENV;
+
         // Extract the token if it's in Bearer format
         $request_api_key = null;
         $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
@@ -156,6 +158,10 @@ class API {
                     $is_junction_domain = true;
                     break;
                 }
+            }
+
+            if ($_ENV['ENV'] == 'dev') {
+                $is_junction_domain = true;
             }
         }
 
