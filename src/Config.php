@@ -46,13 +46,13 @@ class Config {
 		return $or;
 	}
 
-	public function getMenus($json_path = ABSOLUTE_PATH . '/config/menus.json')
+	public function getMenus($json_path = '/config/menus.json')
 	{
 		return json_decode(file_get_contents($json_path), true);
 	}
 
 	public function newestValidTypesInUploads() {
-		$folder_path = TRIBE_ROOT . '/uploads/types';
+		$folder_path = '/uploads/types';
 
 		if (!is_dir($folder_path)) {
 			mkdir($folder_path, 0755, true);
@@ -84,8 +84,8 @@ class Config {
 		if ($newest_json) {
 			$types_json = $newest_json;
 		}
-		else if (file_exists(ABSOLUTE_PATH . '/config/types.json')) {
-			$json_path = ABSOLUTE_PATH . '/config/types.json';
+		else if (file_exists('/config/types.json')) {
+			$json_path = '/config/types.json';
 			$types_json = \json_decode(\file_get_contents($json_path), true);
 		}
 		else {

@@ -6,27 +6,27 @@ class Uploads {
 
 	public function getUploadDirPath()
 	{
-		return TRIBE_ROOT . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
+		return '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
 	public function getUploadDirURL()
 	{
-		return BASE_URL . '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
+		return '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 	}
 
 	public function getUploaderPath()
 	{
-		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-		if (!is_dir(TRIBE_ROOT . '/' . $folder_path)) {
-			mkdir(TRIBE_ROOT . '/' . $folder_path, 0755, true);
-			mkdir(TRIBE_ROOT . '/' . $folder_path . '/xs', 0755, true);
-			mkdir(TRIBE_ROOT . '/' . $folder_path . '/sm', 0755, true);
-			mkdir(TRIBE_ROOT . '/' . $folder_path . '/md', 0755, true);
-			mkdir(TRIBE_ROOT . '/' . $folder_path . '/lg', 0755, true);
-			mkdir(TRIBE_ROOT . '/' . $folder_path . '/xl', 0755, true);
+		$folder_path = '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
+		if (!is_dir($folder_path)) {
+			mkdir($folder_path, 0755, true);
+			mkdir($folder_path . '/xs', 0755, true);
+			mkdir($folder_path . '/sm', 0755, true);
+			mkdir($folder_path . '/md', 0755, true);
+			mkdir($folder_path . '/lg', 0755, true);
+			mkdir($folder_path . '/xl', 0755, true);
 		}
 
-		return array('upload_dir' => TRIBE_ROOT . '/' . $folder_path, 'upload_url' => BASE_URL . '/' . $folder_path);
+		return array('upload_dir' => $folder_path, 'upload_url' => $folder_path);
 	}
 
 	public function getUploadedImageInSize($file_url, $thumbnail = 'md')
@@ -47,13 +47,13 @@ class Uploads {
 				$day = $file_parts[1];
 			}
 
-			if (file_exists(TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1))) {
-				$file_arr['path'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1);
-				$file_arr['url'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . rawurlencode($filename);
+			if (file_exists('/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1))) {
+				$file_arr['path'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . substr(escapeshellarg($filename), 1, -1);
+				$file_arr['url'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $thumbnail . '/' . rawurlencode($filename);
 			}
 			else {
-				$file_arr['path'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
-				$file_arr['url'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
+				$file_arr['path'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
+				$file_arr['url'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
 			}
 
 			return $file_arr;
@@ -81,16 +81,16 @@ class Uploads {
 			$day = $file_parts[1];
 		}
 
-		$file_arr['path']['source'] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
-		$file_arr['url']['source'] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
+		$file_arr['path']['source'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . substr(escapeshellarg($filename), 1, -1);
+		$file_arr['url']['source'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . rawurlencode($filename);
 
 		if (preg_match('/\.(gif|jpe?g|png)$/i', $file_url)) {
 			$sizes = array('xl', 'lg', 'md', 'sm', 'xs');
 
 			foreach ($sizes as $size) {
-				if (file_exists(TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
-					$file_arr['path'][$size] = TRIBE_ROOT . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . substr(escapeshellarg($filename), 1, -1);
-					$file_arr['url'][$size] = BASE_URL . '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
+				if (file_exists('/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . $filename)) {
+					$file_arr['path'][$size] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . substr(escapeshellarg($filename), 1, -1);
+					$file_arr['url'][$size] = '/uploads/' . $year . '/' . $month . '/' . $day . '/' . $size . '/' . rawurlencode($filename);
 				}
 				else {
 					$file_arr['path'][$size] = $file_arr['path']['source'];
@@ -111,45 +111,29 @@ class Uploads {
 	}
 
 	public function deleteFileRecord($object) {
-        if ($_ENV['DOCKER_ROOT'] ?? false)
-        	$web_root = $_ENV['DOCKER_ROOT'];
-        else
-	        $web_root = ($_ENV['WEB_ROOT'] ?? '/mnt/wildfire').'/'.$_ENV['WEB_BARE_URL'];
-
 		if ($object['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['url']);
-			unlink($pth);
+			unlink($object['url']);
 		}
 
 		if ($object['file']['lg']['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['file']['lg']['url']);
-			unlink($pth);
+			unlink($object['file']['lg']['url']);
 		}
 
 		if ($object['file']['md']['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['file']['md']['url']);
-			unlink($pth);
+			unlink($object['file']['md']['url']);
 		}
 
 		if ($object['file']['sm']['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['file']['sm']['url']);
-			unlink($pth);
+			unlink($object['file']['sm']['url']);
 		}
 
 		if ($object['file']['xl']['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['file']['xl']['url']);
-			unlink($pth);
+			unlink($object['file']['xl']['url']);
 		}
 
 		if ($object['file']['xs']['url'] ?? false) {
-			$pth = str_replace($_ENV['WEB_URL'], $web_root, $object['file']['xs']['url']);
-			unlink($pth);
+			unlink($object['file']['xs']['url']);
 		}
-	}
-
-	public function getDirURL()
-	{
-		return str_replace(TRIBE_ROOT, BASE_URL, getcwd());
 	}
 
 	public function copyFileFromURL($url)
@@ -178,27 +162,22 @@ class Uploads {
         $filenames_or = [];
         $filecontents_or = [];
 
-        if ($_ENV['DOCKER_ROOT'] ?? false)
-        	$web_root = $_ENV['DOCKER_ROOT'];
-        else
-	        $web_root = ($_ENV['WEB_ROOT'] ?? '/mnt/wildfire').'/'.$_ENV['WEB_BARE_URL'];
-
         $search_q = '^(?=.*'.implode(')(?=.*', $strings).')';
 
-        $files = explode(PHP_EOL, shell_exec('grep -PRil "'.$search_q.'" '.$web_root.'/uploads/'));
+        $files = explode(PHP_EOL, shell_exec('grep -PRil "'.$search_q.'" /uploads/'));
 
         if ($deep_search) {
-	        $files = array_merge($files, explode(PHP_EOL, shell_exec('timeout 7 pdfgrep -PRil "'.$search_q.'" '.$web_root.'/uploads/')));
+	        $files = array_merge($files, explode(PHP_EOL, shell_exec('timeout 7 pdfgrep -PRil "'.$search_q.'" /uploads/')));
         }
 
-        $filenames = explode(PHP_EOL, shell_exec("find ".$web_root."/uploads -not -path '*/[@.]*' -type f"));
+        $filenames = explode(PHP_EOL, shell_exec("find /uploads -not -path '*/[@.]*' -type f"));
 
         foreach ($strings as $string) {
             $filenames_op = array_merge($filenames_op, preg_grep("/".$search_q."/i", $filenames));
         }
 
         foreach ($filenames_op as $file) {
-            $filenames_or[] = str_replace($web_root, 'https://', $file);
+            $filenames_or[] = $file;
         }
 
         foreach ($files as $file) {
@@ -207,7 +186,7 @@ class Uploads {
         }
 
         foreach ($filecontents_op as $file) {
-            $filecontents_or[] = str_replace($web_root, 'https://', $file);
+            $filecontents_or[] = $file;
         }
 
         $filenames_or = array_unique($filenames_or);

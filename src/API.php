@@ -799,7 +799,7 @@ class API {
 
     public function pushTypesObject($object)
     {
-        $folder_path = TRIBE_ROOT . '/uploads/types';
+        $folder_path = '/uploads/types';
         if (!is_dir($folder_path)) {
             mkdir($folder_path);
         }
@@ -827,7 +827,7 @@ class API {
             $object[$key]['total_objects'] = $this->core->getTypeObjectsCount($key);
         }
 
-        $sizeRaw = $this->core->executeShellCommand('du -s '.TRIBE_ROOT . '/uploads');
+        $sizeRaw = $this->core->executeShellCommand('du -s /uploads');
         $objectsCount = $this->sql->executeSQL("SELECT COUNT(*) AS `count` FROM `data`");
         $object['webapp']['size_in_gb'] = $this->parseSizeToGB($sizeRaw);
         $object['webapp']['total_objects'] = $objectsCount[0]['count'];

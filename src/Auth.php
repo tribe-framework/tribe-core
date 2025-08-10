@@ -169,8 +169,8 @@ class Auth
         global $_SESSION, $_ENV;
 
         $payload = array(
-            "iss" => $_ENV['BASE_URL'] ?? $_ENV['WEB_URL'] ?? null, //“iss” (Issuer) Claim
-            "aud" => $_ENV['BASE_URL'] ?? $_ENV['WEB_URL'] ?? null,
+            "iss" => $_ENV['BASE_URL'] ?? null, //“iss” (Issuer) Claim
+            "aud" => $_ENV['BASE_URL'] ?? null,
             "iat" => time(), //"iat" (Issued At) Claim
             "nbf" => time(), //"nbf" (Not Before) Claim
         );
