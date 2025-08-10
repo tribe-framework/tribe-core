@@ -11,7 +11,7 @@ class Core {
 	{
 		self::$ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_access_log', 'mysql_activity_log'];
 
-        if ('dev' == strtolower($_ENV['ENV'])) {
+        if ($_ENV['DISPLAY_ERRORS'] === true) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);

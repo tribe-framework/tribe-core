@@ -4,19 +4,9 @@ namespace Tribe;
 
 class Uploads {
 
-	public function getUploadDirPath()
-	{
-		return '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-	}
-
-	public function getUploadDirURL()
-	{
-		return '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
-	}
-
 	public function getUploaderPath()
 	{
-		$folder_path = '/uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
+		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
 		if (!is_dir($folder_path)) {
 			mkdir($folder_path, 0755, true);
 			mkdir($folder_path . '/xs', 0755, true);
@@ -26,7 +16,7 @@ class Uploads {
 			mkdir($folder_path . '/xl', 0755, true);
 		}
 
-		return array('upload_dir' => $folder_path, 'upload_url' => $folder_path);
+		return array('upload_dir' => $folder_path, 'upload_url' => '/'.$folder_path);
 	}
 
 	public function getUploadedImageInSize($file_url, $thumbnail = 'md')
