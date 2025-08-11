@@ -160,7 +160,7 @@ class API {
                 }
             }
 
-            if ($_ENV['ENV'] == 'dev') {
+            if ($_ENV['ALLOW_API_FULL_ACCESS'] == 'dev') {
                 $is_junction_domain = true;
             }
         }
