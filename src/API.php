@@ -144,24 +144,21 @@ class API {
         // Get the instance slug from the environment
         $instance_slug = (explode('.', $request_domain)[0]) ?? '';
 
-        // Check if the request is coming from a Junction domain
-        $is_junction_domain = false;
+        // If the request is coming from a domain within this Tribe
+        $is_tribe_domain = false;
         if (!empty($request_domain)) {
-            $junction_domains = [
-                "$instance_slug.junction.express",
-                "$instance_slug.tribe.junction.express",
-                "tribe.junction.express"
+            $tribe_domains = [
+                $_ENV['TRIBE_BARE_URL'],
+                $_ENV['JUNCTION_BARE_URL'],
+                $_ENV['DIST_BARE_URL'],
+                $_ENV['DIST_PHP_BARE_URL']
             ];
 
-            foreach ($junction_domains as $domain) {
+            foreach ($tribe_domains as $domain) {
                 if (strpos($request_domain, $domain) !== false) {
-                    $is_junction_domain = true;
+                    $is_tribe_domain = true;
                     break;
                 }
-            }
-
-            if ($_ENV['ALLOW_API_FULL_ACCESS'] == true) {
-                $is_junction_domain = true;
             }
         }
 
@@ -177,8 +174,8 @@ class API {
         $typesJSON = $this->config->getTypes();
         $block_read_access_without_apikey = isset($typesJSON['block_read_access_without_apikey']) && $typesJSON['block_read_access_without_apikey'];
 
-        // Allow all operations for Junction domains
-        if ($is_junction_domain) {
+        // Allow all operations for Tribe domains
+        if ($is_tribe_domain) {
             return true;
         }
 
