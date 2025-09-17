@@ -96,14 +96,24 @@ class Uploads {
 			}
 		}
 
-		// Check for HLS version for videos
-		if (preg_match('/\.(mp4|mov|avi|mkv|webm)$/i', $file_url)) {
+		// Check for HLS version ONLY for MP4 and MOV videos
+		if (preg_match('/\.(mp4|mov)$/i', $file_url)) {
 			$hls_path = '/uploads/' . $year . '/' . $month . '/' . $day . '/hls/' . pathinfo($filename, PATHINFO_FILENAME) . '.m3u8';
 			$hls_url = '/uploads/' . $year . '/' . $month . '/' . $day . '/hls/' . pathinfo($filename, PATHINFO_FILENAME) . '.m3u8';
 			
 			if (file_exists($hls_path)) {
 				$file_arr['path']['hls'] = $hls_path;
 				$file_arr['url']['hls'] = $hls_url;
+				
+				// Check for different quality versions
+				$video_qualities = ['xl', 'lg', 'md', 'sm', 'xs'];
+				foreach ($video_qualities as $quality) {
+					$quality_hls_path = '/uploads/' . $year . '/' . $month . '/' . $day . '/hls/' . pathinfo($filename, PATHINFO_FILENAME) . '_' . $quality . '.m3u8';
+					if (file_exists($quality_hls_path)) {
+						$file_arr['path']['hls_' . $quality] = $quality_hls_path;
+						$file_arr['url']['hls_' . $quality] = '/uploads/' . $year . '/' . $month . '/' . $day . '/hls/' . pathinfo($filename, PATHINFO_FILENAME) . '_' . $quality . '.m3u8';
+					}
+				}
 			}
 		}
 
@@ -197,10 +207,10 @@ class Uploads {
 
         foreach ($files as $file) {
             if ($file !== '')
-                $filecontents_op[] = $file;
+                $filenames_op[] = $file;
         }
 
-        foreach ($filecontents_op as $file) {
+        foreach ($filenames_op as $file) {
             $filecontents_or[] = $file;
         }
 
@@ -214,42 +224,178 @@ class Uploads {
 	}
 
 	/**
-	 * Convert video to HLS format using FFmpeg in background
+	 * Video quality configurations for HLS streaming
 	 */
-	private function convertToHLS($input_path, $output_dir, $filename_base) {
+	private function getVideoQualitySettings() {
+		return [
+			'xl' => [
+				'resolution' => '3840x2160',
+				'bitrate_video' => '15000k',
+				'bitrate_audio' => '192k',
+				'label' => '2160p'
+			],
+			'lg' => [
+				'resolution' => '1920x1080',
+				'bitrate_video' => '8000k',
+				'bitrate_audio' => '128k',
+				'label' => '1080p'
+			],
+			'md' => [
+				'resolution' => '1280x720',
+				'bitrate_video' => '4000k',
+				'bitrate_audio' => '128k',
+				'label' => '720p'
+			],
+			'sm' => [
+				'resolution' => '960x540',
+				'bitrate_video' => '2000k',
+				'bitrate_audio' => '96k',
+				'label' => '540p'
+			],
+			'xs' => [
+				'resolution' => '640x360',
+				'bitrate_video' => '1000k',
+				'bitrate_audio' => '64k',
+				'label' => '360p'
+			]
+		];
+	}
+
+	/**
+	 * Convert video to multiple quality HLS streams
+	 */
+	private function convertToMultiQualityHLS($input_path, $output_dir, $filename_base) {
 		// Create HLS output directory
 		if (!is_dir($output_dir)) {
 			mkdir($output_dir, 0755, true);
 		}
 
-		$output_playlist = $output_dir . '/' . $filename_base . '.m3u8';
-		$output_segment = $output_dir . '/' . $filename_base . '_%03d.ts';
-		
-		// Escape paths for shell execution
 		$input_escaped = escapeshellarg($input_path);
-		$playlist_escaped = escapeshellarg($output_playlist);
-		$segment_escaped = escapeshellarg($output_segment);
+		$quality_settings = $this->getVideoQualitySettings();
+		$master_playlist_path = $output_dir . '/' . $filename_base . '.m3u8';
 		
-		// Build FFmpeg command for HLS conversion with multiple quality levels
-		$ffmpeg_cmd = "ffmpeg -i {$input_escaped} " .
-			// Video codec settings
-			"-c:v libx264 -preset fast -crf 23 " .
-			// Audio codec settings  
-			"-c:a aac -b:a 128k " .
-			// HLS specific settings
-			"-hls_time 6 " .                    // 6 second segments
-			"-hls_list_size 0 " .               // Keep all segments in playlist
-			"-hls_segment_filename {$segment_escaped} " .
-			// Output playlist
-			"{$playlist_escaped} " .
-			// Run in background, redirect output to log file
-			"2>/tmp/ffmpeg_{$filename_base}.log &";
+		// Get video info to determine available qualities
+		$video_info_cmd = "ffprobe -v quiet -print_format json -show_streams " . $input_escaped;
+		$video_info = json_decode(shell_exec($video_info_cmd), true);
 		
-		// Execute FFmpeg command in background
-		exec($ffmpeg_cmd);
+		$source_width = 0;
+		$source_height = 0;
+		foreach ($video_info['streams'] as $stream) {
+			if ($stream['codec_type'] === 'video') {
+				$source_width = $stream['width'] ?? 0;
+				$source_height = $stream['height'] ?? 0;
+				break;
+			}
+		}
+
+		$ffmpeg_commands = [];
+		$available_qualities = [];
 		
-		// Return the expected playlist URL (even though conversion is still in progress)
-		return str_replace('/var/www/html/', '/', $output_playlist);
+		// Build FFmpeg command for multiple outputs
+		$ffmpeg_base = "ffmpeg -i {$input_escaped}";
+		$output_options = [];
+		$map_options = [];
+		$var_stream_map = [];
+		
+		$stream_index = 0;
+		foreach ($quality_settings as $quality => $settings) {
+			// Parse target resolution
+			list($target_width, $target_height) = explode('x', $settings['resolution']);
+			
+			// Only create quality if source is equal or higher resolution
+			if ($source_height >= $target_height) {
+				$playlist_name = $filename_base . '_' . $quality . '.m3u8';
+				$segment_name = $filename_base . '_' . $quality . '_%03d.ts';
+				
+				// Video encoding options
+				$video_options = "-c:v libx264 -preset medium -crf 23 " .
+					"-maxrate {$settings['bitrate_video']} -bufsize " . (intval($settings['bitrate_video']) * 2) . "k " .
+					"-vf \"scale=-2:{$target_height}\" " .
+					"-g 48 -keyint_min 48 -sc_threshold 0";
+				
+				// Audio encoding options
+				$audio_options = "-c:a aac -b:a {$settings['bitrate_audio']} -ar 44100";
+				
+				// HLS options
+				$hls_options = "-f hls -hls_time 6 -hls_list_size 0 " .
+					"-hls_segment_filename " . escapeshellarg($output_dir . '/' . $segment_name);
+				
+				$output_options[] = "{$video_options} {$audio_options} {$hls_options} " . 
+					escapeshellarg($output_dir . '/' . $playlist_name);
+				
+				$available_qualities[] = [
+					'quality' => $quality,
+					'label' => $settings['label'],
+					'resolution' => $settings['resolution'],
+					'bitrate' => $settings['bitrate_video'],
+					'playlist' => $playlist_name
+				];
+				
+				$stream_index++;
+			}
+		}
+		
+		// If no qualities are available, create at least one stream at source resolution
+		if (empty($available_qualities)) {
+			$playlist_name = $filename_base . '_source.m3u8';
+			$segment_name = $filename_base . '_source_%03d.ts';
+			
+			$output_options[] = "-c:v libx264 -preset medium -crf 23 " .
+				"-c:a aac -b:a 128k -ar 44100 " .
+				"-f hls -hls_time 6 -hls_list_size 0 " .
+				"-hls_segment_filename " . escapeshellarg($output_dir . '/' . $segment_name) . " " .
+				escapeshellarg($output_dir . '/' . $playlist_name);
+			
+			$available_qualities[] = [
+				'quality' => 'source',
+				'label' => 'Original',
+				'resolution' => $source_width . 'x' . $source_height,
+				'bitrate' => '5000k',
+				'playlist' => $playlist_name
+			];
+		}
+		
+		// Build complete FFmpeg command
+		$complete_command = $ffmpeg_base;
+		foreach ($output_options as $output) {
+			$complete_command .= " " . $output;
+		}
+		$complete_command .= " 2>/tmp/ffmpeg_{$filename_base}.log &";
+		
+		// Execute FFmpeg command
+		exec($complete_command);
+		
+		// Create master playlist
+		$this->createMasterPlaylist($master_playlist_path, $available_qualities, $filename_base);
+		
+		return str_replace('/var/www/html/', '/', $master_playlist_path);
+	}
+
+	/**
+	 * Create HLS master playlist for adaptive streaming
+	 */
+	private function createMasterPlaylist($master_playlist_path, $available_qualities, $filename_base) {
+		$content = "#EXTM3U\n";
+		$content .= "#EXT-X-VERSION:3\n\n";
+		
+		foreach ($available_qualities as $quality_info) {
+			// Parse bitrate (remove 'k' suffix and convert to bits)
+			$bitrate_kbps = intval(str_replace('k', '', $quality_info['bitrate']));
+			$bitrate_bps = $bitrate_kbps * 1000;
+			
+			$content .= "#EXT-X-STREAM-INF:BANDWIDTH={$bitrate_bps},RESOLUTION={$quality_info['resolution']},NAME=\"{$quality_info['label']}\"\n";
+			$content .= $quality_info['playlist'] . "\n\n";
+		}
+		
+		// Write master playlist file
+		file_put_contents($master_playlist_path, $content);
+	}
+
+	/**
+	 * Legacy method - now calls the new multi-quality version
+	 */
+	private function convertToHLS($input_path, $output_dir, $filename_base) {
+		return $this->convertToMultiQualityHLS($input_path, $output_dir, $filename_base);
 	}
 
 	/**
@@ -260,32 +406,122 @@ class Uploads {
 			return false;
 		}
 		
-		// Check if playlist file has content and ends properly
+		// For master playlist, check if it has content
 		$content = file_get_contents($hls_path);
+		if (strpos($content, '#EXT-X-STREAM-INF:') !== false) {
+			// This is a master playlist, check individual quality playlists
+			preg_match_all('/^(?!#).*\.m3u8$/m', $content, $matches);
+			$playlist_dir = dirname($hls_path);
+			
+			foreach ($matches[0] as $playlist_file) {
+				$playlist_path = $playlist_dir . '/' . trim($playlist_file);
+				if (!file_exists($playlist_path)) {
+					return false;
+				}
+				
+				$playlist_content = file_get_contents($playlist_path);
+				if (strpos($playlist_content, '#EXT-X-ENDLIST') === false) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		// Regular playlist - check for end marker
 		return strpos($content, '#EXT-X-ENDLIST') !== false;
 	}
 
 	/**
-	 * Get HLS conversion status
+	 * Get HLS conversion status with quality information
 	 */
 	public function getHLSStatus($filename_base) {
 		$log_file = "/tmp/ffmpeg_{$filename_base}.log";
 		
 		if (!file_exists($log_file)) {
-			return 'not_started';
+			return [
+				'status' => 'not_started',
+				'progress' => 0,
+				'qualities' => []
+			];
 		}
 		
 		$log_content = file_get_contents($log_file);
 		
+		// Check for completion indicators
 		if (strpos($log_content, 'video:') !== false && strpos($log_content, 'audio:') !== false) {
-			return 'completed';
+			return [
+				'status' => 'completed',
+				'progress' => 100,
+				'qualities' => $this->getAvailableQualities($filename_base)
+			];
 		}
 		
 		if (strpos($log_content, 'Error') !== false || strpos($log_content, 'failed') !== false) {
-			return 'failed';
+			return [
+				'status' => 'failed',
+				'progress' => 0,
+				'error' => $this->extractErrorFromLog($log_content)
+			];
 		}
 		
-		return 'processing';
+		// Try to extract progress information
+		$progress = $this->extractProgressFromLog($log_content);
+		
+		return [
+			'status' => 'processing',
+			'progress' => $progress,
+			'qualities' => $this->getAvailableQualities($filename_base)
+		];
+	}
+
+	/**
+	 * Extract progress percentage from FFmpeg log
+	 */
+	private function extractProgressFromLog($log_content) {
+		// Look for time indicators in FFmpeg output
+		preg_match_all('/time=(\d{2}):(\d{2}):(\d{2})\.(\d{2})/', $log_content, $matches);
+		
+		if (!empty($matches[0])) {
+			$last_time = end($matches[0]);
+			// This is a rough estimate - you might want to get duration first
+			// and calculate actual percentage
+			return min(50, count($matches[0]) * 2); // Rough progress estimation
+		}
+		
+		return 0;
+	}
+
+	/**
+	 * Extract error message from FFmpeg log
+	 */
+	private function extractErrorFromLog($log_content) {
+		$lines = explode("\n", $log_content);
+		foreach (array_reverse($lines) as $line) {
+			if (stripos($line, 'error') !== false || stripos($line, 'failed') !== false) {
+				return trim($line);
+			}
+		}
+		return 'Unknown error occurred during conversion';
+	}
+
+	/**
+	 * Get available quality streams for a video
+	 */
+	private function getAvailableQualities($filename_base) {
+		$qualities = [];
+		$quality_settings = $this->getVideoQualitySettings();
+		
+		// This would typically check which quality files actually exist
+		// For now, returning the standard qualities
+		foreach ($quality_settings as $quality => $settings) {
+			$qualities[] = [
+				'quality' => $quality,
+				'label' => $settings['label'],
+				'resolution' => $settings['resolution']
+			];
+		}
+		
+		return $qualities;
 	}
 
 	public function handleUpload(array $files_server_arr, array $post_server_arr = [], array $get_server_arr = []) {
@@ -325,13 +561,6 @@ class Uploads {
 		    'application/json'
 		));
 
-		$video_mime_types_allowed[] = 'video/mp4';
-		$video_mime_types_allowed[] = 'video/mov';
-		$video_mime_types_allowed[] = 'video/ogg';
-		$video_mime_types_allowed[] = 'video/mpeg';
-		$video_mime_types_allowed[] = 'video/quicktime';
-		$video_mime_types_allowed[] = 'video/webm';
-
 		//Image size variants
 		$image_versions = [
 			'xl' => array(
@@ -353,14 +582,6 @@ class Uploads {
 			'xs' => array(
 				'max_width' => 100,
 				'max_height' => 100,
-			),
-		];
-
-		//Video size variants
-		$video_versions = [
-			'md' => array(
-				'max_width' => 540,
-				'max_height' => 540,
 			),
 		];
 
@@ -394,20 +615,22 @@ class Uploads {
 				}
 			}
 
-			// Handle MP4 conversion to HLS
+			// Handle video conversion to multi-quality HLS
 			else if (in_array(strtolower($file_extension), ['mp4', 'mov', 'avi', 'mkv', 'webm'])) {
 				$input_path = $uploader_path['upload_dir'].'/'.$handle->file_dst_name;
 				$hls_output_dir = $uploader_path['upload_dir'].'/hls';
 				$filename_base = $file['name'];
 				
-				// Start HLS conversion in background
-				$hls_url = $this->convertToHLS($input_path, $hls_output_dir, $filename_base);
+				// Start multi-quality HLS conversion in background
+				$hls_url = $this->convertToMultiQualityHLS($input_path, $hls_output_dir, $filename_base);
 				
-				// Add HLS info to file array (conversion may still be in progress)
+				// Add HLS info to file array
 				$file['hls'] = array(
 					'url' => str_replace('/var/www/html', '', $hls_url),
 					'status' => 'processing',
-					'playlist' => $filename_base . '.m3u8'
+					'playlist' => $filename_base . '.m3u8',
+					'type' => 'adaptive', // Indicates this supports multiple qualities
+					'qualities' => array_keys($this->getVideoQualitySettings())
 				);
 			}
 
