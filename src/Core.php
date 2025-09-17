@@ -3,9 +3,12 @@ namespace Tribe;
 
 use \Tribe\MySQL;
 use \Tribe\Config;
+use \Tribe\Typesense;
 
 class Core {
 	public static $ignored_keys;
+	private $typesense;
+	private $searchEnabled;
 
 	public function __construct()
 	{
@@ -18,6 +21,21 @@ class Core {
         } else {
             ini_set('display_errors', 0);
             ini_set('display_startup_errors', 0);
+        }
+
+        // Initialize Typesense
+        $this->searchEnabled = ($_ENV['TYPESENSE_ENABLED'] ?? 'true') === 'true';
+        if ($this->searchEnabled) {
+            try {
+                $this->typesense = new Typesense();
+                if (!$this->typesense->isHealthy()) {
+                    error_log("Typesense is not healthy, disabling search features");
+                    $this->searchEnabled = false;
+                }
+            } catch (Exception $e) {
+                error_log("Failed to initialize Typesense: " . $e->getMessage());
+                $this->searchEnabled = false;
+            }
         }
 	}
 
@@ -115,10 +133,142 @@ class Core {
 			$post = array_merge($this->getObject($post['id']), $post);
 		}
 
+		// Add updated_on timestamp
+		$post['updated_on'] = $updated_on;
+
 		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode(array_filter($post))) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
 		$id = (int) $post['id'];
 
+		// Dual-write pattern: Sync to Typesense asynchronously
+		if ($this->searchEnabled && $posttype !== 'webapp') {
+			$this->syncToTypesense($post, $is_new_record);
+		}
+
 		return $id;
+	}
+
+	/**
+	 * Sync object to Typesense search index
+	 */
+	private function syncToTypesense($object, $isNew = false)
+	{
+		if (!$this->searchEnabled) {
+			return;
+		}
+
+		try {
+			if ($isNew) {
+				$result = $this->typesense->indexDocument($object);
+			} else {
+				$result = $this->typesense->updateDocument($object);
+			}
+
+			if (!$result) {
+				// If sync fails, add to dead letter queue for retry
+				$this->addToDeadLetterQueue($object, $isNew ? 'create' : 'update');
+			}
+		} catch (Exception $e) {
+			error_log("Failed to sync object {$object['id']} to Typesense: " . $e->getMessage());
+			$this->addToDeadLetterQueue($object, $isNew ? 'create' : 'update');
+		}
+	}
+
+	/**
+	 * Add failed sync operations to dead letter queue for retry
+	 */
+	private function addToDeadLetterQueue($object, $operation)
+	{
+		$sql = new MySQL();
+		$queueData = [
+			'id' => uniqid(),
+			'type' => 'search_sync_failed',
+			'object_id' => $object['id'],
+			'object_type' => $object['type'],
+			'operation' => $operation,
+			'payload' => json_encode($object),
+			'attempts' => 0,
+			'max_attempts' => 5,
+			'next_retry' => time() + 300, // Retry in 5 minutes
+			'created_on' => time(),
+			'updated_on' => time()
+		];
+
+		$sql->executeSQL("INSERT INTO `data` (`content`, `created_on`, `updated_on`) VALUES ('" . 
+			mysqli_real_escape_string($sql->databaseLink, json_encode($queueData)) . 
+			"', '" . time() . "', '" . time() . "')");
+	}
+
+	/**
+	 * Process dead letter queue for failed search sync operations
+	 */
+	public function processSearchSyncQueue($batchSize = 50)
+	{
+		if (!$this->searchEnabled) {
+			return;
+		}
+
+		$sql = new MySQL();
+		$currentTime = time();
+
+		// Get failed sync operations ready for retry
+		$failedSyncs = $sql->executeSQL("
+			SELECT * FROM `data` 
+			WHERE `content`->>'$.type' = 'search_sync_failed' 
+			AND `content`->>'$.next_retry' <= '$currentTime'
+			AND `content`->>'$.attempts' < `content`->>'$.max_attempts'
+			ORDER BY `created_on` ASC 
+			LIMIT $batchSize
+		");
+
+		if (!$failedSyncs) {
+			return;
+		}
+
+		foreach ($failedSyncs as $syncRecord) {
+			$syncData = json_decode($syncRecord['content'], true);
+			$attempts = (int)$syncData['attempts'] + 1;
+
+			try {
+				$object = json_decode($syncData['payload'], true);
+				$success = false;
+
+				switch ($syncData['operation']) {
+					case 'create':
+						$success = $this->typesense->indexDocument($object);
+						break;
+					case 'update':
+						$success = $this->typesense->updateDocument($object);
+						break;
+					case 'delete':
+						$success = $this->typesense->deleteDocument($syncData['object_id'], $syncData['object_type']);
+						break;
+				}
+
+				if ($success) {
+					// Remove from queue on success
+					$sql->executeSQL("DELETE FROM `data` WHERE `id` = '{$syncRecord['id']}'");
+				} else {
+					// Update retry info
+					$nextRetry = time() + (300 * $attempts); // Exponential backoff
+					$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, 
+						'$.attempts', '$attempts',
+						'$.next_retry', '$nextRetry',
+						'$.updated_on', '" . time() . "'
+					) WHERE `id` = '{$syncRecord['id']}'");
+				}
+
+			} catch (Exception $e) {
+				error_log("Queue processing error for sync ID {$syncRecord['id']}: " . $e->getMessage());
+				
+				// Update retry info
+				$nextRetry = time() + (300 * $attempts);
+				$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, 
+					'$.attempts', '$attempts',
+					'$.next_retry', '$nextRetry',
+					'$.updated_on', '" . time() . "'
+				) WHERE `id` = '{$syncRecord['id']}'");
+			}
+		}
 	}
 
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
@@ -134,6 +284,14 @@ class Core {
 		} else {
 			$meta_value = $sql->databaseLink->real_escape_string($meta_value);
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
+		}
+
+		// Sync updated object to Typesense
+		if ($this->searchEnabled) {
+			$updatedObject = $this->getObject($id);
+			if ($updatedObject && $updatedObject['type'] !== 'webapp') {
+				$this->syncToTypesense($updatedObject, false);
+			}
 		}
 
 		return 1;
@@ -311,6 +469,10 @@ class Core {
 			return false;
 		}
 
+		// Get object info before deletion for Typesense sync
+		$objectToDelete = $this->getObject($id);
+		$objectType = $this->getAttribute($id, 'type');
+
 		$t = $this->getAttribute($id, 'type');
 		if ($t == 'deleted_record') {
 			if (($this->getAttribute($id, 'deleted_type') ?? '') == 'file_record') {
@@ -318,15 +480,47 @@ class Core {
 			}
 
 			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
+			
+			// Remove from Typesense for permanent deletions
+			if ($this->searchEnabled && $objectToDelete) {
+				$deletedType = $this->getAttribute($id, 'deleted_type');
+				if ($deletedType && $deletedType !== 'webapp') {
+					try {
+						$this->typesense->deleteDocument($id, $deletedType);
+					} catch (Exception $e) {
+						error_log("Failed to delete from Typesense: " . $e->getMessage());
+						$this->addToDeadLetterQueue(['id' => $id, 'type' => $deletedType], 'delete');
+					}
+				}
+			}
 		}
 		else if ($types['webapp']['soft_delete_records'] ?? false) {
 			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
+			
+			// For soft deletes, remove from search index but keep in dead letter queue for potential restoration
+			if ($this->searchEnabled && $objectType !== 'webapp') {
+				try {
+					$this->typesense->deleteDocument($id, $objectType);
+				} catch (Exception $e) {
+					error_log("Failed to delete from Typesense: " . $e->getMessage());
+				}
+			}
 		} else {
 			if ($t == 'file_record') {
 				$uploads->deleteFileRecord($this->getObject($id));
 			}
 
 			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
+			
+			// Remove from Typesense for permanent deletions
+			if ($this->searchEnabled && $objectType !== 'webapp') {
+				try {
+					$this->typesense->deleteDocument($id, $objectType);
+				} catch (Exception $e) {
+					error_log("Failed to delete from Typesense: " . $e->getMessage());
+					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
+				}
+			}
 		}
 
 		return true;
@@ -339,32 +533,131 @@ class Core {
 
 		$types = $config->getTypes();
 		$t = $this->getAttribute($ids[0], 'type');
-		$ids = implode(',', $ids);
+		$ids_string = implode(',', $ids);
+
+		// Get objects info for Typesense sync
+		$objectsToDelete = [];
+		if ($this->searchEnabled && $t !== 'webapp') {
+			$objectsToDelete = $this->getObjects($ids_string);
+		}
 
 		if ($t == 'deleted_record') {
-			if (($this->getAttribute($id, 'deleted_type') ?? '') == 'file_record') {
-				$objects = $this->getObjects($ids);
+			if (($this->getAttribute($ids[0], 'deleted_type') ?? '') == 'file_record') {
+				$objects = $this->getObjects($ids_string);
 				foreach ($objects as $object) {
 					$uploads->deleteFileRecord($object);
 				}
 			}
-			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
+			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids_string)");
 		}
 		else if ($types['webapp']['soft_delete_records'] ?? false) {
 			// soft delete
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids)");
+			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids_string)");
 		} else {
 			if ($t == 'file_record') {
-				$objects = $this->getObjects($ids);
+				$objects = $this->getObjects($ids_string);
 				foreach ($objects as $object) {
 					$uploads->deleteFileRecord($object);
 				}
 			}
 			// perma delete
-			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids)");
+			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids_string)");
+		}
+
+		// Sync deletions to Typesense
+		if ($this->searchEnabled && !empty($objectsToDelete)) {
+			foreach ($objectsToDelete as $object) {
+				if ($object['type'] !== 'webapp') {
+					try {
+						$this->typesense->deleteDocument($object['id'], $object['type']);
+					} catch (Exception $e) {
+						error_log("Failed to delete from Typesense: " . $e->getMessage());
+						$this->addToDeadLetterQueue(['id' => $object['id'], 'type' => $object['type']], 'delete');
+					}
+				}
+			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Search objects using Typesense with fallback to database
+	 */
+	public function searchObjects($query, $options = [])
+	{
+		// Try Typesense first if enabled
+		if ($this->searchEnabled && !empty(trim($query))) {
+			try {
+				$searchResults = $this->typesense->search($query, $options);
+				
+				if ($searchResults && !empty($searchResults['hits'])) {
+					// Transform Typesense results to match expected format
+					$ids = array_map(function($hit) {
+						return ['id' => (int)$hit['document']['id']];
+					}, $searchResults['hits']);
+					
+					// Get full objects from database to maintain data consistency
+					$objects = $this->getObjects($ids);
+					
+					return [
+						'objects' => $objects,
+						'total_found' => $searchResults['found'] ?? 0,
+						'search_time_ms' => $searchResults['search_time_ms'] ?? 0,
+						'facet_counts' => $searchResults['facet_counts'] ?? [],
+						'source' => 'typesense'
+					];
+				}
+			} catch (Exception $e) {
+				error_log("Typesense search failed, falling back to database: " . $e->getMessage());
+			}
+		}
+		
+		// Fallback to database search
+		return $this->searchObjectsDatabase($query, $options);
+	}
+
+	/**
+	 * Database-based search fallback
+	 */
+	private function searchObjectsDatabase($query, $options = [])
+	{
+		$type = $options['type'] ?? null;
+		$limit = $options['limit'] ?? "0, 25";
+		$sort_field = $options['sort_field'] ?? 'id';
+		$sort_order = $options['sort_order'] ?? 'DESC';
+		
+		$search_array = ['type' => $type];
+		
+		// Simple full-text search across common fields
+		if (!empty(trim($query))) {
+			$search_array['search_terms'] = explode(' ', trim($query));
+		}
+		
+		$ids = $this->getIDs($search_array, $limit, $sort_field, $sort_order, 
+			$options['show_public_objects_only'] ?? true, [], true);
+			
+		if ($ids) {
+			$objects = $this->getObjects($ids);
+			$totalCount = $this->getIDsTotalCount($search_array, $limit, $sort_field, $sort_order, 
+				$options['show_public_objects_only'] ?? true, [], true);
+				
+			return [
+				'objects' => $objects,
+				'total_found' => $totalCount,
+				'search_time_ms' => 0,
+				'facet_counts' => [],
+				'source' => 'database'
+			];
+		}
+		
+		return [
+			'objects' => [],
+			'total_found' => 0,
+			'search_time_ms' => 0,
+			'facet_counts' => [],
+			'source' => 'database'
+		];
 	}
 
 	public function getIDs(

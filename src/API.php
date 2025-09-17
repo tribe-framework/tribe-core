@@ -452,6 +452,12 @@ class API {
             return;
         }
 
+        // Handle search endpoint
+        if ($this->type === 'search') {
+            $this->handleSearchEndpoint();
+            return;
+        }
+
         // version 1.1
         $linked_modules = $this->config->getTypeLinkedModules($this->type);
 
@@ -789,6 +795,129 @@ class API {
                 die();
             }
         }
+    }
+
+    /**
+     * Handle search endpoint /api/v1.1/search
+     */
+    private function handleSearchEndpoint()
+    {
+        if (!$this->method('GET')) {
+            $error = [
+                'errors' => [[
+                    'status' => '405',
+                    'title' => 'Method Not Allowed',
+                    'detail' => 'Search endpoint only supports GET method'
+                ]]
+            ];
+            $this->json($error)->send(405);
+        }
+
+        $query = $_GET['q'] ?? '';
+        $type = $_GET['type'] ?? null;
+        $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]);
+        $per_page = filter_var($_GET['per_page'] ?? 25, FILTER_VALIDATE_INT, ['options' => ['default' => 25, 'min_range' => 1, 'max_range' => 100]]);
+        $sort_by = $_GET['sort_by'] ?? null;
+        $facet_by = $_GET['facet_by'] ?? null;
+
+        // Validate query
+        if (empty(trim($query))) {
+            $error = [
+                'errors' => [[
+                    'status' => '400',
+                    'title' => 'Bad Request',
+                    'detail' => 'Search query parameter "q" is required and cannot be empty'
+                ]]
+            ];
+            $this->json($error)->send(400);
+        }
+
+        // Validate type if provided
+        if ($type) {
+            $types = $this->config->getTypes();
+            if (!isset($types[$type])) {
+                $error = [
+                    'errors' => [[
+                        'status' => '400',
+                        'title' => 'Bad Request',
+                        'detail' => "Invalid type '{$type}'. Available types: " . implode(', ', array_keys($types))
+                    ]]
+                ];
+                $this->json($error)->send(400);
+            }
+        }
+
+        // Build search options
+        $searchOptions = [
+            'type' => $type,
+            'page' => $page,
+            'per_page' => $per_page,
+            'show_public_only' => !$this->thisRequestHasApiAccess,
+        ];
+
+        // Add sorting if specified
+        if ($sort_by) {
+            $searchOptions['sort_by'] = $sort_by;
+        }
+
+        // Add faceting if specified
+        if ($facet_by) {
+            $searchOptions['facet_by'] = $facet_by;
+        }
+
+        // Add additional filters from query parameters
+        $filters = [];
+        foreach ($_GET as $key => $value) {
+            if (!in_array($key, ['q', 'type', 'page', 'per_page', 'sort_by', 'facet_by']) && !empty($value)) {
+                $filters[$key] = $value;
+            }
+        }
+        
+        if (!empty($filters)) {
+            $searchOptions['filters'] = $filters;
+        }
+
+        // Perform search
+        $searchResults = $this->core->searchObjects($query, $searchOptions);
+
+        // Transform results to JSON:API format
+        $documents = [];
+        $i = 0;
+        
+        if (!empty($searchResults['objects'])) {
+            foreach ($searchResults['objects'] as $object) {
+                $document = new ResourceDocument($object['type'], $object['id']);
+                $document->add('modules', $object);
+                $document->add('slug', $object['slug'] ?? '');
+                
+                // Add search highlighting if available
+                if (isset($searchResults['highlights']) && isset($searchResults['highlights'][$object['id']])) {
+                    $document->add('search_highlights', $searchResults['highlights'][$object['id']]);
+                }
+                
+                $documents[] = $document;
+            }
+        }
+
+        $document = CollectionDocument::fromResources(...$documents);
+
+        // Add search metadata
+        $searchMeta = [
+            'total_found' => $searchResults['total_found'] ?? 0,
+            'search_time_ms' => $searchResults['search_time_ms'] ?? 0,
+            'search_source' => $searchResults['source'] ?? 'unknown',
+            'query' => $query,
+            'page' => $page,
+            'per_page' => $per_page,
+        ];
+
+        // Add facet counts if available
+        if (!empty($searchResults['facet_counts'])) {
+            $searchMeta['facet_counts'] = $searchResults['facet_counts'];
+        }
+
+        $document->addMeta('search', $searchMeta);
+        $document->sendResponse();
     }
 
     public function pushTypesObject($object)
