@@ -148,10 +148,7 @@ class API {
         $is_tribe_domain = false;
         if (!empty($request_domain)) {
             $tribe_domains = [
-                $_ENV['TRIBE_BARE_URL'],
-                $_ENV['JUNCTION_BARE_URL'],
-                $_ENV['DIST_BARE_URL'],
-                $_ENV['DIST_PHP_BARE_URL']
+                $_ENV['BARE_URL']
             ];
 
             foreach ($tribe_domains as $domain) {
