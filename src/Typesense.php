@@ -16,8 +16,8 @@ class Typesense {
             'api_key' => $_ENV['TYPESENSE_API_KEY'] ?? 'xyz',
             'nodes' => [
                 [
-                    'host' => $_ENV['TYPESENSE_HOST'] ?? 'localhost',
-                    'port' => $_ENV['TYPESENSE_PORT'] ?? '12006',
+                    'host' => $_ENV['PROJECT_NAME'].'_typesense',
+                    'port' => $_ENV['TYPESENSE_INTERNAL_PORT'] ?? '8108',
                     'protocol' => $_ENV['TYPESENSE_PROTOCOL'] ?? 'http'
                 ]
             ],
