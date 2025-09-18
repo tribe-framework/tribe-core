@@ -3,6 +3,7 @@ namespace Tribe;
 
 use Typesense\Client;
 use Typesense\Exceptions\TypesenseClientError;
+use Symfony\Component\HttpClient\HttplugClient;
 
 class Typesense {
     private $client;
@@ -21,6 +22,7 @@ class Typesense {
                     'protocol' => $_ENV['TYPESENSE_PROTOCOL'] ?? 'http'
                 ]
             ],
+            'client' => new HttplugClient(),
             'connection_timeout_seconds' => 30,
             'healthcheck_interval_seconds' => 2,
             'num_retries' => 3,
