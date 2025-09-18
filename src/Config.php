@@ -3,6 +3,11 @@ namespace Tribe;
 
 class Config {
 
+	public function projectRoot()
+	{
+	    return $_SERVER['DOCUMENT_ROOT'];
+	}
+
 	public function getTypeSchema($type)
 	{
 		$types = $this->getTypes();
@@ -52,7 +57,7 @@ class Config {
 	}
 
 	public function newestValidTypesInUploads() {
-		$folder_path = 'uploads/types';
+		$folder_path = $this->projectRoot().'/uploads/types';
 
 		if (!is_dir($folder_path)) {
 			mkdir($folder_path, 0755, true);
