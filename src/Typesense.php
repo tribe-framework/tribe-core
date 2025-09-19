@@ -17,8 +17,7 @@ class Typesense {
             'nodes' => [
                 [
                     'host' => $_ENV['PROJECT_NAME'].'_typesense',
-                    'port' => $_ENV['TYPESENSE_INTERNAL_PORT'] ?? '8108',
-                    'protocol' => $_ENV['TYPESENSE_PROTOCOL'] ?? 'http'
+                    'port' => '8108',
                 ]
             ],
         ]);
