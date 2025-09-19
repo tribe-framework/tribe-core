@@ -1,9 +1,8 @@
 <?php
 namespace Tribe;
 
-use Typesense\Client;
-use Typesense\Exceptions\TypesenseClientError;
-use Symfony\Component\HttpClient\HttplugClient;
+use \Typesense\Client;
+use \Typesense\Exceptions\TypesenseClientError;
 
 class Typesense {
     private $client;
@@ -22,11 +21,6 @@ class Typesense {
                     'protocol' => $_ENV['TYPESENSE_PROTOCOL'] ?? 'http'
                 ]
             ],
-            'client' => new HttplugClient(),
-            'connection_timeout_seconds' => 30,
-            'healthcheck_interval_seconds' => 2,
-            'num_retries' => 3,
-            'retry_interval_seconds' => 0.01,
         ]);
     }
     
@@ -51,17 +45,12 @@ class Typesense {
             // Collection exists, check if schema needs updating
             return $this->updateCollectionIfNeeded($collectionName, $schema, $existing);
         } catch (TypesenseClientError $e) {
-            if ($e->getCode() === 404) {
-                // Collection doesn't exist, create new one
-                try {
-                    $result = $this->client->collections->create($schema);
-                    return $result;
-                } catch (TypesenseClientError $e) {
-                    error_log("Failed to create collection '{$collectionName}': " . $e->getMessage());
-                    return false;
-                }
-            } else {
-                error_log("Error checking collection '{$collectionName}': " . $e->getMessage());
+            // Collection doesn't exist, create new one
+            try {
+                $result = $this->client->collections->create($schema);
+                return $result;
+            } catch (TypesenseClientError $e) {
+                error_log("Failed to create collection '{$collectionName}': " . $e->getMessage());
                 return false;
             }
         }
@@ -77,7 +66,6 @@ class Typesense {
             ['name' => 'id', 'type' => 'int64', 'facet' => false],
             ['name' => 'type', 'type' => 'string', 'facet' => true],
             ['name' => 'slug', 'type' => 'string', 'facet' => false],
-            ['name' => 'content_privacy', 'type' => 'string', 'facet' => true],
             ['name' => 'created_on', 'type' => 'int64', 'facet' => false],
             ['name' => 'updated_on', 'type' => 'int64', 'facet' => false],
             ['name' => 'user_id', 'type' => 'int64', 'facet' => true, 'optional' => true],
@@ -482,11 +470,11 @@ class Typesense {
             
             if (!empty($missingFields)) {
                 // Add missing fields
+                $fields = [];
                 foreach ($newSchema['fields'] as $field) {
-                    if (in_array($field['name'], $missingFields)) {
-                        $this->client->collections[$collectionName]->fields->create($field);
-                    }
+                    $fields[] = $field;
                 }
+                $this->client->collections[$collectionName]->update($fields);
             }
             
             return true;
