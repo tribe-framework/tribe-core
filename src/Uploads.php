@@ -14,6 +14,7 @@ class Uploads {
 			mkdir($folder_path . '/lg', 0755, true);
 			mkdir($folder_path . '/xl', 0755, true);
 			mkdir($folder_path . '/hls', 0755, true);
+			mkdir($folder_path . '/transcripts', 0755, true);
 		}
 
 		return array('upload_dir' => $folder_path, 'upload_url' => '/'.$folder_path);
@@ -117,6 +118,22 @@ class Uploads {
 			}
 		}
 
+		// Check for transcript files for audio/video
+		if (preg_match('/\.(mp4|mov|avi|mkv|webm|mp3|wav|m4a|ogg|flac)$/i', $file_url)) {
+			$transcript_formats = ['txt', 'vtt', 'srt', 'json'];
+			$filename_base = pathinfo($filename, PATHINFO_FILENAME);
+			
+			foreach ($transcript_formats as $format) {
+				$transcript_path = '/uploads/' . $year . '/' . $month . '/' . $day . '/transcripts/' . $filename_base . '.' . $format;
+				$transcript_url = '/uploads/' . $year . '/' . $month . '/' . $day . '/transcripts/' . $filename_base . '.' . $format;
+				
+				if (file_exists($transcript_path)) {
+					$file_arr['path']['transcript_' . $format] = $transcript_path;
+					$file_arr['url']['transcript_' . $format] = $transcript_url;
+				}
+			}
+		}
+
 		return $file_arr;
 	}
 
@@ -157,6 +174,20 @@ class Uploads {
 					}
 				}
 				rmdir($hls_dir);
+			}
+		}
+
+		// Delete transcript files
+		if ($object['file']['transcript_txt']['url'] ?? false) {
+			$transcript_dir = dirname($object['file']['transcript_txt']['url']);
+			if (is_dir($transcript_dir)) {
+				$files = glob($transcript_dir . '/*');
+				foreach($files as $file) {
+					if(is_file($file)) {
+						unlink($file);
+					}
+				}
+				rmdir($transcript_dir);
 			}
 		}
 	}
@@ -523,6 +554,231 @@ class Uploads {
 		return $qualities;
 	}
 
+	/**
+	 * Get Whisper service configuration
+	 */
+	private function getWhisperConfig() {
+		$whisper_host = $_ENV['PROJECT_NAME'] . '_whisper';
+		$whisper_port = $_ENV['WHISPER_PORT'] ?? '12008';
+		return [
+			'host' => $whisper_host,
+			'port' => '9000', // Internal port within container
+			'url' => "http://{$whisper_host}:9000"
+		];
+	}
+
+	/**
+	 * Transcribe audio/video file using Whisper
+	 */
+	public function transcribeWithWhisper($file_path, $output_dir, $filename_base, $output_format = 'txt') {
+		if (!file_exists($file_path)) {
+			return ['status' => 'error', 'message' => 'File not found'];
+		}
+
+		$whisper_config = $this->getWhisperConfig();
+		$supported_formats = ['txt', 'vtt', 'srt', 'json'];
+		
+		if (!in_array($output_format, $supported_formats)) {
+			$output_format = 'txt';
+		}
+
+		// Create transcripts directory if it doesn't exist
+		if (!is_dir($output_dir)) {
+			mkdir($output_dir, 0755, true);
+		}
+
+		// Build multipart form data
+		$boundary = uniqid();
+		$data = '';
+		
+		// Add audio file
+		$data .= "--{$boundary}\r\n";
+		$data .= "Content-Disposition: form-data; name=\"audio_file\"; filename=\"" . basename($file_path) . "\"\r\n";
+		$data .= "Content-Type: " . mime_content_type($file_path) . "\r\n\r\n";
+		$data .= file_get_contents($file_path);
+		$data .= "\r\n";
+
+		// Add task type
+		$data .= "--{$boundary}\r\n";
+		$data .= "Content-Disposition: form-data; name=\"task\"\r\n\r\n";
+		$data .= "transcribe\r\n";
+
+		// Add language (auto-detect)
+		$data .= "--{$boundary}\r\n";
+		$data .= "Content-Disposition: form-data; name=\"language\"\r\n\r\n";
+		$data .= "auto\r\n";
+
+		// Add output format
+		$data .= "--{$boundary}\r\n";
+		$data .= "Content-Disposition: form-data; name=\"output\"\r\n\r\n";
+		$data .= $output_format . "\r\n";
+
+		$data .= "--{$boundary}--\r\n";
+
+		// cURL options
+		$ch = curl_init();
+		curl_setopt_array($ch, [
+			CURLOPT_URL => $whisper_config['url'] . '/asr',
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => $data,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_TIMEOUT => 300, // 5 minutes timeout
+			CURLOPT_HTTPHEADER => [
+				"Content-Type: multipart/form-data; boundary={$boundary}",
+				"Content-Length: " . strlen($data)
+			]
+		]);
+
+		$response = curl_exec($ch);
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$curl_error = curl_error($ch);
+		curl_close($ch);
+
+		if ($curl_error) {
+			return [
+				'status' => 'error',
+				'message' => 'cURL error: ' . $curl_error
+			];
+		}
+
+		if ($http_code !== 200) {
+			return [
+				'status' => 'error',
+				'message' => 'HTTP error: ' . $http_code,
+				'response' => $response
+			];
+		}
+
+		$result = json_decode($response, true);
+		
+		if (!$result) {
+			return [
+				'status' => 'error',
+				'message' => 'Invalid JSON response',
+				'response' => $response
+			];
+		}
+
+		// Save transcript to file
+		$transcript_file = $output_dir . '/' . $filename_base . '.' . $output_format;
+		
+		if ($output_format === 'json') {
+			$transcript_content = json_encode($result, JSON_PRETTY_PRINT);
+		} else {
+			$transcript_content = $result['text'] ?? '';
+		}
+
+		if (file_put_contents($transcript_file, $transcript_content) === false) {
+			return [
+				'status' => 'error',
+				'message' => 'Failed to save transcript file'
+			];
+		}
+
+		return [
+			'status' => 'success',
+			'file_path' => $transcript_file,
+			'file_url' => str_replace('/var/www/html/', '/', $transcript_file),
+			'format' => $output_format,
+			'text' => $transcript_content
+		];
+	}
+
+	/**
+	 * Transcribe file in all supported formats
+	 */
+	public function transcribeAllFormats($file_path, $output_dir, $filename_base) {
+		$formats = ['txt', 'vtt', 'srt', 'json'];
+		$results = [];
+
+		foreach ($formats as $format) {
+			$result = $this->transcribeWithWhisper($file_path, $output_dir, $filename_base, $format);
+			$results[$format] = $result;
+			
+			// Add small delay between requests
+			usleep(100000); // 0.1 seconds
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Start background transcription for a file
+	 */
+	public function startBackgroundTranscription($file_path, $output_dir, $filename_base) {
+		// Create a script that will handle the transcription
+		$script_content = "#!/bin/bash\n";
+		$script_content .= "php -r \"\n";
+		$script_content .= "require_once '/var/www/html/vendor/autoload.php';\n";
+		$script_content .= "use Tribe\\Uploads;\n";
+		$script_content .= "\$uploads = new Uploads();\n";
+		$script_content .= "\$uploads->transcribeAllFormats('{$file_path}', '{$output_dir}', '{$filename_base}');\n";
+		$script_content .= "\" > /tmp/whisper_{$filename_base}.log 2>&1 &\n";
+
+		$script_file = "/tmp/transcribe_{$filename_base}.sh";
+		file_put_contents($script_file, $script_content);
+		chmod($script_file, 0755);
+
+		// Execute the script in background
+		exec("bash {$script_file} &");
+
+		return [
+			'status' => 'started',
+			'script_file' => $script_file,
+			'log_file' => "/tmp/whisper_{$filename_base}.log"
+		];
+	}
+
+	/**
+	 * Check transcription status
+	 */
+	public function getTranscriptionStatus($filename_base) {
+		$log_file = "/tmp/whisper_{$filename_base}.log";
+		
+		if (!file_exists($log_file)) {
+			return [
+				'status' => 'not_started',
+				'progress' => 0
+			];
+		}
+
+		$log_content = file_get_contents($log_file);
+		
+		// Check for completion indicators
+		if (strpos($log_content, '"status":"success"') !== false) {
+			return [
+				'status' => 'completed',
+				'progress' => 100
+			];
+		}
+		
+		if (strpos($log_content, '"status":"error"') !== false) {
+			return [
+				'status' => 'failed',
+				'progress' => 0,
+				'error' => $this->extractTranscriptionError($log_content)
+			];
+		}
+		
+		return [
+			'status' => 'processing',
+			'progress' => 50 // Rough estimate
+		];
+	}
+
+	/**
+	 * Extract transcription error from log
+	 */
+	private function extractTranscriptionError($log_content) {
+		$lines = explode("\n", $log_content);
+		foreach (array_reverse($lines) as $line) {
+			if (strpos($line, 'error') !== false || strpos($line, 'Error') !== false) {
+				return trim($line);
+			}
+		}
+		return 'Unknown transcription error';
+	}
+
 	public function handleUpload(array $files_server_arr, array $post_server_arr = [], array $get_server_arr = []) {
 
 		if ($post_server_arr['url'] ?? false)
@@ -629,6 +885,30 @@ class Uploads {
 					'filename' => $filename_base . '.m3u8',
 					'type' => 'adaptive', // Indicates this supports multiple qualities
 					'qualities' => array_keys($this->getVideoQualitySettings())
+				);
+
+				// Start background transcription for video files
+				$transcript_output_dir = $uploader_path['upload_dir'] . '/transcripts';
+				$transcription_result = $this->startBackgroundTranscription($input_path, $transcript_output_dir, $filename_base);
+				
+				$file['transcription'] = array(
+					'status' => 'processing',
+					'log_file' => $transcription_result['log_file'] ?? null
+				);
+			}
+
+			// Handle audio file transcription
+			else if (in_array(strtolower($file_extension), ['mp3', 'wav', 'm4a', 'ogg', 'flac', 'aac'])) {
+				$input_path = $uploader_path['upload_dir'].'/'.$handle->file_dst_name;
+				$transcript_output_dir = $uploader_path['upload_dir'] . '/transcripts';
+				$filename_base = $file['name'];
+				
+				// Start background transcription for audio files
+				$transcription_result = $this->startBackgroundTranscription($input_path, $transcript_output_dir, $filename_base);
+				
+				$file['transcription'] = array(
+					'status' => 'processing',
+					'log_file' => $transcription_result['log_file'] ?? null
 				);
 			}
 
