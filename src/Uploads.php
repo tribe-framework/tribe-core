@@ -328,7 +328,7 @@ class Uploads {
 					'label' => $settings['label'],
 					'resolution' => $settings['resolution'],
 					'bitrate' => $settings['bitrate_video'],
-					'playlist' => $playlist_name
+					'filename' => $playlist_name
 				];
 				
 				$stream_index++;
@@ -351,7 +351,7 @@ class Uploads {
 				'label' => 'Original',
 				'resolution' => $source_width . 'x' . $source_height,
 				'bitrate' => '5000k',
-				'playlist' => $playlist_name
+				'filename' => $playlist_name
 			];
 		}
 		
@@ -360,7 +360,7 @@ class Uploads {
 		foreach ($output_options as $output) {
 			$complete_command .= " " . $output;
 		}
-		$complete_command .= " 2>/tmp/ffmpeg_{$filename_base}.log &";
+		$complete_command .= " 2>/tmp/ffmpeg_{$filename_base}.log > /dev/null 2>&1 &";
 		
 		// Execute FFmpeg command
 		exec($complete_command);
@@ -384,7 +384,7 @@ class Uploads {
 			$bitrate_bps = $bitrate_kbps * 1000;
 			
 			$content .= "#EXT-X-STREAM-INF:BANDWIDTH={$bitrate_bps},RESOLUTION={$quality_info['resolution']},NAME=\"{$quality_info['label']}\"\n";
-			$content .= $quality_info['playlist'] . "\n\n";
+			$content .= $quality_info['filename'] . "\n\n";
 		}
 		
 		// Write master playlist file
@@ -468,7 +468,6 @@ class Uploads {
 		$progress = $this->extractProgressFromLog($log_content);
 		
 		return [
-			'status' => 'processing',
 			'progress' => $progress,
 			'qualities' => $this->getAvailableQualities($filename_base)
 		];
@@ -626,9 +625,8 @@ class Uploads {
 				
 				// Add HLS info to file array
 				$file['hls'] = array(
-					'url' => str_replace('/var/www/html', '', $hls_url),
-					'status' => 'processing',
-					'playlist' => $filename_base . '.m3u8',
+					'url' => '/'.$hls_url,
+					'filename' => $filename_base . '.m3u8',
 					'type' => 'adaptive', // Indicates this supports multiple qualities
 					'qualities' => array_keys($this->getVideoQualitySettings())
 				);
