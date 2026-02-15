@@ -148,6 +148,177 @@ class Core {
 	}
 
 	/**
+	 * Batch-insert/update multiple objects in a single operation to reduce SQL queries.
+	 *
+	 * Instead of N×(INSERT + UPDATE) round-trips that pushObject would perform in a loop,
+	 * this method batches new-row creation into a single multi-row INSERT and all content
+	 * updates into a single bulk UPDATE via INSERT…ON DUPLICATE KEY UPDATE.
+	 *
+	 * @param  array  $posts            Array of post arrays (same format pushObject accepts).
+	 * @param  bool   $overwrite_posts  When true, existing records are fully replaced instead
+	 *                                  of merged with their current stored data.
+	 * @param  int    $chunk_size       How many rows to batch per SQL statement (default 500).
+	 * @return array  Array of resulting IDs in the same order as the input $posts.
+	 */
+	public function pushObjects(array $posts, bool $overwrite_posts = false, int $chunk_size = 500): array
+	{
+		if (empty($posts)) {
+			return [];
+		}
+
+		$sql    = new MySQL();
+		$config = new Config();
+		$types  = $config->getTypes();
+
+		$updated_on = time();
+		$result_ids = [];
+
+		// ── 1. Pre-process every post (type-cast, slug, uniqueness) ────────
+		$new_posts      = []; // posts that need an INSERT to get an ID
+		$existing_posts = []; // posts that already have an ID
+
+		foreach ($posts as $index => $post) {
+			$posttype = $post['type'];
+
+			// Get title/primary module info
+			$title_slug   = null;
+			$title_unique = false;
+			if ($posttype && isset($types[$posttype])) {
+				$title_module = $config->getTypePrimaryModule($posttype, $types);
+				$title_slug   = $title_module['slug'];
+				$title_unique = $title_module['unique'];
+			}
+
+			// ID type correction
+			if ($post['id'] ?? false) {
+				$post['id'] = (int) $post['id'];
+			}
+
+			// Variable type casting from module definitions
+			if (isset($types[$posttype]['modules'])) {
+				foreach ($types[$posttype]['modules'] as $module) {
+					if ($module['var_type'] ?? false) {
+						$slug = $module['input_slug'];
+						if ($module['var_type'] == 'int') {
+							$post[$slug] = (int) ($post[$slug] ?? 0);
+						} else if ($module['var_type'] == 'float') {
+							$post[$slug] = (float) ($post[$slug] ?? 0);
+						} else if ($module['var_type'] == 'bool') {
+							$post[$slug] = (bool) ($post[$slug] ?? false);
+						}
+					}
+				}
+			}
+
+			// Slug generation
+			if (!trim($post['slug'] ?? '') || ($post['slug_update'] ?? '')) {
+				$_title_slug   = isset($title_slug) ? ($post[$title_slug] ?? '') : '';
+				$_title_unique = $title_unique ?? '';
+				$post['slug']  = $this->slugify($_title_slug, $_title_unique);
+				unset($post['slug_update']);
+			}
+
+			// Title uniqueness check (must remain individual – relies on DB state)
+			if ($title_unique ?? false) {
+				$q = $sql->executeSQL(
+					"SELECT `id` FROM `data` WHERE `type`='" . $post['type'] .
+					"' && `slug`='" . $post['slug'] . "' ORDER BY `id` DESC LIMIT 0,1"
+				);
+				if (is_array($q) && ($q[0]['id'] ?? false) && ($post['id'] ?? null) != $q[0]['id']) {
+					// Conflict – push 0 as the ID for this index (mirrors pushObject returning 0)
+					$result_ids[$index] = 0;
+					continue;
+				}
+			}
+
+			$post['updated_on'] = $updated_on;
+
+			if (!($post['id'] ?? null)) {
+				$new_posts[$index] = $post;
+			} else {
+				$existing_posts[$index] = $post;
+			}
+		}
+
+		// ── 2. Batch-create IDs for all new posts ──────────────────────────
+		if (!empty($new_posts)) {
+			// Single multi-row INSERT to generate IDs
+			$placeholders = implode(',', array_fill(0, count($new_posts), "('$updated_on')"));
+			$sql->executeSQL("INSERT INTO `data` (`created_on`) VALUES $placeholders");
+
+			// Retrieve the generated auto-increment IDs
+			$first_id = $sql->lastInsertID();
+			$i = 0;
+			foreach ($new_posts as $index => &$post) {
+				$post['id']  = $first_id + $i;
+				$post['is_new'] = true;
+				$i++;
+			}
+			unset($post);
+		}
+
+		// ── 3. Merge existing data for updates (unless overwrite) ──────────
+		if (!empty($existing_posts) && !$overwrite_posts) {
+			$ids_csv = implode(',', array_column($existing_posts, 'id'));
+			$current_objects = $this->getObjects($ids_csv); // single SELECT
+
+			foreach ($existing_posts as $index => &$post) {
+				if (isset($current_objects[$post['id']])) {
+					$post = array_merge($current_objects[$post['id']], $post);
+				}
+				$post['is_new'] = false;
+			}
+			unset($post);
+		}
+
+		// ── 4. Batch UPDATE all content via INSERT … ON DUPLICATE KEY ──────
+		$all_posts = $new_posts + $existing_posts; // preserve original indices
+
+		foreach (array_chunk($all_posts, $chunk_size, true) as $chunk) {
+			$values = [];
+			foreach ($chunk as $post) {
+				$id      = (int) $post['id'];
+				$is_new  = $post['is_new'] ?? true;
+				unset($post['is_new']);
+
+				$content = mysqli_real_escape_string(
+					$sql->databaseLink,
+					json_encode(array_filter($post))
+				);
+				$values[] = "($id, '$content', '$updated_on', '$updated_on')";
+			}
+
+			$sql->executeSQL(
+				"INSERT INTO `data` (`id`, `content`, `updated_on`, `created_on`) VALUES " .
+				implode(', ', $values) .
+				" ON DUPLICATE KEY UPDATE `content`=VALUES(`content`), `updated_on`=VALUES(`updated_on`)"
+			);
+		}
+
+		// ── 5. Typesense sync (batched where possible) ─────────────────────
+		if ($this->searchEnabled) {
+			foreach ($all_posts as $index => $post) {
+				unset($post['is_new']);
+				if (($post['type'] ?? '') !== 'webapp') {
+					$is_new = isset($new_posts[$index]);
+					$this->syncToTypesense($post, $is_new);
+				}
+			}
+		}
+
+		// ── 6. Build ordered result array ──────────────────────────────────
+		foreach ($posts as $index => $original_post) {
+			if (!isset($result_ids[$index])) {
+				$merged = $all_posts[$index] ?? null;
+				$result_ids[$index] = $merged ? (int) $merged['id'] : 0;
+			}
+		}
+
+		ksort($result_ids);
+		return array_values($result_ids);
+	}
+
+	/**
 	 * Sync object to Typesense search index
 	 */
 	private function syncToTypesense($object, $isNew = false)
