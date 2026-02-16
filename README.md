@@ -215,6 +215,103 @@ $post = [
 $core->pushObject($post, true);  // Second parameter overwrites
 ```
 
+### Batch Creating/Updating Objects
+
+```php
+// pushObjects - Batch insert/update multiple objects efficiently
+// Reduces SQL queries by batching operations instead of individual pushObject calls
+
+// Create multiple new objects
+$posts = [
+    [
+        'type' => 'post',
+        'title' => 'First Post',
+        'body' => 'Content of first post',
+        'content_privacy' => 'public'
+    ],
+    [
+        'type' => 'post',
+        'title' => 'Second Post',
+        'body' => 'Content of second post',
+        'content_privacy' => 'public'
+    ],
+    [
+        'type' => 'post',
+        'title' => 'Third Post',
+        'body' => 'Content of third post',
+        'content_privacy' => 'draft'
+    ]
+];
+
+$ids = $core->pushObjects($posts);
+// Returns: [123, 124, 125] - Array of IDs in same order as input
+
+// Update existing objects in batch
+$updates = [
+    ['id' => 123, 'type' => 'post', 'title' => 'Updated First'],
+    ['id' => 124, 'type' => 'post', 'title' => 'Updated Second'],
+    ['id' => 125, 'type' => 'post', 'content_privacy' => 'public']
+];
+
+$ids = $core->pushObjects($updates);
+// Only updates provided fields for each object
+
+// Overwrite entire objects (replace all fields)
+$replacements = [
+    ['id' => 123, 'type' => 'post', 'title' => 'New Title', 'body' => 'New body'],
+    ['id' => 124, 'type' => 'post', 'title' => 'Another Title', 'body' => 'Another body']
+];
+
+$ids = $core->pushObjects($replacements, true);  // Second parameter overwrites
+
+// Custom chunk size for very large batches
+$largeDataset = [/* 1000+ objects */];
+$ids = $core->pushObjects($largeDataset, false, 1000);  // Chunk size of 1000
+
+// Mixed new and existing objects
+$mixed = [
+    ['type' => 'post', 'title' => 'New Post'],           // No ID - will create
+    ['id' => 50, 'type' => 'post', 'title' => 'Update'], // Has ID - will update
+    ['type' => 'post', 'title' => 'Another New']         // No ID - will create
+];
+
+$ids = $core->pushObjects($mixed);
+// Returns IDs maintaining input order
+```
+
+**Performance Benefits:**
+
+```php
+// BAD: Individual operations (N queries for N objects)
+foreach ($posts as $post) {
+    $core->pushObject($post);
+}
+
+// GOOD: Batch operation (2-3 queries total regardless of N)
+$core->pushObjects($posts);
+
+// Example: 500 objects
+// pushObject in loop: ~1000 queries (INSERT + UPDATE per object)
+// pushObjects: 3-4 queries (batched INSERTs and UPDATEs)
+```
+
+**Parameters:**
+
+- **$posts** (array): Array of post arrays in same format as pushObject
+- **$overwrite_posts** (bool, default: false): When true, replaces entire object instead of merging
+- **$chunk_size** (int, default: 500): Number of rows to batch per SQL statement
+
+**Return Value:**
+
+- Array of resulting IDs in the same order as input posts
+
+**Notes:**
+
+- All standard pushObject features apply: type casting, slug generation, uniqueness checks
+- Syncs to Typesense automatically (when enabled)
+- Handles mixed new and existing objects seamlessly
+- Use for bulk imports, migrations, or batch updates
+
 ### Reading Objects
 
 ```php
