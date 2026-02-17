@@ -587,7 +587,11 @@ class API {
                 }
 
                 //getting IDs
-                if ($this->ids = $this->core->getIDs(
+                if ($_GET['sql']) {
+                    $this->ids = $this->sql->executeSQL($_GET['sql']);
+                }
+                else {
+                    $this->ids = $this->core->getIDs(
                         $search_array = array_merge(
                             ($_GET['filter'] ?? []),
                             ($_GET['modules'] ?? []),
@@ -600,7 +604,10 @@ class API {
                         $ignore_ids = ($_GET['ignore_ids'] ?? []),
                         $show_partial_search_results = (($_GET['filter'] ?? false) ? boolval(true) : boolval(false)),
                         false, 'LIKE', 'OR', 'AND', ($_GET['range'] ?? [])
-                    ))
+                    );
+                }
+
+                if ($this->ids)
                 {
                     $objectr = $this->core->getObjects($this->ids);
                     $objects = [];
