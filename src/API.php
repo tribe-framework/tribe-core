@@ -752,8 +752,12 @@ class API {
                         false, 'LIKE', 'OR', 'AND', ($_GET['range'] ?? [])
                     );
 
-                    $document->addMeta('total_objects', $totalObjectsCount);
-                    //$document['meta'] = array('total_objects', $totalObjectsCount);
+                    if ($_GET['sql']) {
+                        $ids = $this->sql->executeSQL(explode('LIMIT', $_GET['sql'])[0]);
+                        $document->addMeta('total_objects', count($ids));
+                    }
+                    else
+                        $document->addMeta('total_objects', $totalObjectsCount);
 
                     $document->sendResponse();
                 }
