@@ -523,6 +523,183 @@ class Uploads {
 		return $qualities;
 	}
 
+	/**
+	 * Deploy a dist folder or zip file to /uploads/sites/dist
+	 * Backs up previous version, keeps last 7 backups.
+	 */
+	public function handleDistUpload(array $files_server_arr) {
+		$dist_target   = '/uploads/sites/dist';
+		$sites_dir     = '/uploads/sites';
+		$max_versions  = 7;
+
+		if (empty($files_server_arr['file'])) {
+			return ['status' => 'error', 'error_message' => 'No file received.'];
+		}
+
+		$tmp_path  = $files_server_arr['file']['tmp_name'];
+		$orig_name = $files_server_arr['file']['name'];
+		$mime      = mime_content_type($tmp_path);
+
+		// Determine if it's a zip
+		$is_zip = in_array($mime, ['application/zip', 'application/x-zip-compressed'])
+		          || strtolower(pathinfo($orig_name, PATHINFO_EXTENSION)) === 'zip';
+
+		if (!$is_zip) {
+			return ['status' => 'error', 'error_message' => 'Only .zip files are supported for dist deployment.'];
+		}
+
+		// ── 1. Back up current dist if it exists ─────────────────────────────
+		if (is_dir($dist_target)) {
+			$timestamp   = date('Y-m-d_H-i-s');
+			$backup_path = $sites_dir . '/dist.' . $timestamp;
+			rename($dist_target, $backup_path);
+		}
+
+		// ── 2. Extract zip into a temp dir, then find / move the dist folder ──
+		$extract_tmp = sys_get_temp_dir() . '/dist_upload_' . uniqid();
+		mkdir($extract_tmp, 0755, true);
+
+		$zip = new \ZipArchive();
+		if ($zip->open($tmp_path) !== true) {
+			return ['status' => 'error', 'error_message' => 'Could not open zip file.'];
+		}
+		$zip->extractTo($extract_tmp);
+		$zip->close();
+
+		// Look for a folder named "dist" anywhere in the extracted tree (BFS)
+		$found_dist = $this->findDistFolder($extract_tmp);
+
+		if (!$found_dist) {
+			// Fall back: treat the entire extracted root as the dist content
+			$found_dist = $extract_tmp;
+		}
+
+		// ── 3. Move the found dist content to the target location ─────────────
+		if (!is_dir($sites_dir)) {
+			mkdir($sites_dir, 0755, true);
+		}
+
+		$this->copyDirectory($found_dist, $dist_target);
+		$this->deleteDirectory($extract_tmp);
+
+		// ── 4. Prune versions beyond max_versions ─────────────────────────────
+		$this->pruneDistVersions($sites_dir, $max_versions);
+
+		$versions = $this->getDistVersionsList($sites_dir);
+
+		return [
+			'status'   => 'success',
+			'message'  => 'Dist deployed successfully.',
+			'versions' => $versions,
+		];
+	}
+
+	/**
+	 * Return the list of available dist backup versions (newest first).
+	 */
+	public function getDistVersions() {
+		$sites_dir = '/uploads/sites';
+		return [
+			'status'   => 'success',
+			'versions' => $this->getDistVersionsList($sites_dir),
+		];
+	}
+
+	/**
+	 * Revert to a specific backup version by its timestamp label.
+	 */
+	public function revertDistVersion(string $timestamp) {
+		$sites_dir   = '/uploads/sites';
+		$dist_target = $sites_dir . '/dist';
+		$backup_path = $sites_dir . '/dist.' . $timestamp;
+		$max_versions = 7;
+
+		if (!is_dir($backup_path)) {
+			return ['status' => 'error', 'error_message' => 'Version not found: ' . $timestamp];
+		}
+
+		// Back up current dist before reverting
+		if (is_dir($dist_target)) {
+			$new_backup = $sites_dir . '/dist.' . date('Y-m-d_H-i-s');
+			rename($dist_target, $new_backup);
+		}
+
+		rename($backup_path, $dist_target);
+
+		$this->pruneDistVersions($sites_dir, $max_versions);
+
+		return [
+			'status'   => 'success',
+			'message'  => 'Reverted to version: ' . $timestamp,
+			'versions' => $this->getDistVersionsList($sites_dir),
+		];
+	}
+
+	// ── Private helpers ──────────────────────────────────────────────────────
+
+	private function findDistFolder(string $base): ?string {
+		// BFS through the extracted directory
+		$queue = [$base];
+		while (!empty($queue)) {
+			$dir = array_shift($queue);
+			foreach (scandir($dir) as $entry) {
+				if ($entry === '.' || $entry === '..') continue;
+				$full = $dir . '/' . $entry;
+				if (is_dir($full)) {
+					if (strtolower($entry) === 'dist') return $full;
+					$queue[] = $full;
+				}
+			}
+		}
+		return null;
+	}
+
+	private function copyDirectory(string $src, string $dst): void {
+		if (!is_dir($dst)) mkdir($dst, 0755, true);
+		foreach (scandir($src) as $entry) {
+			if ($entry === '.' || $entry === '..') continue;
+			$s = $src . '/' . $entry;
+			$d = $dst . '/' . $entry;
+			is_dir($s) ? $this->copyDirectory($s, $d) : copy($s, $d);
+		}
+	}
+
+	private function deleteDirectory(string $dir): void {
+		if (!is_dir($dir)) return;
+		foreach (scandir($dir) as $entry) {
+			if ($entry === '.' || $entry === '..') continue;
+			$path = $dir . '/' . $entry;
+			is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
+		}
+		rmdir($dir);
+	}
+
+	private function pruneDistVersions(string $sites_dir, int $max): void {
+		$versions = $this->getDistVersionsList($sites_dir);
+		// versions are newest-first; delete oldest ones beyond $max
+		$to_delete = array_slice($versions, $max);
+		foreach ($to_delete as $v) {
+			$this->deleteDirectory($sites_dir . '/dist.' . $v['timestamp']);
+		}
+	}
+
+	private function getDistVersionsList(string $sites_dir): array {
+		$versions = [];
+		if (!is_dir($sites_dir)) return $versions;
+		foreach (scandir($sites_dir) as $entry) {
+			if (preg_match('/^dist\.(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})$/', $entry, $m)) {
+				$versions[] = [
+					'timestamp' => $m[1],
+					'label'     => str_replace(['_', '-'], [' ', '/'], $m[1]),
+					'path'      => $sites_dir . '/' . $entry,
+				];
+			}
+		}
+		// Sort newest first
+		usort($versions, fn($a, $b) => strcmp($b['timestamp'], $a['timestamp']));
+		return $versions;
+	}
+
 	public function handleUpload(array $files_server_arr, array $post_server_arr = [], array $get_server_arr = []) {
 
 		if ($post_server_arr['url'] ?? false)
