@@ -192,6 +192,9 @@ class Core {
 			// ID type correction
 			if ($post['id'] ?? false) {
 				$post['id'] = (int) $post['id'];
+			} else {
+				// created_on needs to be added when post doesn't have an ID (it is new post)
+				$post['created_on'] = $updated_on;
 			}
 
 			// Variable type casting from module definitions
