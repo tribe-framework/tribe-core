@@ -67,18 +67,11 @@ RUN pecl install imagick \
 # ─── Composer ─────────────────────────────────────────────────────────────────
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# ─── Indexer composer dependencies ───────────────────────────────────────────
-# Installed as root into /app so they're baked into the image.
-# The scripts themselves (index_files.php, watcher.sh) are mounted at runtime
-# via docker-compose volumes so you can edit them without rebuilding.
-WORKDIR /app
-RUN composer init --no-interaction --name="indexer/app" --stability=stable \
- && composer require \
-      typesense/typesense-php \
-      php-http/curl-client \
-      --no-interaction --no-progress
-
 # ─── App setup ────────────────────────────────────────────────────────────────
+# Set the web root as the working directory so that vendor/, _init.php, and
+# the indexer scripts (index_files.php, index_db.php, watcher.sh) all share
+# the same base path. This is required for _init.php and vendor/autoload.php
+# to be resolvable from the indexer scripts at runtime.
 WORKDIR /var/www/html
 
 # Custom PHP configuration
@@ -88,6 +81,19 @@ COPY ./php.ini /usr/local/etc/php/php.ini
 RUN groupadd -g 1000 www \
  && useradd -u 1000 -ms /bin/bash -g www www \
  && chown -R www:www /var/www/html
+
+# ─── Indexer Composer dependencies ───────────────────────────────────────────
+# Installed into /var/www/html so vendor/autoload.php is at the same path
+# that index_files.php and index_db.php expect: /var/www/html/vendor/autoload.php
+# The Tribe app's own composer install (run at container start via docker-compose)
+# will merge its dependencies into this same vendor/ directory via upsert.
+# The scripts themselves (index_files.php, index_db.php, watcher.sh) are mounted
+# at runtime via docker-compose volumes so they can be edited without rebuilding.
+RUN composer init --no-interaction --name="tribe/app" --stability=stable \
+ && composer require \
+      typesense/typesense-php \
+      php-http/curl-client \
+      --no-interaction --no-progress
 
 # ─── supervisord ──────────────────────────────────────────────────────────────
 # supervisord config is mounted at runtime via docker-compose
