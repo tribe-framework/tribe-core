@@ -2,10 +2,14 @@
 
 A PHP-based headless CMS framework providing a JSON API for dynamic content management with flexible content types, authentication, and file handling.
 
+## Dockerfile
+
+The /config/Dockerfile is the one pushed to docker using `docker push tribeframework/tribe-core:latest`
+
 ## Compatibility
 
 - PHP 8.0 or above
-- MySQL 8.x
+- MySQL 9.x
 - Composer for dependency management
 
 ## Installation
