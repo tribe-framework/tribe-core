@@ -55,6 +55,16 @@ class Typesense {
     // ─── Public helpers ───────────────────────────────────────────────────────
 
     /**
+     * Expose the raw Typesense SDK client.
+     * Used by index_db.php and reindex_db.php so they can call the SDK
+     * directly without duplicating connection logic.
+     */
+    public function getClient(): \Typesense\Client
+    {
+        return $this->client;
+    }
+
+    /**
      * Expose collection name so external code (search.php, status.php, …)
      * can reference the same naming convention.
      */

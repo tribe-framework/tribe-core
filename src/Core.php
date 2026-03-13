@@ -32,7 +32,7 @@ class Core {
                     error_log("Typesense is not healthy, disabling search features");
                     $this->searchEnabled = false;
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 error_log("Failed to initialize Typesense: " . $e->getMessage());
                 $this->searchEnabled = false;
             }
@@ -322,29 +322,61 @@ class Core {
 	}
 
 	/**
-	 * Sync object to Typesense search index
+	 * Sync object to Typesense search index.
+	 *
+	 * Strategy (defence-in-depth):
+	 *   1. In-process upsert via Typesense::updateDocument — upsert handles
+	 *      both create and update transparently; no branch on $isNew needed.
+	 *   2. On any failure: enqueue to the DB dead-letter queue for the
+	 *      background retry worker.
+	 *   3. Fire index_db.php as a detached background process for a fast
+	 *      per-record retry (path from INDEX_DB_SCRIPT env var).
+	 *
+	 * $isNew is kept for API compatibility but no longer used for routing.
 	 */
-	private function syncToTypesense($object, $isNew = false)
+	private function syncToTypesense(array $object, bool $isNew = false): void
 	{
 		if (!$this->searchEnabled) {
 			return;
 		}
 
+		$id   = $object['id']   ?? null;
+		$type = $object['type'] ?? null;
+
+		if (!$id || !$type) {
+			error_log("Core::syncToTypesense — skipped: missing id or type.");
+			return;
+		}
+
 		try {
-			if ($isNew) {
-				$result = $this->typesense->indexDocument($object);
-			} else {
-				$result = $this->typesense->updateDocument($object);
-			}
+			// updateDocument uses upsert — safe for both new and existing records
+			$result = $this->typesense->updateDocument($object);
 
 			if (!$result) {
-				// If sync fails, add to dead letter queue for retry
-				$this->addToDeadLetterQueue($object, $isNew ? 'create' : 'update');
+				error_log("Core::syncToTypesense — upsert returned falsy for id={$id}. Queuing.");
+				$this->addToDeadLetterQueue($object, 'upsert');
+				$this->fireIndexDbScript((int)$id);
 			}
-		} catch (Exception $e) {
-			error_log("Failed to sync object {$object['id']} to Typesense: " . $e->getMessage());
-			$this->addToDeadLetterQueue($object, $isNew ? 'create' : 'update');
+		} catch (\Throwable $e) {
+			error_log("Core::syncToTypesense — exception for id={$id}: " . $e->getMessage());
+			$this->addToDeadLetterQueue($object, 'upsert');
+			$this->fireIndexDbScript((int)$id);
 		}
+	}
+
+	/**
+	 * Fire index_db.php as a fire-and-forget background process for a single
+	 * record. Best-effort fast-path retry alongside the dead-letter queue.
+	 * Set INDEX_DB_SCRIPT=/app/index_db.php in the environment to enable.
+	 */
+	private function fireIndexDbScript(int $id): void
+	{
+		$script = getenv('INDEX_DB_SCRIPT') ?: '/app/index_db.php';
+		if (!$script || !file_exists($script)) {
+			return;
+		}
+		$safeScript = escapeshellarg($script);
+		shell_exec("php {$safeScript} {$id} > /dev/null 2>&1 &");
 	}
 
 	/**
@@ -431,7 +463,7 @@ class Core {
 					) WHERE `id` = '{$syncRecord['id']}'");
 				}
 
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				error_log("Queue processing error for sync ID {$syncRecord['id']}: " . $e->getMessage());
 				
 				// Update retry info
@@ -661,7 +693,7 @@ class Core {
 				if ($deletedType && $deletedType !== 'webapp') {
 					try {
 						$this->typesense->deleteDocument($id, $deletedType);
-					} catch (Exception $e) {
+					} catch (\Throwable $e) {
 						error_log("Failed to delete from Typesense: " . $e->getMessage());
 						$this->addToDeadLetterQueue(['id' => $id, 'type' => $deletedType], 'delete');
 					}
@@ -675,7 +707,7 @@ class Core {
 			if ($this->searchEnabled && $objectType !== 'webapp') {
 				try {
 					$this->typesense->deleteDocument($id, $objectType);
-				} catch (Exception $e) {
+				} catch (\Throwable $e) {
 					error_log("Failed to delete from Typesense: " . $e->getMessage());
 				}
 			}
@@ -690,7 +722,7 @@ class Core {
 			if ($this->searchEnabled && $objectType !== 'webapp') {
 				try {
 					$this->typesense->deleteDocument($id, $objectType);
-				} catch (Exception $e) {
+				} catch (\Throwable $e) {
 					error_log("Failed to delete from Typesense: " . $e->getMessage());
 					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
 				}
@@ -744,7 +776,7 @@ class Core {
 				if ($object['type'] !== 'webapp') {
 					try {
 						$this->typesense->deleteDocument($object['id'], $object['type']);
-					} catch (Exception $e) {
+					} catch (\Throwable $e) {
 						error_log("Failed to delete from Typesense: " . $e->getMessage());
 						$this->addToDeadLetterQueue(['id' => $object['id'], 'type' => $object['type']], 'delete');
 					}
@@ -782,7 +814,7 @@ class Core {
 						'source' => 'typesense'
 					];
 				}
-			} catch (Exception $e) {
+			} catch (\Throwable $e) {
 				error_log("Typesense search failed, falling back to database: " . $e->getMessage());
 			}
 		}
