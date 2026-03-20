@@ -3,6 +3,56 @@ namespace Tribe;
 
 class Uploads {
 
+	/**
+	 * Default allowed MIME types and their extensions
+	 */
+	private array $allowed_mime_types = [
+		// Images
+		'image/jpeg'          => ['jpg', 'jpeg'],
+		'image/png'           => ['png'],
+		'image/gif'           => ['gif'],
+		'image/webp'          => ['webp'],
+		'image/svg+xml'       => ['svg'],
+		// Video
+		'video/mp4'           => ['mp4'],
+		'video/quicktime'     => ['mov'],
+		'video/x-msvideo'     => ['avi'],
+		'video/x-matroska'    => ['mkv'],
+		'video/webm'          => ['webm'],
+		// Audio
+		'audio/mpeg'          => ['mp3'],
+		'audio/mp4'           => ['m4a'],
+		'audio/ogg'           => ['ogg', 'oga'],
+		'audio/wav'           => ['wav'],
+		'audio/x-wav'         => ['wav'],
+		// Documents
+		'application/pdf'                                                          => ['pdf'],
+		'application/msword'                                                       => ['doc'],
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => ['docx'],
+		'application/vnd.ms-excel'                                                 => ['xls'],
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'        => ['xlsx'],
+		'application/vnd.ms-powerpoint'                                            => ['ppt'],
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation'=> ['pptx'],
+		'application/zip'           => ['zip'],
+		'application/x-rar-compressed' => ['rar'],
+		'text/plain'                => ['txt'],
+		'text/csv'                  => ['csv'],
+		'text/vtt'                  => ['vtt'],
+		'application/x-subrip'      => ['srt'],
+		'application/json'          => ['json'],
+	];
+
+	/**
+	 * Image size variants for resizing
+	 */
+	private array $image_versions = [
+		'xl' => ['max_width' => 2100, 'max_height' => 2100],
+		'lg' => ['max_width' => 1400, 'max_height' => 1400],
+		'md' => ['max_width' => 700,  'max_height' => 700],
+		'sm' => ['max_width' => 350,  'max_height' => 350],
+		'xs' => ['max_width' => 100,  'max_height' => 100],
+	];
+
 	public function getUploaderPath()
 	{
 		$folder_path = 'uploads/' . date('Y') . '/' . date('m-F') . '/' . date('d-D');
@@ -482,9 +532,7 @@ class Uploads {
 		
 		if (!empty($matches[0])) {
 			$last_time = end($matches[0]);
-			// This is a rough estimate - you might want to get duration first
-			// and calculate actual percentage
-			return min(50, count($matches[0]) * 2); // Rough progress estimation
+			return min(50, count($matches[0]) * 2);
 		}
 		
 		return 0;
@@ -510,8 +558,6 @@ class Uploads {
 		$qualities = [];
 		$quality_settings = $this->getVideoQualitySettings();
 		
-		// This would typically check which quality files actually exist
-		// For now, returning the standard qualities
 		foreach ($quality_settings as $quality => $settings) {
 			$qualities[] = [
 				'quality' => $quality,
@@ -700,121 +746,237 @@ class Uploads {
 		return $versions;
 	}
 
+	/**
+	 * Validate an uploaded file against allowed MIME types.
+	 * Returns the detected MIME type on success, or false on failure.
+	 */
+	private function validateUpload(array $file_info): string|false
+	{
+		// Check for upload errors
+		if (($file_info['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+			return false;
+		}
+
+		$tmp_path = $file_info['tmp_name'] ?? '';
+		if (!$tmp_path || !file_exists($tmp_path)) {
+			return false;
+		}
+
+		// Detect MIME from file content (not the client-provided type)
+		$finfo = new \finfo(FILEINFO_MIME_TYPE);
+		$detected_mime = $finfo->file($tmp_path);
+
+		// SVG files are often detected as text/xml or text/html — check extension too
+		$ext = strtolower(pathinfo($file_info['name'] ?? '', PATHINFO_EXTENSION));
+		if ($ext === 'svg' && in_array($detected_mime, ['text/xml', 'text/html', 'text/plain', 'application/xml'])) {
+			$detected_mime = 'image/svg+xml';
+		}
+
+		// VTT files detected as text/plain
+		if ($ext === 'vtt' && $detected_mime === 'text/plain') {
+			$detected_mime = 'text/vtt';
+		}
+
+		// SRT files detected as text/plain
+		if ($ext === 'srt' && $detected_mime === 'text/plain') {
+			$detected_mime = 'application/x-subrip';
+		}
+
+		// JSON files detected as text/plain
+		if ($ext === 'json' && $detected_mime === 'text/plain') {
+			$detected_mime = 'application/json';
+		}
+
+		if (!isset($this->allowed_mime_types[$detected_mime])) {
+			return false;
+		}
+
+		return $detected_mime;
+	}
+
+	/**
+	 * Move an uploaded file to the destination, generating a safe unique filename.
+	 * Returns the final filename (body + extension) or false on failure.
+	 */
+	private function moveUploadedFile(array $file_info, string $dest_dir): string|false
+	{
+		$original_name = $file_info['name'] ?? 'file';
+		$ext  = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+		$body = pathinfo($original_name, PATHINFO_FILENAME);
+
+		// Sanitize the filename body: keep only safe characters
+		$body = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $body);
+		$body = $body . '_' . uniqid();
+
+		$final_name = $body . '.' . $ext;
+		$dest_path  = $dest_dir . '/' . $final_name;
+
+		if (is_uploaded_file($file_info['tmp_name'])) {
+			$success = move_uploaded_file($file_info['tmp_name'], $dest_path);
+		} else {
+			// For testing or internal moves
+			$success = rename($file_info['tmp_name'], $dest_path);
+		}
+
+		return $success ? $final_name : false;
+	}
+
+	/**
+	 * Resize an image using GD library.
+	 * Supports JPEG, PNG, WEBP, and GIF.
+	 * Maintains aspect ratio within the given max dimensions.
+	 */
+	private function resizeImage(string $source_path, string $dest_path, int $max_width, int $max_height): bool
+	{
+		$image_info = @getimagesize($source_path);
+		if (!$image_info) {
+			return false;
+		}
+
+		$orig_width  = $image_info[0];
+		$orig_height = $image_info[1];
+		$mime        = $image_info['mime'];
+
+		// No resize needed if already within bounds
+		if ($orig_width <= $max_width && $orig_height <= $max_height) {
+			return copy($source_path, $dest_path);
+		}
+
+		// Calculate new dimensions preserving aspect ratio
+		$ratio = min($max_width / $orig_width, $max_height / $orig_height);
+		$new_width  = (int) round($orig_width * $ratio);
+		$new_height = (int) round($orig_height * $ratio);
+
+		// Create source image resource
+		$source_image = match ($mime) {
+			'image/jpeg' => @imagecreatefromjpeg($source_path),
+			'image/png'  => @imagecreatefrompng($source_path),
+			'image/gif'  => @imagecreatefromgif($source_path),
+			'image/webp' => @imagecreatefromwebp($source_path),
+			default      => false,
+		};
+
+		if (!$source_image) {
+			return false;
+		}
+
+		// Create destination image
+		$dest_image = imagecreatetruecolor($new_width, $new_height);
+
+		// Preserve transparency for PNG and GIF
+		if ($mime === 'image/png' || $mime === 'image/gif') {
+			imagealphablending($dest_image, false);
+			imagesavealpha($dest_image, true);
+			$transparent = imagecolorallocatealpha($dest_image, 0, 0, 0, 127);
+			imagefill($dest_image, 0, 0, $transparent);
+		}
+
+		// Resize with resampling for best quality
+		imagecopyresampled(
+			$dest_image, $source_image,
+			0, 0, 0, 0,
+			$new_width, $new_height,
+			$orig_width, $orig_height
+		);
+
+		// Save in the same format
+		$result = match ($mime) {
+			'image/jpeg' => imagejpeg($dest_image, $dest_path, 85),
+			'image/png'  => imagepng($dest_image, $dest_path, 6),
+			'image/gif'  => imagegif($dest_image, $dest_path),
+			'image/webp' => imagewebp($dest_image, $dest_path, 85),
+			default      => false,
+		};
+
+		// Free memory
+		imagedestroy($source_image);
+		imagedestroy($dest_image);
+
+		return $result;
+	}
+
+	/**
+	 * Handle the full upload workflow: validation, move, resize, video conversion.
+	 * Drop-in replacement for the previous verot-based handleUpload().
+	 */
 	public function handleUpload(array $files_server_arr, array $post_server_arr = [], array $get_server_arr = []) {
 
+		// URL-only "upload" — just return it
 		if ($post_server_arr['url'] ?? false)
 			return array('status'=>'success', 'success'=>1, 'error'=>0, 'file'=>array('url'=>$post_server_arr['url']));
 
+		// Alias: accept 'image' key as 'file'
 		else if ($files_server_arr['image'] ?? false)
 			$files_server_arr['file'] = $files_server_arr['image'];
 
-		//handle upload search
+		// Handle upload search
 		else if (($post_server_arr['search'] ?? false) && ($post_server_arr['q'] ?? false))
 			return $this->handleFileSearch($post_server_arr['q'], ($post_server_arr['deep_search'] ?? false));
 
-		$handle = new \Verot\Upload\Upload($files_server_arr['file']);
+		// ── Validate ─────────────────────────────────────────────────────────
+		$file_input = $files_server_arr['file'] ?? null;
+		if (!$file_input) {
+			return array('status'=>'error', 'success'=>0, 'error'=>1, 'error_message'=>'No file provided.');
+		}
 
-		// Add additional allowed mime types
-		$handle->mime_types = array_merge($handle->mime_types, array(
-		    'svg'  => 'image/svg+xml',
-		    'vtt'  => 'text/vtt',
-		    'srt'  => 'application/x-subrip',
-		    'm4a'  => 'audio/mp4',
-		    'ogg'  => 'audio/ogg',
-		    'oga'  => 'audio/ogg',
-		    'webm' => 'video/webm',
-		    'json' => 'application/json'
-		));
+		$detected_mime = $this->validateUpload($file_input);
+		if ($detected_mime === false) {
+			return array('status'=>'error', 'success'=>0, 'error'=>1, 'error_message'=>'File type not allowed or upload error.');
+		}
 
-		// Add additional allowed mime types
-		$handle->allowed = array_merge($handle->allowed, array(
-		    'image/svg+xml',
-		    'text/vtt',
-		    'application/x-subrip',
-		    'audio/mp4',
-		    'audio/ogg',
-		    'video/webm',
-		    'application/json'
-		));
+		// ── Move to upload directory ─────────────────────────────────────────
+		$uploader_path = $this->getUploaderPath();
+		$final_name = $this->moveUploadedFile($file_input, $uploader_path['upload_dir']);
+		if ($final_name === false) {
+			return array('status'=>'error', 'success'=>0, 'error'=>1, 'error_message'=>'Failed to move uploaded file.');
+		}
 
-		//Image size variants
-		$image_versions = [
-			'xl' => array(
-				'max_width' => 2100,
-				'max_height' => 2100,
-			),
-			'lg' => array(
-				'max_width' => 1400,
-				'max_height' => 1400,
-			),
-			'md' => array(
-				'max_width' => 700,
-				'max_height' => 700,
-			),
-			'sm' => array(
-				'max_width' => 350,
-				'max_height' => 350,
-			),
-			'xs' => array(
-				'max_width' => 100,
-				'max_height' => 100,
-			),
-		];
+		$file_extension = strtolower(pathinfo($final_name, PATHINFO_EXTENSION));
+		$file_body      = pathinfo($final_name, PATHINFO_FILENAME);
 
-		if ($handle->uploaded) {
-		  
-			$file = array();
-			$uploader_path = $this->getUploaderPath();
-			$file_extension = pathinfo($files_server_arr['file']['name'], PATHINFO_EXTENSION);
-			$file['name'] = pathinfo($files_server_arr['file']['name'], PATHINFO_FILENAME).'_'.uniqid();
+		$file = array();
+		$file['name'] = $file_body;
+		$file['url']  = $uploader_path['upload_url'] . '/' . $final_name;
+		$file['mime'] = $detected_mime;
 
-			$handle->file_new_name_body = $file['name'];
-			$handle->process($uploader_path['upload_dir']);
+		// ── Generate image size variants ─────────────────────────────────────
+		if (in_array($file_extension, ['jpg', 'jpeg', 'png', 'webp'])) {
+			$source_path = $uploader_path['upload_dir'] . '/' . $final_name;
 
-			$file['name'] = $handle->file_dst_name_body;
-			$file['url'] = $uploader_path['upload_url'].'/'.$handle->file_dst_name;
-			$file['mime'] = mime_content_type($uploader_path['upload_dir'].'/'.$handle->file_dst_name);
+			foreach ($this->image_versions as $version => $constraints) {
+				$version_dir  = $uploader_path['upload_dir'] . '/' . $version;
+				$version_path = $version_dir . '/' . $final_name;
 
-			if (in_array(strtolower($file_extension), ['jpg', 'jpeg', 'png', 'webp'])) {
-				foreach ($image_versions as $version => $constraints) {
-					$handle->file_new_name_body = $file['name'];
+				$resized = $this->resizeImage(
+					$source_path,
+					$version_path,
+					$constraints['max_width'],
+					$constraints['max_height']
+				);
 
-					$handle->image_resize         = true;
-					$handle->image_x              = $constraints['max_width'];
-					$handle->image_y              = $constraints['max_height'];
-					$handle->image_ratio          = true;
-
-					$handle->process($uploader_path['upload_dir'].'/'.$version);
-
-					$file[$version]['name'] = $handle->file_dst_name_body;
-					$file[$version]['url'] = $uploader_path['upload_url'].'/'.$version.'/'.$handle->file_dst_name;
+				if ($resized) {
+					$file[$version]['name'] = $file_body;
+					$file[$version]['url']  = $uploader_path['upload_url'] . '/' . $version . '/' . $final_name;
 				}
 			}
-
-			// Handle video conversion to multi-quality HLS
-			else if (in_array(strtolower($file_extension), ['mp4', 'mov', 'avi', 'mkv', 'webm'])) {
-				$input_path = $uploader_path['upload_dir'].'/'.$handle->file_dst_name;
-				$hls_output_dir = $uploader_path['upload_dir'].'/hls';
-				$filename_base = $file['name'];
-				
-				// Start multi-quality HLS conversion in background
-				$hls_url = $this->convertToMultiQualityHLS($input_path, $hls_output_dir, $filename_base);
-				
-				// Add HLS info to file array
-				$file['hls'] = array(
-					'url' => '/'.$hls_url,
-					'filename' => $filename_base . '.m3u8',
-					'type' => 'adaptive', // Indicates this supports multiple qualities
-					'qualities' => array_keys($this->getVideoQualitySettings())
-				);
-			}
-
-			if ($handle->processed) {
-				return array('status'=>'success', 'success'=>1, 'error'=>0, 'file'=>$file);
-				$handle->clean();
-			} else {
-				return array('status'=>'error', 'success'=>0, 'error'=>1, 'error_message'=>$handle->error);
-			}
 		}
+
+		// ── Handle video conversion to multi-quality HLS ─────────────────────
+		else if (in_array($file_extension, ['mp4', 'mov', 'avi', 'mkv', 'webm'])) {
+			$input_path     = $uploader_path['upload_dir'] . '/' . $final_name;
+			$hls_output_dir = $uploader_path['upload_dir'] . '/hls';
+
+			// Start multi-quality HLS conversion in background
+			$hls_url = $this->convertToMultiQualityHLS($input_path, $hls_output_dir, $file_body);
+
+			$file['hls'] = array(
+				'url'       => '/' . $hls_url,
+				'filename'  => $file_body . '.m3u8',
+				'type'      => 'adaptive',
+				'qualities' => array_keys($this->getVideoQualitySettings())
+			);
+		}
+
+		return array('status'=>'success', 'success'=>1, 'error'=>0, 'file'=>$file);
 	}
 }
