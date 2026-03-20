@@ -39,6 +39,20 @@ class Core {
         }
 	}
 
+	public function getUniqueUserID()
+	{
+		$sql = new MySQL();
+		$bytes = strtoupper(bin2hex(random_bytes(3)));
+
+		$q = $sql->executeSQL("SELECT id FROM data WHERE user_id='$bytes' ORDER BY id DESC LIMIT 0,1");
+
+		if ($q && $q[0]['id']) {
+			return $this->getUniqueUserID();
+		} else {
+			return $bytes;
+		}
+	}
+
 	public function executeShellCommand($cmd)
 	{
 		ob_start();

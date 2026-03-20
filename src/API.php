@@ -23,7 +23,6 @@ class API {
     // private properties for Tribe objects
     private $config;
     private $core;
-    private $auth;
     private $sql;
 
     public function __construct()
@@ -32,7 +31,6 @@ class API {
 
         $this->config = new \Tribe\Config;
         $this->core = new \Tribe\Core;
-        $this->auth = new \Tribe\Auth;
         $this->sql = new \Tribe\MySQL;
 
         $this->url_parts = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -516,7 +514,7 @@ class API {
                 unset($object['attributes']);
 
                 if ($object['type'] == 'user')
-                    $object['user_id'] = $this->auth->getUniqueUserID();
+                    $object['user_id'] = $this->core->getUniqueUserID();
 
                 $object = $this->core->getObject($this->core->pushObject($object));
 
