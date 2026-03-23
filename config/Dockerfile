@@ -42,6 +42,10 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libwebp-dev \
     python3-pip \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-hin \
+    ghostscript \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
