@@ -14,7 +14,7 @@ class Core {
 	{
 		self::$ignored_keys = ['type', 'function', 'class', 'slug', 'id', 'updated_on', 'created_on', 'user_id', 'files_descriptor', 'password_md5', 'role_slug', 'mysql_access_log', 'mysql_activity_log'];
 
-        if ($_ENV['DISPLAY_ERRORS'] === true) {
+        if (filter_var($_ENV['DISPLAY_ERRORS'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
             ini_set('display_startup_errors', 1);
@@ -336,17 +336,18 @@ class Core {
 	}
 
 	/**
-	 * Sync object to Typesense search index.
+	 * Sync an object to Typesense.
 	 *
 	 * Strategy (defence-in-depth):
-	 *   1. In-process upsert via Typesense::updateDocument — upsert handles
-	 *      both create and update transparently; no branch on $isNew needed.
-	 *   2. On any failure: enqueue to the DB dead-letter queue for the
-	 *      background retry worker.
-	 *   3. Fire index_db.php as a detached background process for a fast
-	 *      per-record retry (path from INDEX_DB_SCRIPT env var).
+	 *   1. In-process upsert via Typesense::updateDocument — handles both create
+	 *      and update transparently; no branch on $isNew needed.
+	 *   2. On any failure: enqueue to the DB dead-letter queue so the next
+	 *      processSearchSyncQueue() call picks it up.
+	 *   3. Also fire index_db.php as a fire-and-forget background process for a
+	 *      faster best-effort retry without waiting for the queue cycle.
 	 *
-	 * $isNew is kept for API compatibility but no longer used for routing.
+	 * $isNew is kept for API compatibility but is no longer used for routing
+	 * since updateDocument already uses upsert internally.
 	 */
 	private function syncToTypesense(array $object, bool $isNew = false): void
 	{
@@ -362,30 +363,36 @@ class Core {
 			return;
 		}
 
+		// Store the operation label so the dead-letter queue can use the right
+		// Typesense call when retrying. Both map to upsert in practice, but
+		// keeping the distinction makes queue logs easier to read.
+		$operation = $isNew ? 'create' : 'update';
+
 		try {
-			// updateDocument uses upsert — safe for both new and existing records
 			$result = $this->typesense->updateDocument($object);
 
 			if (!$result) {
 				error_log("Core::syncToTypesense — upsert returned falsy for id={$id}. Queuing.");
-				$this->addToDeadLetterQueue($object, 'upsert');
+				$this->addToDeadLetterQueue($object, $operation);
 				$this->fireIndexDbScript((int)$id);
 			}
 		} catch (\Throwable $e) {
 			error_log("Core::syncToTypesense — exception for id={$id}: " . $e->getMessage());
-			$this->addToDeadLetterQueue($object, 'upsert');
+			$this->addToDeadLetterQueue($object, $operation);
 			$this->fireIndexDbScript((int)$id);
 		}
 	}
 
 	/**
-	 * Fire index_db.php as a fire-and-forget background process for a single
-	 * record. Best-effort fast-path retry alongside the dead-letter queue.
-	 * Set INDEX_DB_SCRIPT=/app/index_db.php in the environment to enable.
+	 * Fire index_db.php as a detached background process for a single record.
+	 * Best-effort fast-path retry that runs in parallel with the dead-letter queue.
+	 *
+	 * Reads INDEX_DB_SCRIPT from the environment (set in docker-compose.yml).
+	 * Silently no-ops if the script path is missing or the file does not exist.
 	 */
 	private function fireIndexDbScript(int $id): void
 	{
-		$script = getenv('INDEX_DB_SCRIPT') ?: '/app/index_db.php';
+		$script = getenv('INDEX_DB_SCRIPT') ?: '/var/www/html/config/index_db.php';
 		if (!$script || !file_exists($script)) {
 			return;
 		}
@@ -394,50 +401,63 @@ class Core {
 	}
 
 	/**
-	 * Add failed sync operations to dead letter queue for retry
+	 * Enqueue a failed Typesense sync for later retry.
+	 *
+	 * Each entry is stored as a `search_sync_failed` row in the `data` table.
+	 * The `id` column is auto-assigned by MySQL; we do NOT set it manually
+	 * to avoid colliding with real object IDs.
 	 */
-	private function addToDeadLetterQueue($object, $operation)
+	private function addToDeadLetterQueue(array $object, string $operation): void
 	{
 		$sql = new MySQL();
+
 		$queueData = [
-			'id' => uniqid(),
-			'type' => 'search_sync_failed',
-			'object_id' => $object['id'],
+			'type'        => 'search_sync_failed',
+			'object_id'   => $object['id'],
 			'object_type' => $object['type'],
-			'operation' => $operation,
-			'payload' => json_encode($object),
-			'attempts' => 0,
-			'max_attempts' => 5,
-			'next_retry' => time() + 300, // Retry in 5 minutes
-			'created_on' => time(),
-			'updated_on' => time()
+			'operation'   => $operation,   // 'create' | 'update' | 'delete'
+			'payload'     => json_encode($object),
+			'attempts'    => 0,
+			'max_attempts'=> 5,
+			'next_retry'  => time() + 60,  // first retry after 1 minute
+			'created_on'  => time(),
+			'updated_on'  => time(),
 		];
 
-		$sql->executeSQL("INSERT INTO `data` (`content`, `created_on`, `updated_on`) VALUES ('" . 
-			mysqli_real_escape_string($sql->databaseLink, json_encode($queueData)) . 
-			"', '" . time() . "', '" . time() . "')");
+		$now     = time();
+		$escaped = mysqli_real_escape_string($sql->databaseLink, json_encode($queueData));
+
+		$sql->executeSQL(
+			"INSERT INTO `data` (`content`, `created_on`, `updated_on`) " .
+			"VALUES ('{$escaped}', '{$now}', '{$now}')"
+		);
 	}
 
 	/**
-	 * Process dead letter queue for failed search sync operations
+	 * Process the dead-letter queue for failed Typesense sync operations.
+	 *
+	 * Call this from a cron-style endpoint or supervisord job.
+	 * Uses exponential back-off: delay = 60 * 2^attempts seconds.
+	 * After max_attempts the row is left in place (failed permanently) so
+	 * you can inspect it; clean up manually or add a purge step.
 	 */
-	public function processSearchSyncQueue($batchSize = 50)
+	public function processSearchSyncQueue(int $batchSize = 50): void
 	{
 		if (!$this->searchEnabled) {
 			return;
 		}
 
-		$sql = new MySQL();
+		$sql         = new MySQL();
 		$currentTime = time();
 
-		// Get failed sync operations ready for retry
 		$failedSyncs = $sql->executeSQL("
-			SELECT * FROM `data` 
-			WHERE `content`->>'$.type' = 'search_sync_failed' 
-			AND `content`->>'$.next_retry' <= '$currentTime'
-			AND `content`->>'$.attempts' < `content`->>'$.max_attempts'
-			ORDER BY `created_on` ASC 
-			LIMIT $batchSize
+			SELECT `id`, `content` FROM `data`
+			WHERE  `content`->>'$.type'     = 'search_sync_failed'
+			  AND  `content`->>'$.next_retry' <= '{$currentTime}'
+			  AND  CAST(`content`->>'$.attempts'     AS UNSIGNED)
+			     < CAST(`content`->>'$.max_attempts' AS UNSIGNED)
+			ORDER BY `created_on` ASC
+			LIMIT {$batchSize}
 		");
 
 		if (!$failedSyncs) {
@@ -446,49 +466,64 @@ class Core {
 
 		foreach ($failedSyncs as $syncRecord) {
 			$syncData = json_decode($syncRecord['content'], true);
-			$attempts = (int)$syncData['attempts'] + 1;
+			$rowId    = (int)$syncRecord['id'];
+			$attempts = (int)($syncData['attempts'] ?? 0) + 1;
+
+			// Exponential back-off: 60s, 120s, 240s, 480s, 960s …
+			$nextRetry = time() + (60 * (2 ** ($attempts - 1)));
 
 			try {
-				$object = json_decode($syncData['payload'], true);
+				$object  = json_decode($syncData['payload'] ?? '{}', true) ?: [];
 				$success = false;
 
-				switch ($syncData['operation']) {
+				switch ($syncData['operation'] ?? '') {
 					case 'create':
-						$success = $this->typesense->indexDocument($object);
-						break;
 					case 'update':
-						$success = $this->typesense->updateDocument($object);
+						// Both map to upsert — 'create' kept for queue-log clarity.
+						$success = (bool)$this->typesense->updateDocument($object);
 						break;
 					case 'delete':
-						$success = $this->typesense->deleteDocument($syncData['object_id'], $syncData['object_type']);
+						$success = (bool)$this->typesense->deleteDocument(
+							$syncData['object_id'],
+							$syncData['object_type']
+						);
 						break;
+					default:
+						// Unknown operation — treat as permanently failed.
+						error_log("Core::processSearchSyncQueue — unknown op '{$syncData['operation']}' for row {$rowId}");
+						$success = false;
 				}
 
 				if ($success) {
-					// Remove from queue on success
-					$sql->executeSQL("DELETE FROM `data` WHERE `id` = '{$syncRecord['id']}'");
+					$sql->executeSQL("DELETE FROM `data` WHERE `id` = '{$rowId}'");
 				} else {
-					// Update retry info
-					$nextRetry = time() + (300 * $attempts); // Exponential backoff
-					$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, 
-						'$.attempts', '$attempts',
-						'$.next_retry', '$nextRetry',
-						'$.updated_on', '" . time() . "'
-					) WHERE `id` = '{$syncRecord['id']}'");
+					$this->updateDeadLetterRow($sql, $rowId, $attempts, $nextRetry);
 				}
 
 			} catch (\Throwable $e) {
-				error_log("Queue processing error for sync ID {$syncRecord['id']}: " . $e->getMessage());
-				
-				// Update retry info
-				$nextRetry = time() + (300 * $attempts);
-				$sql->executeSQL("UPDATE `data` SET `content` = JSON_SET(`content`, 
-					'$.attempts', '$attempts',
-					'$.next_retry', '$nextRetry',
-					'$.updated_on', '" . time() . "'
-				) WHERE `id` = '{$syncRecord['id']}'");
+				error_log("Core::processSearchSyncQueue — error on row {$rowId}: " . $e->getMessage());
+				$this->updateDeadLetterRow($sql, $rowId, $attempts, $nextRetry);
 			}
 		}
+	}
+
+	/**
+	 * Update attempt count and next-retry timestamp on a dead-letter row.
+	 */
+	private function updateDeadLetterRow(MySQL $sql, int $rowId, int $attempts, int $nextRetry): void
+	{
+		$now = time();
+		$sql->executeSQL(
+			"UPDATE `data`
+			 SET `content` = JSON_SET(
+			     `content`,
+			     '$.attempts',   {$attempts},
+			     '$.next_retry', {$nextRetry},
+			     '$.updated_on', {$now}
+			 ),
+			 `updated_on` = '{$now}'
+			 WHERE `id` = '{$rowId}'"
+		);
 	}
 
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
@@ -679,65 +714,75 @@ class Core {
 
 	public function deleteObject(int $id): bool
 	{
-		$sql = new MySQL();
-		$config = new Config();
+		$sql     = new MySQL();
+		$config  = new Config();
 		$uploads = new Uploads();
-
-		$types = $config->getTypes();
+		$types   = $config->getTypes();
 
 		if (!$id) {
 			return false;
 		}
 
-		// Get object info before deletion for Typesense sync
+		// Fetch the object and its type BEFORE any mutation so we always have
+		// the correct values for Typesense regardless of which branch runs.
 		$objectToDelete = $this->getObject($id);
-		$objectType = $this->getAttribute($id, 'type');
+		$objectType     = $objectToDelete['type'] ?? null;
 
-		$t = $this->getAttribute($id, 'type');
-		if ($t == 'deleted_record') {
-			if (($this->getAttribute($id, 'deleted_type') ?? '') == 'file_record') {
-				$uploads->deleteFileRecord($this->getObject($id));
+		if ($objectType === 'deleted_record') {
+			// This is a soft-deleted record being permanently purged.
+			// The original type is stored in deleted_type.
+			$deletedType = $objectToDelete['deleted_type'] ?? null;
+
+			if ($deletedType === 'file_record') {
+				$uploads->deleteFileRecord($objectToDelete);
 			}
 
-			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
-			
-			// Remove from Typesense for permanent deletions
-			if ($this->searchEnabled && $objectToDelete) {
-				$deletedType = $this->getAttribute($id, 'deleted_type');
-				if ($deletedType && $deletedType !== 'webapp') {
-					try {
-						$this->typesense->deleteDocument($id, $deletedType);
-					} catch (\Throwable $e) {
-						error_log("Failed to delete from Typesense: " . $e->getMessage());
-						$this->addToDeadLetterQueue(['id' => $id, 'type' => $deletedType], 'delete');
-					}
+			$sql->executeSQL("DELETE FROM `data` WHERE `id`={$id}");
+
+			// Remove from the collection that holds the original type.
+			if ($this->searchEnabled && $deletedType && $deletedType !== 'webapp') {
+				try {
+					$this->typesense->deleteDocument($id, $deletedType);
+				} catch (\Throwable $e) {
+					error_log("Core::deleteObject — Typesense delete failed for id={$id}: " . $e->getMessage());
+					$this->addToDeadLetterQueue(['id' => $id, 'type' => $deletedType], 'delete');
 				}
 			}
-		}
-		else if ($types['webapp']['soft_delete_records'] ?? false) {
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id={$id}");
-			
-			// For soft deletes, remove from search index but keep in dead letter queue for potential restoration
-			if ($this->searchEnabled && $objectType !== 'webapp') {
+
+		} elseif ($types['webapp']['soft_delete_records'] ?? false) {
+			// Soft delete: mark as deleted_record; keep in DB but remove from search.
+			$sql->executeSQL(
+				"UPDATE `data`
+				 SET `content` = JSON_SET(`content`,
+				     '$.deleted_type', `content`->>'$.type',
+				     '$.type',         'deleted_record'
+				 )
+				 WHERE `id`={$id}"
+			);
+
+			if ($this->searchEnabled && $objectType && $objectType !== 'webapp') {
 				try {
 					$this->typesense->deleteDocument($id, $objectType);
 				} catch (\Throwable $e) {
-					error_log("Failed to delete from Typesense: " . $e->getMessage());
+					error_log("Core::deleteObject (soft) — Typesense delete failed for id={$id}: " . $e->getMessage());
+					// Soft-delete failures go to DLQ too so the stale doc eventually gets cleaned up.
+					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
 				}
 			}
+
 		} else {
-			if ($t == 'file_record') {
-				$uploads->deleteFileRecord($this->getObject($id));
+			// Hard delete.
+			if ($objectType === 'file_record') {
+				$uploads->deleteFileRecord($objectToDelete);
 			}
 
-			$q = $sql->executeSQL("DELETE FROM data WHERE id={$id}");
-			
-			// Remove from Typesense for permanent deletions
-			if ($this->searchEnabled && $objectType !== 'webapp') {
+			$sql->executeSQL("DELETE FROM `data` WHERE `id`={$id}");
+
+			if ($this->searchEnabled && $objectType && $objectType !== 'webapp') {
 				try {
 					$this->typesense->deleteDocument($id, $objectType);
 				} catch (\Throwable $e) {
-					error_log("Failed to delete from Typesense: " . $e->getMessage());
+					error_log("Core::deleteObject (hard) — Typesense delete failed for id={$id}: " . $e->getMessage());
 					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
 				}
 			}
@@ -748,52 +793,60 @@ class Core {
 
 	public function deleteObjects(array $ids, string $redirect_type): bool
 	{
-		$sql = new MySQL;
-		$config = new Config();
+		$sql     = new MySQL();
+		$config  = new Config();
+		$uploads = new Uploads();
+		$types   = $config->getTypes();
 
-		$types = $config->getTypes();
-		$t = $this->getAttribute($ids[0], 'type');
-		$ids_string = implode(',', $ids);
+		$t          = $this->getAttribute($ids[0], 'type');
+		$ids_string = implode(',', array_map('intval', $ids));
 
-		// Get objects info for Typesense sync
+		// Fetch objects for Typesense sync before any mutation.
 		$objectsToDelete = [];
 		if ($this->searchEnabled && $t !== 'webapp') {
-			$objectsToDelete = $this->getObjects($ids_string);
+			$objectsToDelete = $this->getObjects($ids_string) ?: [];
 		}
 
-		if ($t == 'deleted_record') {
-			if (($this->getAttribute($ids[0], 'deleted_type') ?? '') == 'file_record') {
-				$objects = $this->getObjects($ids_string);
+		if ($t === 'deleted_record') {
+			if (($this->getAttribute($ids[0], 'deleted_type') ?? '') === 'file_record') {
+				$objects = $this->getObjects($ids_string) ?: [];
 				foreach ($objects as $object) {
 					$uploads->deleteFileRecord($object);
 				}
 			}
-			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids_string)");
-		}
-		else if ($types['webapp']['soft_delete_records'] ?? false) {
-			// soft delete
-			$sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.deleted_type', content->>'$.type', '$.type', 'deleted_record') WHERE id IN ($ids_string)");
+			$sql->executeSQL("DELETE FROM `data` WHERE `id` IN ({$ids_string})");
+
+		} elseif ($types['webapp']['soft_delete_records'] ?? false) {
+			$sql->executeSQL(
+				"UPDATE `data`
+				 SET `content` = JSON_SET(`content`,
+				     '$.deleted_type', `content`->>'$.type',
+				     '$.type',         'deleted_record'
+				 )
+				 WHERE `id` IN ({$ids_string})"
+			);
+
 		} else {
-			if ($t == 'file_record') {
-				$objects = $this->getObjects($ids_string);
+			if ($t === 'file_record') {
+				$objects = $this->getObjects($ids_string) ?: [];
 				foreach ($objects as $object) {
 					$uploads->deleteFileRecord($object);
 				}
 			}
-			// perma delete
-			$sql->executeSQL("DELETE FROM data WHERE id IN ($ids_string)");
+			$sql->executeSQL("DELETE FROM `data` WHERE `id` IN ({$ids_string})");
 		}
 
-		// Sync deletions to Typesense
+		// Sync all deletions to Typesense.
 		if ($this->searchEnabled && !empty($objectsToDelete)) {
 			foreach ($objectsToDelete as $object) {
-				if ($object['type'] !== 'webapp') {
-					try {
-						$this->typesense->deleteDocument($object['id'], $object['type']);
-					} catch (\Throwable $e) {
-						error_log("Failed to delete from Typesense: " . $e->getMessage());
-						$this->addToDeadLetterQueue(['id' => $object['id'], 'type' => $object['type']], 'delete');
-					}
+				$objType = $object['type'] ?? null;
+				if (!$objType || $objType === 'webapp') continue;
+
+				try {
+					$this->typesense->deleteDocument($object['id'], $objType);
+				} catch (\Throwable $e) {
+					error_log("Core::deleteObjects — Typesense delete failed for id={$object['id']}: " . $e->getMessage());
+					$this->addToDeadLetterQueue(['id' => $object['id'], 'type' => $objType], 'delete');
 				}
 			}
 		}
