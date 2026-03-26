@@ -3,12 +3,9 @@ namespace Tribe;
 
 use \Tribe\MySQL;
 use \Tribe\Config;
-use \Tribe\Typesense;
 
 class Core {
 	public static $ignored_keys;
-	private $typesense;
-	private $searchEnabled;
 
 	public function __construct()
 	{
@@ -21,21 +18,6 @@ class Core {
         } else {
             ini_set('display_errors', 0);
             ini_set('display_startup_errors', 0);
-        }
-
-        // Initialize Typesense
-        $this->searchEnabled = ($_ENV['TYPESENSE_ENABLED'] ?? 'true') === 'true';
-        if ($this->searchEnabled) {
-            try {
-                $this->typesense = new Typesense();
-                if (!$this->typesense->isHealthy()) {
-                    error_log("Typesense is not healthy, disabling search features");
-                    $this->searchEnabled = false;
-                }
-            } catch (\Throwable $e) {
-                error_log("Failed to initialize Typesense: " . $e->getMessage());
-                $this->searchEnabled = false;
-            }
         }
 	}
 
@@ -152,11 +134,6 @@ class Core {
 
 		$sql->executeSQL("UPDATE `data` SET `content`='" . mysqli_real_escape_string($sql->databaseLink, json_encode(array_filter($post))) . "', `updated_on`='$updated_on' WHERE `id`='" . $post['id'] . "'");
 		$id = (int) $post['id'];
-
-		// Dual-write pattern: Sync to Typesense asynchronously
-		if ($this->searchEnabled && $posttype !== 'webapp') {
-			$this->syncToTypesense($post, $is_new_record);
-		}
 
 		return $id;
 	}
@@ -312,18 +289,7 @@ class Core {
 			);
 		}
 
-		// ── 5. Typesense sync (batched where possible) ─────────────────────
-		if ($this->searchEnabled) {
-			foreach ($all_posts as $index => $post) {
-				unset($post['is_new']);
-				if (($post['type'] ?? '') !== 'webapp') {
-					$is_new = isset($new_posts[$index]);
-					$this->syncToTypesense($post, $is_new);
-				}
-			}
-		}
-
-		// ── 6. Build ordered result array ──────────────────────────────────
+		// ── 5. Build ordered result array ──────────────────────────────────
 		foreach ($posts as $index => $original_post) {
 			if (!isset($result_ids[$index])) {
 				$merged = $all_posts[$index] ?? null;
@@ -333,54 +299,6 @@ class Core {
 
 		ksort($result_ids);
 		return array_values($result_ids);
-	}
-
-	/**
-	 * Sync an object to Typesense.
-	 *
-	 * Strategy (defence-in-depth):
-	 *   1. In-process upsert via Typesense::updateDocument — handles both create
-	 *      and update transparently; no branch on $isNew needed.
-	 *   2. On any failure: enqueue to the DB dead-letter queue so the next
-	 *      processSearchSyncQueue() call picks it up.
-	 *   3. Also fire index_db.php as a fire-and-forget background process for a
-	 *      faster best-effort retry without waiting for the queue cycle.
-	 *
-	 * $isNew is kept for API compatibility but is no longer used for routing
-	 * since updateDocument already uses upsert internally.
-	 */
-	private function syncToTypesense(array $object, bool $isNew = false): void
-	{
-		if (!$this->searchEnabled) {
-			return;
-		}
-
-		$id   = $object['id']   ?? null;
-		$type = $object['type'] ?? null;
-
-		if (!$id || !$type) {
-			error_log("Core::syncToTypesense — skipped: missing id or type.");
-			return;
-		}
-
-		// Store the operation label so the dead-letter queue can use the right
-		// Typesense call when retrying. Both map to upsert in practice, but
-		// keeping the distinction makes queue logs easier to read.
-		$operation = $isNew ? 'create' : 'update';
-
-		try {
-			$result = $this->typesense->updateDocument($object);
-
-			if (!$result) {
-				error_log("Core::syncToTypesense — upsert returned falsy for id={$id}. Queuing.");
-				$this->addToDeadLetterQueue($object, $operation);
-				$this->fireIndexDbScript((int)$id);
-			}
-		} catch (\Throwable $e) {
-			error_log("Core::syncToTypesense — exception for id={$id}: " . $e->getMessage());
-			$this->addToDeadLetterQueue($object, $operation);
-			$this->fireIndexDbScript((int)$id);
-		}
 	}
 
 	/**
@@ -400,132 +318,6 @@ class Core {
 		shell_exec("php {$safeScript} {$id} > /dev/null 2>&1 &");
 	}
 
-	/**
-	 * Enqueue a failed Typesense sync for later retry.
-	 *
-	 * Each entry is stored as a `search_sync_failed` row in the `data` table.
-	 * The `id` column is auto-assigned by MySQL; we do NOT set it manually
-	 * to avoid colliding with real object IDs.
-	 */
-	private function addToDeadLetterQueue(array $object, string $operation): void
-	{
-		$sql = new MySQL();
-
-		$queueData = [
-			'type'        => 'search_sync_failed',
-			'object_id'   => $object['id'],
-			'object_type' => $object['type'],
-			'operation'   => $operation,   // 'create' | 'update' | 'delete'
-			'payload'     => json_encode($object),
-			'attempts'    => 0,
-			'max_attempts'=> 5,
-			'next_retry'  => time() + 60,  // first retry after 1 minute
-			'created_on'  => time(),
-			'updated_on'  => time(),
-		];
-
-		$now     = time();
-		$escaped = mysqli_real_escape_string($sql->databaseLink, json_encode($queueData));
-
-		$sql->executeSQL(
-			"INSERT INTO `data` (`content`, `created_on`, `updated_on`) " .
-			"VALUES ('{$escaped}', '{$now}', '{$now}')"
-		);
-	}
-
-	/**
-	 * Process the dead-letter queue for failed Typesense sync operations.
-	 *
-	 * Call this from a cron-style endpoint or supervisord job.
-	 * Uses exponential back-off: delay = 60 * 2^attempts seconds.
-	 * After max_attempts the row is left in place (failed permanently) so
-	 * you can inspect it; clean up manually or add a purge step.
-	 */
-	public function processSearchSyncQueue(int $batchSize = 50): void
-	{
-		if (!$this->searchEnabled) {
-			return;
-		}
-
-		$sql         = new MySQL();
-		$currentTime = time();
-
-		$failedSyncs = $sql->executeSQL("
-			SELECT `id`, `content` FROM `data`
-			WHERE  `content`->>'$.type'     = 'search_sync_failed'
-			  AND  `content`->>'$.next_retry' <= '{$currentTime}'
-			  AND  CAST(`content`->>'$.attempts'     AS UNSIGNED)
-			     < CAST(`content`->>'$.max_attempts' AS UNSIGNED)
-			ORDER BY `created_on` ASC
-			LIMIT {$batchSize}
-		");
-
-		if (!$failedSyncs) {
-			return;
-		}
-
-		foreach ($failedSyncs as $syncRecord) {
-			$syncData = json_decode($syncRecord['content'], true);
-			$rowId    = (int)$syncRecord['id'];
-			$attempts = (int)($syncData['attempts'] ?? 0) + 1;
-
-			// Exponential back-off: 60s, 120s, 240s, 480s, 960s …
-			$nextRetry = time() + (60 * (2 ** ($attempts - 1)));
-
-			try {
-				$object  = json_decode($syncData['payload'] ?? '{}', true) ?: [];
-				$success = false;
-
-				switch ($syncData['operation'] ?? '') {
-					case 'create':
-					case 'update':
-						// Both map to upsert — 'create' kept for queue-log clarity.
-						$success = (bool)$this->typesense->updateDocument($object);
-						break;
-					case 'delete':
-						$success = (bool)$this->typesense->deleteDocument(
-							$syncData['object_id'],
-							$syncData['object_type']
-						);
-						break;
-					default:
-						// Unknown operation — treat as permanently failed.
-						error_log("Core::processSearchSyncQueue — unknown op '{$syncData['operation']}' for row {$rowId}");
-						$success = false;
-				}
-
-				if ($success) {
-					$sql->executeSQL("DELETE FROM `data` WHERE `id` = '{$rowId}'");
-				} else {
-					$this->updateDeadLetterRow($sql, $rowId, $attempts, $nextRetry);
-				}
-
-			} catch (\Throwable $e) {
-				error_log("Core::processSearchSyncQueue — error on row {$rowId}: " . $e->getMessage());
-				$this->updateDeadLetterRow($sql, $rowId, $attempts, $nextRetry);
-			}
-		}
-	}
-
-	/**
-	 * Update attempt count and next-retry timestamp on a dead-letter row.
-	 */
-	private function updateDeadLetterRow(MySQL $sql, int $rowId, int $attempts, int $nextRetry): void
-	{
-		$now = time();
-		$sql->executeSQL(
-			"UPDATE `data`
-			 SET `content` = JSON_SET(
-			     `content`,
-			     '$.attempts',   {$attempts},
-			     '$.next_retry', {$nextRetry},
-			     '$.updated_on', {$now}
-			 ),
-			 `updated_on` = '{$now}'
-			 WHERE `id` = '{$rowId}'"
-		);
-	}
-
 	public function pushAttribute($id, $meta_key, $meta_value = ''): bool
 	{
 		$sql = new MySQL();
@@ -539,14 +331,6 @@ class Core {
 		} else {
 			$meta_value = $sql->databaseLink->real_escape_string($meta_value);
 			$q = $sql->executeSQL("UPDATE data SET content = JSON_SET(content, '$.$meta_key', '$meta_value') WHERE id='$id'");
-		}
-
-		// Sync updated object to Typesense
-		if ($this->searchEnabled) {
-			$updatedObject = $this->getObject($id);
-			if ($updatedObject && $updatedObject['type'] !== 'webapp') {
-				$this->syncToTypesense($updatedObject, false);
-			}
 		}
 
 		return 1;
@@ -723,8 +507,6 @@ class Core {
 			return false;
 		}
 
-		// Fetch the object and its type BEFORE any mutation so we always have
-		// the correct values for Typesense regardless of which branch runs.
 		$objectToDelete = $this->getObject($id);
 		$objectType     = $objectToDelete['type'] ?? null;
 
@@ -739,16 +521,6 @@ class Core {
 
 			$sql->executeSQL("DELETE FROM `data` WHERE `id`={$id}");
 
-			// Remove from the collection that holds the original type.
-			if ($this->searchEnabled && $deletedType && $deletedType !== 'webapp') {
-				try {
-					$this->typesense->deleteDocument($id, $deletedType);
-				} catch (\Throwable $e) {
-					error_log("Core::deleteObject — Typesense delete failed for id={$id}: " . $e->getMessage());
-					$this->addToDeadLetterQueue(['id' => $id, 'type' => $deletedType], 'delete');
-				}
-			}
-
 		} elseif ($types['webapp']['soft_delete_records'] ?? false) {
 			// Soft delete: mark as deleted_record; keep in DB but remove from search.
 			$sql->executeSQL(
@@ -760,16 +532,6 @@ class Core {
 				 WHERE `id`={$id}"
 			);
 
-			if ($this->searchEnabled && $objectType && $objectType !== 'webapp') {
-				try {
-					$this->typesense->deleteDocument($id, $objectType);
-				} catch (\Throwable $e) {
-					error_log("Core::deleteObject (soft) — Typesense delete failed for id={$id}: " . $e->getMessage());
-					// Soft-delete failures go to DLQ too so the stale doc eventually gets cleaned up.
-					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
-				}
-			}
-
 		} else {
 			// Hard delete.
 			if ($objectType === 'file_record') {
@@ -777,15 +539,6 @@ class Core {
 			}
 
 			$sql->executeSQL("DELETE FROM `data` WHERE `id`={$id}");
-
-			if ($this->searchEnabled && $objectType && $objectType !== 'webapp') {
-				try {
-					$this->typesense->deleteDocument($id, $objectType);
-				} catch (\Throwable $e) {
-					error_log("Core::deleteObject (hard) — Typesense delete failed for id={$id}: " . $e->getMessage());
-					$this->addToDeadLetterQueue(['id' => $id, 'type' => $objectType], 'delete');
-				}
-			}
 		}
 
 		return true;
@@ -800,12 +553,6 @@ class Core {
 
 		$t          = $this->getAttribute($ids[0], 'type');
 		$ids_string = implode(',', array_map('intval', $ids));
-
-		// Fetch objects for Typesense sync before any mutation.
-		$objectsToDelete = [];
-		if ($this->searchEnabled && $t !== 'webapp') {
-			$objectsToDelete = $this->getObjects($ids_string) ?: [];
-		}
 
 		if ($t === 'deleted_record') {
 			if (($this->getAttribute($ids[0], 'deleted_type') ?? '') === 'file_record') {
@@ -836,64 +583,13 @@ class Core {
 			$sql->executeSQL("DELETE FROM `data` WHERE `id` IN ({$ids_string})");
 		}
 
-		// Sync all deletions to Typesense.
-		if ($this->searchEnabled && !empty($objectsToDelete)) {
-			foreach ($objectsToDelete as $object) {
-				$objType = $object['type'] ?? null;
-				if (!$objType || $objType === 'webapp') continue;
-
-				try {
-					$this->typesense->deleteDocument($object['id'], $objType);
-				} catch (\Throwable $e) {
-					error_log("Core::deleteObjects — Typesense delete failed for id={$object['id']}: " . $e->getMessage());
-					$this->addToDeadLetterQueue(['id' => $object['id'], 'type' => $objType], 'delete');
-				}
-			}
-		}
-
 		return true;
 	}
 
 	/**
-	 * Search objects using Typesense with fallback to database
+	 * Search objects using database
 	 */
 	public function searchObjects($query, $options = [])
-	{
-		// Try Typesense first if enabled
-		if ($this->searchEnabled && !empty(trim($query))) {
-			try {
-				$searchResults = $this->typesense->search($query, $options);
-				
-				if ($searchResults && !empty($searchResults['hits'])) {
-					// Transform Typesense results to match expected format
-					$ids = array_map(function($hit) {
-						return ['id' => (int)$hit['document']['id']];
-					}, $searchResults['hits']);
-					
-					// Get full objects from database to maintain data consistency
-					$objects = $this->getObjects($ids);
-					
-					return [
-						'objects' => $objects,
-						'total_found' => $searchResults['found'] ?? 0,
-						'search_time_ms' => $searchResults['search_time_ms'] ?? 0,
-						'facet_counts' => $searchResults['facet_counts'] ?? [],
-						'source' => 'typesense'
-					];
-				}
-			} catch (\Throwable $e) {
-				error_log("Typesense search failed, falling back to database: " . $e->getMessage());
-			}
-		}
-		
-		// Fallback to database search
-		return $this->searchObjectsDatabase($query, $options);
-	}
-
-	/**
-	 * Database-based search fallback
-	 */
-	private function searchObjectsDatabase($query, $options = [])
 	{
 		$type = $options['type'] ?? null;
 		$limit = $options['limit'] ?? "0, 25";
