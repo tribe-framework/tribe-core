@@ -597,7 +597,7 @@ class Uploads {
 			return ['status' => 'error', 'error_message' => 'Invalid target. Must be "dist" or "dist-php".'];
 		}
 
-		$sites_dir    = '/uploads/sites';
+		$sites_dir    = '/var/www/html/uploads/sites';
 		$dist_target  = $sites_dir . '/' . $target;
 		$max_versions = 7;
 
@@ -716,7 +716,7 @@ class Uploads {
 		if (!$this->validateDistTarget($target)) {
 			return ['status' => 'error', 'error_message' => 'Invalid target.'];
 		}
-		$sites_dir = '/uploads/sites';
+		$sites_dir = '/var/www/html/uploads/sites';
 		return [
 			'status'   => 'success',
 			'versions' => $this->getDistVersionsList($sites_dir, $target),
@@ -734,7 +734,7 @@ class Uploads {
 			return ['status' => 'error', 'error_message' => 'Invalid target.'];
 		}
 
-		$sites_dir    = '/uploads/sites';
+		$sites_dir    = '/var/www/html/uploads/sites';
 		$dist_target  = $sites_dir . '/' . $target;
 		$backup_name  = $target . '-' . $timestamp;
 		$backup_path  = $sites_dir . '/' . $backup_name;
