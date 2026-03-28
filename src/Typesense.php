@@ -316,6 +316,11 @@ class Typesense {
             $params['query_by'] = $queryBy;
         }
 
+        // Default highlight context window to 25 tokens (overridable via options)
+        if (!isset($options['highlight_affix_num_tokens'])) {
+            $params['highlight_affix_num_tokens'] = 25;
+        }
+
         // Map all supported Typesense search parameters
         $typesenseParams = [
             'filter_by', 'sort_by', 'facet_by',
