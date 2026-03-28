@@ -24,6 +24,7 @@ class API {
     private $config;
     private $core;
     private $sql;
+    private $typesense;
 
     public function __construct()
     {
@@ -32,6 +33,7 @@ class API {
         $this->config = new \Tribe\Config;
         $this->core = new \Tribe\Core;
         $this->sql = new \Tribe\MySQL;
+        $this->typesense = new \Tribe\Typesense;
 
         $this->url_parts = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $this->type = (string) ($this->url_parts[2] ?? '');
@@ -115,6 +117,18 @@ class API {
                 }
             }
         }
+    }
+
+    /**
+     * Public accessor for API key validation — used by search.php
+     * and any external caller needing to verify authentication status
+     * without triggering a 403 response.
+     *
+     * @return bool Whether the request carries valid API credentials
+     */
+    public function validateApiKeyPublic(): bool
+    {
+        return $this->validateApiKey();
     }
 
     /**
@@ -465,7 +479,11 @@ class API {
                 $this->send(404);
             }
 
+            // Capture the type before deletion for Typesense cleanup
+            $deleteType = $this->type;
+
             if ($this->core->deleteObject($this->id)) {
+                try { $this->typesense->delete($deleteType, $this->id); } catch (\Throwable $e) { error_log('[Typesense] delete error: ' . $e->getMessage()); }
                 $document = new ResourceDocument();
                 $document->sendResponse();
                 die();
@@ -488,6 +506,8 @@ class API {
                 unset($object['attributes']);
 
                 $object = $this->core->getObject($this->core->pushObject($object));
+
+                try { $this->typesense->upsert($object); } catch (\Throwable $e) { error_log('[Typesense] upsert error: ' . $e->getMessage()); }
 
                 $document = new ResourceDocument($this->type, $object['id']);
                 $document->add('modules', $object);
@@ -517,6 +537,8 @@ class API {
                     $object['user_id'] = $this->core->getUniqueUserID();
 
                 $object = $this->core->getObject($this->core->pushObject($object));
+
+                try { $this->typesense->upsert($object); } catch (\Throwable $e) { error_log('[Typesense] upsert error: ' . $e->getMessage()); }
 
                 $document = new ResourceDocument($this->type, $object['id']);
                 $document->add('modules', $object);
