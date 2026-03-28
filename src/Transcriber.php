@@ -351,7 +351,7 @@ class Transcriber
     private function callPaddleOCR(string $imagePath): ?array
     {
         $cmd = sprintf(
-            'python3 /usr/local/bin/paddle_ocr.py %s 2>/dev/null',
+            '/opt/paddleocr-venv/bin/python3 /usr/local/bin/paddle_ocr.py %s 2>/tmp/paddle_ocr_err.log',
             escapeshellarg($imagePath)
         );
 
