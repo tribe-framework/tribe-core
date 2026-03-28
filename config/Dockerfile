@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libwebp-dev \
     python3-pip \
+    python3-venv \
     tesseract-ocr \
     tesseract-ocr-eng \
     tesseract-ocr-hin \
@@ -67,6 +68,43 @@ RUN docker-php-ext-install \
 # ImageMagick PHP extension via PECL
 RUN pecl install imagick \
  && docker-php-ext-enable imagick
+
+# ─── PaddleOCR (Python, CPU-only) ─────────────────────────────────────────────
+# Install in a venv to avoid breaking system packages.
+# Pre-download models for the most common Indian languages on build
+# so first-run transcription doesn't stall on model downloads.
+RUN python3 -m venv /opt/paddleocr-venv \
+ && /opt/paddleocr-venv/bin/pip install --no-cache-dir --upgrade pip \
+ && /opt/paddleocr-venv/bin/pip install --no-cache-dir \
+      paddlepaddle \
+      paddleocr \
+ && ln -sf /opt/paddleocr-venv/bin/python3 /usr/local/bin/python3-paddle
+
+# PaddleOCR wrapper script
+COPY ./paddle_ocr.py /usr/local/bin/paddle_ocr.py
+RUN chmod +x /usr/local/bin/paddle_ocr.py \
+ && sed -i '1s|.*|#!/opt/paddleocr-venv/bin/python3|' /usr/local/bin/paddle_ocr.py
+
+# Pre-download OCR models for key Indian languages (runs detection once per lang
+# so the model weights are cached inside the image at /opt/paddleocr_models).
+# Uses a tiny 1x1 white PNG as input — we only care about triggering the download.
+RUN mkdir -p /opt/paddleocr_models \
+ && export PADDLEOCR_HOME=/opt/paddleocr_models \
+ && /opt/paddleocr-venv/bin/python3 -c " \
+from PIL import Image; \
+img = Image.new('RGB', (100, 30), 'white'); \
+img.save('/tmp/_probe.png'); \
+" \
+ && for lang in en hi ta te kn bn gu pa ur mr ne as ar; do \
+      echo \"--- Pre-downloading PaddleOCR model: \$lang ---\"; \
+      /opt/paddleocr-venv/bin/python3 -c " \
+import os; os.environ['PADDLEOCR_HOME']='/opt/paddleocr_models'; \
+from paddleocr import PaddleOCR; \
+ocr = PaddleOCR(lang='${lang}', use_angle_cls=True, show_log=False, use_gpu=False); \
+ocr.ocr('/tmp/_probe.png', cls=True); \
+" 2>/dev/null || true; \
+    done \
+ && rm -f /tmp/_probe.png
 
 # ─── Composer ─────────────────────────────────────────────────────────────────
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

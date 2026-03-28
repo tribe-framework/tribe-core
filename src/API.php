@@ -502,10 +502,19 @@ class API {
 
             } else {
 
-                $object = array_merge($this->core->getObject($object['data']['id']), $object['data'], $object['data']['attributes']['modules']);
+                $existingObject = $this->core->getObject($object['data']['id']);
+                $oldUrl = $existingObject['url'] ?? null;
+
+                $object = array_merge($existingObject, $object['data'], $object['data']['attributes']['modules']);
                 unset($object['attributes']);
 
                 $object = $this->core->getObject($this->core->pushObject($object));
+
+                // ── Re-transcribe file_record when its URL changes ──
+                $newUrl = $object['url'] ?? null;
+                if ($oldUrl !== $newUrl) {
+                    $object = $this->transcribeIfFileRecord($object);
+                }
 
                 try { $this->typesense->upsert($object); } catch (\Throwable $e) { error_log('[Typesense] upsert error: ' . $e->getMessage()); }
 
@@ -537,6 +546,9 @@ class API {
                     $object['user_id'] = $this->core->getUniqueUserID();
 
                 $object = $this->core->getObject($this->core->pushObject($object));
+
+                // ── Transcribe file_record objects on creation ──
+                $object = $this->transcribeIfFileRecord($object);
 
                 try { $this->typesense->upsert($object); } catch (\Throwable $e) { error_log('[Typesense] upsert error: ' . $e->getMessage()); }
 
@@ -1098,5 +1110,51 @@ class API {
     {
         require __DIR__."/../API/v1/handler.php";
         return;
+    }
+
+    /**
+     * If the object is a file_record and transcription is enabled,
+     * extract text via Tika or PaddleOCR, attach transcription fields,
+     * and persist the updated object.
+     *
+     * @param array $object The saved file_record object
+     * @return array The object (possibly updated with transcription fields)
+     */
+    private function transcribeIfFileRecord(array $object): array
+    {
+        // Only process file_record objects
+        if (($object['type'] ?? '') !== 'file_record') {
+            return $object;
+        }
+
+        // Must have a URL field pointing to the file
+        if (empty($object['url'])) {
+            return $object;
+        }
+
+        try {
+            $transcriber = new \Tribe\Transcriber();
+
+            if (!$transcriber->isEnabled()) {
+                return $object;
+            }
+
+            $result = $transcriber->transcribe($object['url']);
+
+            if ($result && !empty($result['transcription']['text'])) {
+                // Merge transcription fields into the object
+                $object['transcription'] = $result['transcription'];
+
+                // Persist the updated object with transcription data
+                $this->core->pushObject($object);
+
+                // Re-fetch to get the canonical version
+                $object = $this->core->getObject($object['id']);
+            }
+        } catch (\Throwable $e) {
+            error_log('[Transcriber] Failed to transcribe file_record ' . ($object['id'] ?? '?') . ': ' . $e->getMessage());
+        }
+
+        return $object;
     }
 }
