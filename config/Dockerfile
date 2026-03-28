@@ -87,24 +87,28 @@ RUN chmod +x /usr/local/bin/paddle_ocr.py \
 
 # Pre-download OCR models for key Indian languages (runs detection once per lang
 # so the model weights are cached inside the image at /opt/paddleocr_models).
-# Uses a tiny 1x1 white PNG as input — we only care about triggering the download.
+# Scripts are written to files first to avoid shell quoting / indentation issues
+# that arise when embedding multiline Python inside a RUN -c "..." string.
 RUN mkdir -p /opt/paddleocr_models \
- && export PADDLEOCR_HOME=/opt/paddleocr_models \
- && /opt/paddleocr-venv/bin/python3 -c " \
-from PIL import Image; \
-img = Image.new('RGB', (100, 30), 'white'); \
-img.save('/tmp/_probe.png'); \
-" \
+ && printf '%s\n' \
+      'from PIL import Image' \
+      "img = Image.new('RGB', (100, 30), 'white')" \
+      "img.save('/tmp/_probe.png')" \
+    > /tmp/_mk_probe.py \
+ && printf '%s\n' \
+      'import os, sys' \
+      "os.environ['PADDLEOCR_HOME'] = '/opt/paddleocr_models'" \
+      'from paddleocr import PaddleOCR' \
+      "ocr = PaddleOCR(lang=sys.argv[1], use_angle_cls=True, show_log=False, use_gpu=False)" \
+      "ocr.ocr('/tmp/_probe.png', cls=True)" \
+    > /tmp/_dl_model.py \
+ && PADDLEOCR_HOME=/opt/paddleocr_models /opt/paddleocr-venv/bin/python3 /tmp/_mk_probe.py \
  && for lang in en hi ta te kn bn gu pa ur mr ne as ar; do \
-      echo \"--- Pre-downloading PaddleOCR model: \$lang ---\"; \
-      /opt/paddleocr-venv/bin/python3 -c " \
-import os; os.environ['PADDLEOCR_HOME']='/opt/paddleocr_models'; \
-from paddleocr import PaddleOCR; \
-ocr = PaddleOCR(lang='${lang}', use_angle_cls=True, show_log=False, use_gpu=False); \
-ocr.ocr('/tmp/_probe.png', cls=True); \
-" 2>/dev/null || true; \
+      echo "--- Pre-downloading PaddleOCR model: $lang ---"; \
+      PADDLEOCR_HOME=/opt/paddleocr_models \
+        /opt/paddleocr-venv/bin/python3 /tmp/_dl_model.py "$lang" 2>/dev/null || true; \
     done \
- && rm -f /tmp/_probe.png
+ && rm -f /tmp/_probe.png /tmp/_mk_probe.py /tmp/_dl_model.py
 
 # ─── Composer ─────────────────────────────────────────────────────────────────
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
