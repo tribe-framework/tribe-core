@@ -316,9 +316,9 @@ class Typesense {
             $params['query_by'] = $queryBy;
         }
 
-        // Default highlight context window to 25 tokens (overridable via options)
+        // Default highlight context window to 50 tokens (overridable via options)
         if (!isset($options['highlight_affix_num_tokens'])) {
-            $params['highlight_affix_num_tokens'] = 25;
+            $params['highlight_affix_num_tokens'] = 50;
         }
 
         // Map all supported Typesense search parameters
@@ -410,17 +410,7 @@ class Typesense {
         $hits = [];
         foreach ($raw['hits'] ?? [] as $hit) {
             $doc = $hit['document'] ?? [];
-            $highlights = [];
-
-            foreach ($hit['highlights'] ?? [] as $hl) {
-                $highlights[$hl['field'] ?? ''] = [
-                    'snippet'          => $hl['snippet'] ?? null,
-                    'snippets'         => $hl['snippets'] ?? null,
-                    'value'            => $hl['value'] ?? null,
-                    'matched_tokens'   => $hl['matched_tokens'] ?? [],
-                    'indices'          => $hl['indices'] ?? null,
-                ];
-            }
+            $highlights = $this->extractHighlights($hit);
 
             $hits[] = [
                 'document'        => $doc,
@@ -487,14 +477,7 @@ class Typesense {
                 $doc = $hit['document'] ?? [];
                 $doc['_collection_type'] = $colType; // tag each hit with its source collection
 
-                $highlights = [];
-                foreach ($hit['highlights'] ?? [] as $hl) {
-                    $highlights[$hl['field'] ?? ''] = [
-                        'snippet'        => $hl['snippet'] ?? null,
-                        'snippets'       => $hl['snippets'] ?? null,
-                        'matched_tokens' => $hl['matched_tokens'] ?? [],
-                    ];
-                }
+                $highlights = $this->extractHighlights($hit);
 
                 $allHits[] = [
                     'document'   => $doc,
@@ -519,6 +502,72 @@ class Typesense {
     }
 
     /**
+     * Normalise Typesense highlight data from a single hit.
+     *
+     * Typesense returns highlights in two shapes depending on whether the
+     * matched field is top-level or nested:
+     *   - `highlights` (array)  — top-level field matches, each element has a `field` key
+     *   - `highlight`  (object) — nested/dot-path field matches, keyed by field path
+     *
+     * Both are merged here so callers never miss `<mark>` snippets from nested fields.
+     */
+    private function extractHighlights(array $hit): array
+    {
+        $highlights = [];
+
+        // Top-level field matches (array of highlight objects)
+        foreach ($hit['highlights'] ?? [] as $hl) {
+            $highlights[$hl['field'] ?? ''] = [
+                'snippet'        => $hl['snippet'] ?? null,
+                'snippets'       => $hl['snippets'] ?? null,
+                'matched_tokens' => $hl['matched_tokens'] ?? [],
+            ];
+        }
+
+        // Nested field matches — Typesense returns these as a recursive map where
+        // intermediate keys are object names and leaf nodes carry snippet/matched_tokens.
+        // Flatten to dot-path keys (e.g. "transcription" → "transcription.text").
+        $this->flattenHighlightMap($hit['highlight'] ?? [], '', $highlights);
+
+        return $highlights;
+    }
+
+    /**
+     * Recursively flatten Typesense's nested `highlight` map into dot-path keyed entries.
+     *
+     * Typesense structures nested highlights as recursive objects rather than flat dot-paths:
+     *   {"transcription": {"text": {"snippet": "...<mark>...</mark>", "matched_tokens": [...]}}}
+     *
+     * This method walks the tree, accumulating the path, and writes leaf nodes
+     * (those containing a `snippet` or `matched_tokens` key) into $out using their
+     * full dot-path as the key — skipping any path already populated by `highlights`.
+     */
+    private function flattenHighlightMap(array $map, string $prefix, array &$out): void
+    {
+        foreach ($map as $key => $value) {
+            $path = $prefix === "" ? $key : "{$prefix}.{$key}";
+
+            if (!is_array($value)) {
+                continue;
+            }
+
+            // A leaf node has `snippet` or `matched_tokens` directly on it
+            if (array_key_exists('snippet', $value) || array_key_exists('matched_tokens', $value)) {
+                if (!isset($out[$path])) {
+                    $out[$path] = [
+                        'snippet'        => $value['snippet'] ?? null,
+                        'snippets'       => $value['snippets'] ?? null,
+                        'matched_tokens' => $value['matched_tokens'] ?? [],
+                    ];
+                }
+            } else {
+                // Intermediate node — recurse deeper
+                $this->flattenHighlightMap($value, $path, $out);
+            }
+        }
+    }
+
+        /**
      * Return an empty search result structure.
      */
     private function emptySearchResult(string $q, ?string $type): array
