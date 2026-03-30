@@ -183,6 +183,12 @@ class API {
         $typesJSON = $this->config->getTypes();
         $block_read_access_without_apikey = isset($typesJSON['block_read_access_without_apikey']) && $typesJSON['block_read_access_without_apikey'];
 
+        // If ALLOW_ALL_CONNECTIONS_DANGEROUSLY is enabled, bypass all host/key validation
+        $allow_all = filter_var($_ENV['ALLOW_ALL_CONNECTIONS_DANGEROUSLY'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if ($allow_all) {
+            return true;
+        }
+
         // Allow all operations for Tribe domains
         if ($is_tribe_domain) {
             return true;
