@@ -55,32 +55,22 @@ class API {
 
     /**
      * Handle CORS headers for API requests
-     * This method should be called early in the request lifecycle
      */
     private function handleCors() {
-        // Get the request origin
         $origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '*';
-
-        // Get the request method
         $request_method = $_SERVER['REQUEST_METHOD'];
 
-        // Set CORS headers for all responses
         header("Access-Control-Allow-Origin: $origin");
         header("Access-Control-Allow-Credentials: true");
-        header("Access-Control-Max-Age: 86400"); // Cache preflight for 24 hours
-
-        // Set allowed headers - include X-API-KEY explicitly
+        header("Access-Control-Max-Age: 86400");
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-API-KEY, X-Requested-With, Accept, Origin");
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
 
-        // Handle preflight OPTIONS request
         if ($request_method === 'OPTIONS') {
-            // Just exit with 200 OK for preflight requests
             http_response_code(200);
             exit(0);
         }
 
-        // Continue with the regular request processing
         return;
     }
 
@@ -90,7 +80,7 @@ class API {
     private function loadApiKeys()
     {
         $this->allowed_read_access_api_keys = $this->allowed_full_access_api_keys = [];
-        $this->api_objects = []; // Store all API objects for domain validation
+        $this->api_objects = [];
         $api_ids = $this->core->getIDs(array('type'=>'apikey_record'), "0, 25", 'id', 'DESC', false);
 
         if (!$api_ids) {
@@ -100,19 +90,14 @@ class API {
         $api_objects = $this->core->getObjects($api_ids);
 
         foreach ($api_objects as $api_object) {
-            // Store the full API object for later use
             $this->api_objects[$api_object['apikey']] = $api_object;
 
-            // we are accepting only public or private privacy
             $is_privacy_valid = in_array($api_object['content_privacy'], ['public', 'private'], true);
 
             if ($is_privacy_valid) {
-                // check if key is allowed full access to the api
                 if (empty($api_object['readonly'])) {
                     $this->allowed_full_access_api_keys[] = $api_object['apikey'];
-                }
-                // else mark the key as readonly access
-                else {
+                } else {
                     $this->allowed_read_access_api_keys[] = $api_object['apikey'];
                 }
             }
@@ -120,11 +105,7 @@ class API {
     }
 
     /**
-     * Public accessor for API key validation — used by search.php
-     * and any external caller needing to verify authentication status
-     * without triggering a 403 response.
-     *
-     * @return bool Whether the request carries valid API credentials
+     * Public accessor for API key validation
      */
     public function validateApiKeyPublic(): bool
     {
@@ -133,13 +114,11 @@ class API {
 
     /**
      * Validates API key authentication and handles exceptions
-     * @return bool Whether the request is authorized
      */
     private function validateApiKey()
     {
         global $_ENV;
 
-        // Extract the token if it's in Bearer format
         $request_api_key = null;
         $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
         if ($auth_header && strpos($auth_header, 'Bearer ') === 0) {
@@ -147,16 +126,13 @@ class API {
             $request_api_key = trim($request_api_key);
         }
 
-        // Get the request domain
         $request_domain = parse_url((isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''), PHP_URL_HOST);
         if (empty($request_domain)) {
             $request_domain = $_SERVER['HTTP_HOST'] ?? '';
         }
 
-        // Get the instance slug from the environment
         $instance_slug = (explode('.', $request_domain)[0]) ?? '';
 
-        // If the request is coming from a domain within this Tribe
         $is_tribe_domain = false;
         if (!empty($request_domain)) {
             $tribe_domains = [
@@ -171,65 +147,48 @@ class API {
             }
         }
 
-        // Check if the request is from localhost
         $is_localhost = in_array($request_domain, ['localhost', '127.0.0.1']) ||
                         strpos($request_domain, 'localhost:') === 0 ||
                         strpos($request_domain, '127.0.0.1:') === 0;
 
-        // Get the request method
         $request_method = strtoupper($_SERVER['REQUEST_METHOD']);
 
-        // Get the type configuration to check if API access is locked
         $typesJSON = $this->config->getTypes();
         $block_read_access_without_apikey = isset($typesJSON['block_read_access_without_apikey']) && $typesJSON['block_read_access_without_apikey'];
 
-        // If ALLOW_ALL_CONNECTIONS_DANGEROUSLY is enabled, bypass all host/key validation
         $allow_all = filter_var($_ENV['ALLOW_ALL_CONNECTIONS_DANGEROUSLY'] ?? false, FILTER_VALIDATE_BOOLEAN);
         if ($allow_all) {
             return true;
         }
 
-        // Allow all operations for Tribe domains
         if ($is_tribe_domain) {
             return true;
         }
 
-        // Check if API key is valid and has special permissions
         if ($request_api_key && isset($this->api_objects[$request_api_key])) {
             $api_object = $this->api_objects[$request_api_key];
 
-            // Check for dev mode with localhost
             if (isset($api_object['devmode']) && $api_object['devmode'] === true && $is_localhost) {
-                return true; // Allow all operations in dev mode from localhost
+                return true;
             }
 
-            // Check for whitelisted domains
             if (!empty($api_object['whitelisted_domains'])) {
                 $whitelisted_domains = array_map('trim', explode("\n", $api_object['whitelisted_domains']));
 
                 foreach ($whitelisted_domains as $domain_pattern) {
-                    // Convert wildcard pattern to regex
                     if (strpos($domain_pattern, '*') !== false) {
                         $pattern = '/^' . str_replace('*', '.*', preg_quote($domain_pattern, '/')) . '$/i';
                         if (preg_match($pattern, $request_domain)) {
-                            // For read operations, any valid API key is sufficient
                             if ($request_method === 'GET') {
                                 return true;
-                            }
-                            // For write operations, need full access API key
-                            else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+                            } else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
                                 return in_array($request_api_key, $this->allowed_full_access_api_keys);
                             }
                         }
-                    }
-                    // Exact domain match
-                    else if (strtolower($domain_pattern) === strtolower($request_domain)) {
-                        // For read operations, any valid API key is sufficient
+                    } else if (strtolower($domain_pattern) === strtolower($request_domain)) {
                         if ($request_method === 'GET') {
                             return true;
-                        }
-                        // For write operations, need full access API key
-                        else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+                        } else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
                             return in_array($request_api_key, $this->allowed_full_access_api_keys);
                         }
                     }
@@ -246,36 +205,21 @@ class API {
             $this->thisRequestHasApiAccess = true;
         }
 
-        // For read operations (GET)
         if (!isset($request_method) || $request_method == 'GET' || $request_method == '') {
-            // If API access is locked, require a valid API key
-            // Webapp data cannot be accessed publicly
             if ($block_read_access_without_apikey || $this->type == 'webapp' || $this->type == 'apikey_record') {
                 return $is_allowed;
             } else {
                 return true;
             }
-        }
-        // For write operations (POST, PUT, PATCH, DELETE)
-        else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
-            // Require a valid API key with full access
+        } else if (in_array($request_method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             return in_array($request_api_key, $this->allowed_full_access_api_keys);
         }
 
-        // Default deny for unrecognized methods
         return false;
     }
 
     /**
      * Process linked modules for an object and add relationships to the document
-     *
-     * @param ResourceDocument $document The document to add relationships to
-     * @param array $object The object containing module data
-     * @param array $linked_modules The linked modules configuration
-     * @param array|null $related_objects_core Optional pre-fetched related objects
-     * @param array|null $rojt Optional lookup table for slug-based lookups
-     * @param array|null $id_rojt Optional lookup table for ID-based lookups
-     * @return ResourceDocument The document with added relationships
      */
     private function processLinkedModules(
         ResourceDocument $document,
@@ -289,23 +233,17 @@ class API {
             if (array_key_exists($module_key, $object)) {
                 $value = $object[$module_key];
 
-                // Skip if the value is empty
                 if (empty($value)) {
                     continue;
                 }
 
-                // If we don't have pre-fetched related objects, fetch them now
                 if ($related_objects_core === null) {
                     $related_objects = [];
 
-                    // Determine the query format based on the value type
                     if (is_array($value)) {
-                        // Check if it's an array of numeric IDs
                         if (!empty($value) && is_numeric($value[0] ?? '')) {
-                            // Array of IDs: [23, 24, 25] or ["23", "24", "25"]
                             $related_objects = $this->core->getObjects(implode(',', $value));
                         } else {
-                            // Array of slugs: ["slug1", "slug2", "slug3"]
                             $query_params = [];
                             foreach ($value as $slug) {
                                 if (!empty($slug)) {
@@ -318,15 +256,11 @@ class API {
                             $related_objects = $this->core->getObjects($query_params);
                         }
                     } else if (is_string($value)) {
-                        // Check if it's a comma-separated list of IDs
                         if (strpos($value, ',') !== false && is_numeric(trim(explode(',', $value)[0]))) {
-                            // Comma-separated IDs: "23, 24, 25"
                             $related_objects = $this->core->getObjects($value);
                         } else if (is_numeric($value)) {
-                            // Single numeric ID: "23" or 23
                             $related_objects = $this->core->getObjects($value);
                         } else {
-                            // Single slug: "slug1"
                             $obj = $this->core->getObject([
                                 'type' => $module_type,
                                 'slug' => $value
@@ -342,11 +276,9 @@ class API {
                         }
                     }
 
-                    // Add relationships if related objects were found
                     if (!empty($related_objects)) {
-                        // Create an array of relationship objects
                         $relationships = [];
-                        $processed_ids = []; // Track already processed IDs
+                        $processed_ids = [];
 
                         foreach($related_objects as $related_object) {
                             if (empty($related_object) || !isset($related_object['id'])) {
@@ -355,12 +287,10 @@ class API {
 
                             $related_id = $related_object['id'];
 
-                            // Skip if this is the same as the current object or already processed
                             if ($related_id == $object['id'] || isset($processed_ids[$related_id])) {
                                 continue;
                             }
 
-                            // Mark as processed
                             $processed_ids[$related_id] = true;
 
                             $ojt = new ResourceDocument($module_type, $related_id);
@@ -369,47 +299,38 @@ class API {
                             $relationships[] = $ojt;
                         }
 
-                        // Add all relationships at once as a collection
                         if (!empty($relationships)) {
                             $document->addRelationship($module_key, $relationships);
                         }
                     }
-                }
-                // Use pre-fetched related objects (for collection documents)
-                else {
+                } else {
                     $items_to_process = [];
 
-                    // Convert the value to an array of items to process
                     if (is_array($value)) {
                         $items_to_process = $value;
                     } else if (is_string($value) && strpos($value, ',') !== false) {
-                        // Handle comma-separated values
                         $items_to_process = array_map('trim', explode(',', $value));
                     } else {
                         $items_to_process = [$value];
                     }
 
-                    // Create an array of relationship objects
                     $relationships = [];
-                    $processed_ids = []; // Track already processed IDs
+                    $processed_ids = [];
 
                     foreach ($items_to_process as $item) {
                         if (empty($item)) {
                             continue;
                         }
 
-                        // For numeric IDs, look up directly in id_rojt
                         if (is_numeric($item)) {
                             $related_id = (int)$item;
 
-                            // Skip if already processed, same as current object, or not found
                             if (isset($processed_ids[$related_id]) ||
                                 $related_id == $object['id'] ||
                                 !isset($id_rojt[$related_id])) {
                                 continue;
                             }
 
-                            // Mark as processed
                             $processed_ids[$related_id] = true;
 
                             $related_object = $id_rojt[$related_id];
@@ -417,12 +338,9 @@ class API {
                             $ojt->add('modules', $related_object);
                             $ojt->add('slug', $related_object['slug'] ?? '');
                             $relationships[] = $ojt;
-                        }
-                        // For slugs, use the slug-based lookup table
-                        else if (isset($rojt[$module_type][$item])) {
+                        } else if (isset($rojt[$module_type][$item])) {
                             $related_id = $rojt[$module_type][$item];
 
-                            // Skip if already processed, invalid ID, or not found
                             if (isset($processed_ids[$related_id]) ||
                                 !$related_id ||
                                 $related_id == $object['id'] ||
@@ -430,7 +348,6 @@ class API {
                                 continue;
                             }
 
-                            // Mark as processed
                             $processed_ids[$related_id] = true;
 
                             $ojt = new ResourceDocument($module_type, $related_id);
@@ -440,7 +357,6 @@ class API {
                         }
                     }
 
-                    // Add all relationships at once as a collection
                     if (!empty($relationships)) {
                         $document->addRelationship($module_key, $relationships);
                     }
@@ -452,7 +368,6 @@ class API {
     }
 
     public function jsonAPI($version = '1.1') {
-        // Validate API key for all requests
         if (!$this->validateApiKey()) {
             $error = [
                 'errors' => [
@@ -480,12 +395,10 @@ class API {
         $linked_modules = $this->config->getTypeLinkedModules($this->type);
 
         if ($this->method('DELETE')) {
-            // return 404 if id isn't provided
             if (!$this->id) {
                 $this->send(404);
             }
 
-            // Capture the type before deletion for Typesense cleanup
             $deleteType = $this->type;
 
             if ($this->core->deleteObject($this->id)) {
@@ -516,7 +429,7 @@ class API {
 
                 $object = $this->core->getObject($this->core->pushObject($object));
 
-                // ── Re-transcribe file_record when its URL changes ──
+                // Re-transcribe file_record when its URL changes
                 $newUrl = $object['url'] ?? null;
                 if ($oldUrl !== $newUrl) {
                     $object = $this->transcribeIfFileRecord($object);
@@ -553,7 +466,7 @@ class API {
 
                 $object = $this->core->getObject($this->core->pushObject($object));
 
-                // ── Transcribe file_record objects on creation ──
+                // Transcribe file_record objects on creation
                 $object = $this->transcribeIfFileRecord($object);
 
                 try { $this->typesense->upsert($object); } catch (\Throwable $e) { error_log('[Typesense] upsert error: ' . $e->getMessage()); }
@@ -571,7 +484,6 @@ class API {
         }
         elseif ($this->method('GET')) {
             if ($this->type == 'webapp') {
-                // Any ID resolves to the one-and-only webapp object
                 $this->getTypesObject();
             }
             else if (($this->type ?? false) && !($this->id ?? false)) {
@@ -651,7 +563,6 @@ class API {
                     $objectr = $this->core->getObjects($this->ids);
                     $objects = [];
 
-                    //to sort accurately
                     foreach ($this->ids as $this->idr) {
                         $objects[] = $objectr[$this->idr['id']];
                     }
@@ -670,24 +581,19 @@ class API {
                                 if (array_key_exists($module_key, $object)) {
                                     $value = $object[$module_key];
 
-                                    // Skip if the value is empty
                                     if (empty($value)) {
                                         continue;
                                     }
 
-                                    // Process different input formats
                                     if (is_array($value)) {
-                                        // Handle array of values (could be IDs or slugs)
                                         foreach ($value as $item) {
                                             if (is_numeric($item)) {
-                                                // It's an ID
                                                 $related_objects_meta[] = [
                                                     'id' => (int)$item,
                                                     'module' => $module_key,
                                                     'type' => $module_type
                                                 ];
                                             } else {
-                                                // It's a slug
                                                 $related_objects_meta[] = [
                                                     'type' => $module_type,
                                                     'module' => $module_key,
@@ -696,18 +602,15 @@ class API {
                                             }
                                         }
                                     } else if (is_string($value) && strpos($value, ',') !== false) {
-                                        // Handle comma-separated string
                                         $items = array_map('trim', explode(',', $value));
                                         foreach ($items as $item) {
                                             if (is_numeric($item)) {
-                                                // It's an ID
                                                 $related_objects_meta[] = [
                                                     'id' => (int)$item,
                                                     'module' => $module_key,
                                                     'type' => $module_type
                                                 ];
                                             } else {
-                                                // It's a slug
                                                 $related_objects_meta[] = [
                                                     'type' => $module_type,
                                                     'module' => $module_key,
@@ -716,16 +619,13 @@ class API {
                                             }
                                         }
                                     } else {
-                                        // Handle single value (could be ID or slug)
                                         if (is_numeric($value)) {
-                                            // It's an ID
                                             $related_objects_meta[] = [
                                                 'id' => (int)$value,
                                                 'module' => $module_key,
                                                 'type' => $module_type
                                             ];
                                         } else {
-                                            // It's a slug
                                             $related_objects_meta[] = [
                                                 'type' => $module_type,
                                                 'module' => $module_key,
@@ -741,27 +641,20 @@ class API {
                     }
 
                     if ($linked_modules != [] && !empty($related_objects_meta)) {
-                        // Fetch all related objects at once
                         $related_objects_core = $this->core->getObjects($related_objects_meta);
 
-                        // Build lookup tables for both slug-based and ID-based lookups
                         $rojt = [];
                         $id_rojt = [];
 
                         foreach ($related_objects_core as $related_object) {
-                            // For slug-based lookups
                             if (isset($related_object['slug'])) {
                                 $rojt[$related_object['type']][$related_object['slug']] = $related_object['id'];
                             }
-
-                            // For ID-based lookups - store the object directly by ID
                             $id_rojt[$related_object['id']] = $related_object;
                         }
 
                         $i = 0;
-                        // Process each object with the fetched related objects
                         foreach ($objects as $object) {
-                            // Pass both lookup tables to processLinkedModules
                             $documents[$i] = $this->processLinkedModules(
                                 $documents[$i],
                                 $object,
@@ -870,7 +763,6 @@ class API {
         $sort_by = $_GET['sort_by'] ?? null;
         $facet_by = $_GET['facet_by'] ?? null;
 
-        // Validate query
         if (empty(trim($query))) {
             $error = [
                 'errors' => [[
@@ -882,7 +774,6 @@ class API {
             $this->json($error)->send(400);
         }
 
-        // Validate type if provided
         if ($type) {
             $types = $this->config->getTypes();
             if (!isset($types[$type])) {
@@ -897,7 +788,6 @@ class API {
             }
         }
 
-        // Build search options
         $searchOptions = [
             'type' => $type,
             'page' => $page,
@@ -905,17 +795,14 @@ class API {
             'show_public_only' => !$this->thisRequestHasApiAccess,
         ];
 
-        // Add sorting if specified
         if ($sort_by) {
             $searchOptions['sort_by'] = $sort_by;
         }
 
-        // Add faceting if specified
         if ($facet_by) {
             $searchOptions['facet_by'] = $facet_by;
         }
 
-        // Add additional filters from query parameters
         $filters = [];
         foreach ($_GET as $key => $value) {
             if (!in_array($key, ['q', 'type', 'page', 'per_page', 'sort_by', 'facet_by']) && !empty($value)) {
@@ -927,10 +814,8 @@ class API {
             $searchOptions['filters'] = $filters;
         }
 
-        // Perform search
         $searchResults = $this->core->searchObjects($query, $searchOptions);
 
-        // Transform results to JSON:API format
         $documents = [];
         $i = 0;
         
@@ -940,7 +825,6 @@ class API {
                 $document->add('modules', $object);
                 $document->add('slug', $object['slug'] ?? '');
                 
-                // Add search highlighting if available
                 if (isset($searchResults['highlights']) && isset($searchResults['highlights'][$object['id']])) {
                     $document->add('search_highlights', $searchResults['highlights'][$object['id']]);
                 }
@@ -951,7 +835,6 @@ class API {
 
         $document = CollectionDocument::fromResources(...$documents);
 
-        // Add search metadata
         $searchMeta = [
             'total_found' => $searchResults['total_found'] ?? 0,
             'search_time_ms' => $searchResults['search_time_ms'] ?? 0,
@@ -961,7 +844,6 @@ class API {
             'per_page' => $per_page,
         ];
 
-        // Add facet counts if available
         if (!empty($searchResults['facet_counts'])) {
             $searchMeta['facet_counts'] = $searchResults['facet_counts'];
         }
@@ -970,42 +852,45 @@ class API {
         $document->sendResponse();
     }
 
+    /**
+     * Save the types/blueprint to the active blueprint_record.
+     * The webapp type itself is never stored as its own DB row —
+     * it lives inside the blueprint_record's `blueprint` JSON field.
+     */
     public function pushTypesObject($object)
     {
         $modules = $object['data']['attributes']['modules'];
         $json    = json_encode($modules, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        // ── Primary: save to database as a webapp object ──────────────────────
+        // ── Primary: save to the active blueprint_record ─────────────────
         $dbSaved = false;
         try {
-            // Fetch the latest existing webapp object (if any) to get its id
-            $existingIds = $this->core->getIDs(
-                ['type' => 'webapp'],
-                '0, 1',
-                'id',
-                'DESC',
-                false
-            );
+            $activeBlueprintId = $this->findActiveBlueprintRecordId();
 
-            $webappObject = [
-                'type'    => 'webapp',
-                'slug'    => 'webapp',
-                'blueprint' => $json,
-            ];
-
-            if (!empty($existingIds)) {
-                // Update the existing record so there is always exactly one
-                $existingWebapp = $this->core->getObject($existingIds[0]['id']);
-                $webappObject   = array_merge($existingWebapp, $webappObject);
+            if ($activeBlueprintId) {
+                // Update the existing active blueprint_record
+                $existingRecord = $this->core->getObject($activeBlueprintId);
+                $existingRecord['blueprint'] = $json;
+                $this->core->pushObject($existingRecord);
+                $dbSaved = true;
+            } else {
+                // No active blueprint_record exists — create one
+                $title = $modules['webapp']['name'] ?? 'Blueprint';
+                $newRecord = [
+                    'type'      => 'blueprint_record',
+                    'title'     => $title,
+                    'active'    => true,
+                    'blueprint' => $json,
+                    'content_privacy' => 'private',
+                ];
+                $this->core->pushObject($newRecord);
+                $dbSaved = true;
             }
-
-            $this->core->pushObject($webappObject);
-            $dbSaved = true;
         } catch (\Throwable $e) {
-            error_log('[pushTypesObject] DB save failed: ' . $e->getMessage());
+            error_log('[pushTypesObject] blueprint_record save failed: ' . $e->getMessage());
         }
 
-        // ── Fallback: write to folder if DB save failed ───────────────────────
+        // ── Fallback: write to folder if DB save failed ───────────────────
         if (!$dbSaved) {
             $folder_path = 'uploads/types';
             if (!is_dir($folder_path)) {
@@ -1016,6 +901,41 @@ class API {
         }
 
         unset($object['attributes']);
+    }
+
+    /**
+     * Find the DB id of the currently active blueprint_record.
+     * Returns the integer id, or null if none is active.
+     */
+    private function findActiveBlueprintRecordId(): ?int
+    {
+        // Try string "true"
+        $rows = $this->sql->executeSQL(
+            "SELECT `id` FROM `data`
+             WHERE `content`->>'$.type' = 'blueprint_record'
+               AND `content`->>'$.active' = 'true'
+             ORDER BY `id` DESC
+             LIMIT 1"
+        );
+
+        if (!empty($rows[0]['id'])) {
+            return (int) $rows[0]['id'];
+        }
+
+        // Try JSON boolean true
+        $rows = $this->sql->executeSQL(
+            "SELECT `id` FROM `data`
+             WHERE `content`->>'$.type' = 'blueprint_record'
+               AND JSON_EXTRACT(`content`, '$.active') = true
+             ORDER BY `id` DESC
+             LIMIT 1"
+        );
+
+        if (!empty($rows[0]['id'])) {
+            return (int) $rows[0]['id'];
+        }
+
+        return null;
     }
 
     private function parseSizeToGB(string $sizeRaw): string {
@@ -1033,37 +953,30 @@ class API {
     public function getTypesObject() {
         global $_ENV;
 
-        // ── 1. Load the blueprint from the DB webapp record (any ID resolves to the one webapp) ──
+        // ── 1. Load the blueprint from the active blueprint_record ───────
         $blueprint = null;
         try {
-            $existingIds = $this->core->getIDs(
-                ['type' => 'webapp'],
-                '0, 1',
-                'id',
-                'DESC',
-                false
-            );
+            $activeBlueprintId = $this->findActiveBlueprintRecordId();
 
-            if (!empty($existingIds)) {
-                $webappRecord = $this->core->getObject($existingIds[0]['id']);
-                if (!empty($webappRecord['blueprint'])) {
-                    $decoded = json_decode($webappRecord['blueprint'], true);
+            if ($activeBlueprintId) {
+                $bpRecord = $this->core->getObject($activeBlueprintId);
+                if (!empty($bpRecord['blueprint'])) {
+                    $decoded = json_decode($bpRecord['blueprint'], true);
                     if (json_last_error() === JSON_ERROR_NONE) {
                         $blueprint = $decoded;
                     }
                 }
             }
         } catch (\Throwable $e) {
-            error_log('[getTypesObject] DB blueprint load failed: ' . $e->getMessage());
+            error_log('[getTypesObject] blueprint_record load failed: ' . $e->getMessage());
         }
 
-        // ── 2. Fall back to folder-based blueprint if DB had nothing ─────────
+        // ── 2. Fall back to folder-based blueprint if DB had nothing ─────
         if ($blueprint === null) {
             $folder_path = 'uploads/types';
             if (is_dir($folder_path)) {
                 $files = glob($folder_path . '/types-*.json');
                 if (!empty($files)) {
-                    // Pick the most recent file
                     usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
                     $raw = file_get_contents($files[0]);
                     $decoded = json_decode($raw, true);
@@ -1074,20 +987,23 @@ class API {
             }
         }
 
-        // ── 3. Base object comes from config; merge blueprint on top ──────────
+        // ── 3. Base object comes from config; merge blueprint on top ─────
         $object = $this->config->getTypes();
         if ($blueprint !== null) {
             $object = array_replace_recursive($object, $blueprint);
         }
 
-        // ── 4. Conditionally calculate per-type total_objects ─────────────────
+        // ── 4. Conditionally calculate per-type total_objects ─────────────
         $cacheWebappTotalObjects = filter_var(
             $_ENV['CACHE_WEBAPP_TOTAL_OBJECTS'] ?? false,
             FILTER_VALIDATE_BOOLEAN
         );
 
-        if (!$cacheWebappTotalObjects) {
-            // Fetch all type counts in a single query for performance
+        $includeParam = $_GET['include'] ?? '';
+        $includeTotalObjects = (strpos($includeParam, 'total_objects') !== false);
+
+        if (!$cacheWebappTotalObjects && $includeTotalObjects) {
+            // Live count — suitable for small-to-medium databases
             $typeCounts = $this->core->getTypeObjectsCounts(array_keys($object));
 
             foreach ($object as $key => $value) {
@@ -1098,7 +1014,12 @@ class API {
             $objectsCount = $this->sql->executeSQL("SELECT COUNT(*) AS `count` FROM `data`");
             $object['webapp']['size_in_gb']    = $this->parseSizeToGB($sizeRaw);
             $object['webapp']['total_objects'] = $objectsCount[0]['count'];
+        } else if ($cacheWebappTotalObjects && $includeTotalObjects) {
+            // Use cached counts from the blueprint_record itself (for large DBs).
+            // Counts are populated by recalculateTotalObjects().
+            // If no cached counts exist yet, serve zeros rather than blocking.
         }
+        // If total_objects is not requested, skip both live and cached counting.
 
         $document = new ResourceDocument($this->type, 0);
         $document->add('modules', $object);
@@ -1110,6 +1031,8 @@ class API {
      * Recalculate and persist total_objects for all types.
      * Call this when CACHE_WEBAPP_TOTAL_OBJECTS=true and a fresh
      * count is explicitly needed (e.g. from a scheduled job or admin action).
+     *
+     * Stores counts inside the active blueprint_record's blueprint JSON.
      */
     public function recalculateTotalObjects(): void
     {
@@ -1125,36 +1048,29 @@ class API {
         $object['webapp']['size_in_gb']    = $this->parseSizeToGB($sizeRaw);
         $object['webapp']['total_objects'] = $objectsCount[0]['count'];
 
-        // Persist the updated counts back into the DB webapp record
+        // Persist the updated counts into the active blueprint_record
         try {
-            $existingIds = $this->core->getIDs(
-                ['type' => 'webapp'],
-                '0, 1',
-                'id',
-                'DESC',
-                false
-            );
+            $activeBlueprintId = $this->findActiveBlueprintRecordId();
 
-            if (!empty($existingIds)) {
-                $webappRecord = $this->core->getObject($existingIds[0]['id']);
-                // Merge counts into existing blueprint
+            if ($activeBlueprintId) {
+                $bpRecord = $this->core->getObject($activeBlueprintId);
                 $existingBlueprint = [];
-                if (!empty($webappRecord['blueprint'])) {
-                    $existingBlueprint = json_decode($webappRecord['blueprint'], true) ?? [];
+                if (!empty($bpRecord['blueprint'])) {
+                    $existingBlueprint = json_decode($bpRecord['blueprint'], true) ?? [];
                 }
                 foreach ($object as $key => $value) {
                     $existingBlueprint[$key]['total_objects'] = $value['total_objects'];
                 }
                 $existingBlueprint['webapp']['size_in_gb'] = $object['webapp']['size_in_gb'];
 
-                $webappRecord['blueprint'] = json_encode(
+                $bpRecord['blueprint'] = json_encode(
                     $existingBlueprint,
                     JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
                 );
-                $this->core->pushObject($webappRecord);
+                $this->core->pushObject($bpRecord);
             }
         } catch (\Throwable $e) {
-            error_log('[recalculateTotalObjects] DB update failed: ' . $e->getMessage());
+            error_log('[recalculateTotalObjects] blueprint_record update failed: ' . $e->getMessage());
         }
     }
 
@@ -1178,31 +1094,24 @@ class API {
 
     /**
      * sets http code to response and responds to the request
-     * @param int $status_code
      */
     #[NoReturn]
     public function send(int $status_code = 200)
     {
-        // Set content type header
         header('Content-Type: application/vnd.api+json');
 
-        // Set CORS headers again to ensure they're included in all responses
         $origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'] ?? '*';
         header("Access-Control-Allow-Origin: $origin");
         header("Access-Control-Allow-Credentials: true");
 
-        // Set the HTTP status code
         http_response_code($status_code);
 
-        // Output the response
         echo $this->response;
         die();
     }
 
     /**
      * validates request method for API calls
-     * @param ?string $reqMethod
-     * @return bool|string
      */
     public function method(?string $reqMethod = null)
     {
@@ -1216,20 +1125,13 @@ class API {
         return $serverMethod === $reqMethod;
     }
 
-    /*
-     * Servers MUST respond with a 415 Unsupported Media Type status code
-     * if a request specifies the header Content-Type: application/vnd.api+json
-     * with any media type parameters.
-     */
     public function isValidJsonRequest()
     {
         $error = 0;
         $requestHeaders = $this->getRequestHeaders();
 
         if (is_array($requestHeaders['Content-Type']) && in_array('application/vnd.api+json', $requestHeaders['Content-Type'])) {
-            //In some responses Content-type is an array
             $error = 1;
-
         } else if (strstr($requestHeaders['Content-Type'], 'application/vnd.api+json')) {
             $error = 1;
         }
@@ -1239,24 +1141,16 @@ class API {
         } else {
             return true;
         }
-
     }
 
-    /*
-     * This small helper function generates RFC 4122 compliant Version 4 UUIDs.
-     */
     public function guidv4($data = null)
     {
-        // Generate 16 bytes (128 bits) of random data or use the data passed into the function.
         $data = $data ?? random_bytes(16);
         assert(strlen($data) == 16);
 
-        // Set version to 0100
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-        // Set bits 6-7 to 10
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
 
-        // Output the 36 character UUID.
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
@@ -1268,20 +1162,14 @@ class API {
 
     /**
      * If the object is a file_record and transcription is enabled,
-     * extract text via Tika or PaddleOCR, attach transcription fields,
-     * and persist the updated object.
-     *
-     * @param array $object The saved file_record object
-     * @return array The object (possibly updated with transcription fields)
+     * extract text via Tika or PaddleOCR
      */
     private function transcribeIfFileRecord(array $object): array
     {
-        // Only process file_record objects
         if (($object['type'] ?? '') !== 'file_record') {
             return $object;
         }
 
-        // Must have a URL field pointing to the file
         if (empty($object['url'])) {
             return $object;
         }
@@ -1296,13 +1184,8 @@ class API {
             $result = $transcriber->transcribe($object['url']);
 
             if ($result && !empty($result['transcription']['text'])) {
-                // Merge transcription fields into the object
                 $object['transcription'] = $result['transcription'];
-
-                // Persist the updated object with transcription data
                 $this->core->pushObject($object);
-
-                // Re-fetch to get the canonical version
                 $object = $this->core->getObject($object['id']);
             }
         } catch (\Throwable $e) {

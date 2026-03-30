@@ -18,8 +18,6 @@ class Config {
 
 	public function getTypePrimaryModule(string $posttype, array $types)
 	{
-
-		//foreach loop that breaks
 		$i = 0;
 		foreach ($types[$posttype]['modules'] as $module) {
 			$title = array();
@@ -30,7 +28,6 @@ class Config {
 				$title['unique'] = $module['input_unique'];
 				break;
 			}
-
 			$i++;
 		}
 		return $title;
@@ -52,22 +49,34 @@ class Config {
 	}
 
 	/**
-	 * Load the webapp blueprint JSON from the database (type=webapp, newest record).
-	 * Falls back to the folder-based types files if the DB has nothing.
-	 * Returns the decoded array on success, or null if nothing is available.
+	 * Load the active blueprint from blueprint_record entries in the database.
+	 * Finds the newest blueprint_record where modules.active === true.
+	 * Returns the decoded types array on success, or null if nothing found.
 	 */
-	private function getWebappBlueprintFromDB(): ?array
+	private function getActiveBlueprintFromDB(): ?array
 	{
 		try {
-			$sql  = new \Tribe\MySQL();
+			$sql = new \Tribe\MySQL();
 
-			// Fetch the single canonical webapp record (newest wins)
+			// Find the newest blueprint_record with active=true
 			$rows = $sql->executeSQL(
-				"SELECT `content` FROM `data`
-				 WHERE `content`->>'$.type' = 'webapp'
+				"SELECT `id`, `content` FROM `data`
+				 WHERE `content`->>'$.type' = 'blueprint_record'
+				   AND `content`->>'$.active' = 'true'
 				 ORDER BY `id` DESC
 				 LIMIT 1"
 			);
+
+			// Fallback: also check for boolean true stored as JSON true (not string)
+			if (empty($rows[0]['content'])) {
+				$rows = $sql->executeSQL(
+					"SELECT `id`, `content` FROM `data`
+					 WHERE `content`->>'$.type' = 'blueprint_record'
+					   AND JSON_EXTRACT(`content`, '$.active') = true
+					 ORDER BY `id` DESC
+					 LIMIT 1"
+				);
+			}
 
 			if (!empty($rows[0]['content'])) {
 				$record = json_decode($rows[0]['content'], true);
@@ -81,26 +90,63 @@ class Config {
 				}
 			}
 		} catch (\Throwable $e) {
-			error_log('[Config::getWebappBlueprintFromDB] ' . $e->getMessage());
+			error_log('[Config::getActiveBlueprintFromDB] ' . $e->getMessage());
 		}
 
 		return null;
 	}
 
 	/**
-	 * Return the newest valid types array, preferring the DB webapp blueprint
-	 * and falling back to the uploads/types folder.
+	 * Return the newest valid types array, preferring the active blueprint_record
+	 * in the DB and falling back to the uploads/types folder (with auto-migration).
 	 */
 	public function newestValidTypes(): ?array
 	{
-		// 1. Try DB first
-		$fromDb = $this->getWebappBlueprintFromDB();
+		// 1. Try active blueprint_record from DB
+		$fromDb = $this->getActiveBlueprintFromDB();
 		if ($fromDb !== null) {
 			return $fromDb;
 		}
 
-		// 2. Fall back to folder
-		return $this->newestValidTypesInUploads();
+		// 2. Fall back to folder, auto-migrating if found
+		$fromFolder = $this->newestValidTypesInUploads();
+		if ($fromFolder) {
+			$this->migrateTypesToBlueprintRecord($fromFolder);
+			return $fromFolder;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Migrate a types.json array from the uploads folder into a blueprint_record
+	 * in the database, marking it as active. This provides backward compatibility:
+	 * existing folder-based types files are consumed once and stored properly.
+	 */
+	private function migrateTypesToBlueprintRecord(array $typesJson): void
+	{
+		try {
+			$core = new \Tribe\Core();
+
+			// Determine a title from the webapp entry if available
+			$title = $typesJson['webapp']['name'] ?? 'Migrated Blueprint';
+
+			$blueprintJson = json_encode($typesJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+			$record = [
+				'type'    => 'blueprint_record',
+				'title'   => $title,
+				'active'  => true,
+				'blueprint' => $blueprintJson,
+				'content_privacy' => 'private',
+			];
+
+			$core->pushObject($record);
+
+			error_log('[Config::migrateTypesToBlueprintRecord] Successfully migrated folder types to blueprint_record: ' . $title);
+		} catch (\Throwable $e) {
+			error_log('[Config::migrateTypesToBlueprintRecord] Migration failed: ' . $e->getMessage());
+		}
 	}
 
 	public function getMenus($json_path = 'config/menus.json')
