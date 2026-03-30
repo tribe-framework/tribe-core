@@ -465,6 +465,51 @@ class Core {
 		return (int) $q[0]['total'];
 	}
 
+	/**
+	 * Batch-fetch object counts for multiple types in a single SQL query.
+	 * Replaces N individual getTypeObjectsCount() calls in getTypesObject().
+	 *
+	 * @param  array $types  List of type slugs (e.g. ['post', 'event', 'webapp'])
+	 * @return array         Map of type => count, with 0 for any type not found
+	 */
+	public function getTypeObjectsCounts(array $types): array
+	{
+		if (empty($types)) {
+			return [];
+		}
+
+		$sql = new MySQL();
+
+		// Build a safe IN list — type slugs are internal strings, but escape them anyway
+		$placeholders = implode(
+			', ',
+			array_map(
+				fn($t) => "'" . mysqli_real_escape_string($sql->databaseLink, $t) . "'",
+				$types
+			)
+		);
+
+		$rows = $sql->executeSQL(
+			"SELECT `content`->>'$.type' AS `type`, COUNT(`id`) AS `cnt`
+			 FROM `data`
+			 WHERE `content`->>'$.type' IN ($placeholders)
+			 GROUP BY `content`->>'$.type'"
+		);
+
+		// Seed every requested type with 0 so callers don't need to check isset()
+		$result = array_fill_keys($types, 0);
+
+		if (is_array($rows)) {
+			foreach ($rows as $row) {
+				if (isset($result[$row['type']])) {
+					$result[$row['type']] = (int) $row['cnt'];
+				}
+			}
+		}
+
+		return $result;
+	}
+
 	public function contentCleanup($rows, $object_structure=array(), $return_multi_array=1)
 	{
 		$config = new Config();

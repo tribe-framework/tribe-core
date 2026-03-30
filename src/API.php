@@ -571,6 +571,7 @@ class API {
         }
         elseif ($this->method('GET')) {
             if ($this->type == 'webapp') {
+                // Any ID resolves to the one-and-only webapp object
                 $this->getTypesObject();
             }
             else if (($this->type ?? false) && !($this->id ?? false)) {
@@ -971,12 +972,49 @@ class API {
 
     public function pushTypesObject($object)
     {
-        $folder_path = 'uploads/types';
-        if (!is_dir($folder_path)) {
-            mkdir($folder_path);
+        $modules = $object['data']['attributes']['modules'];
+        $json    = json_encode($modules, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        // ── Primary: save to database as a webapp object ──────────────────────
+        $dbSaved = false;
+        try {
+            // Fetch the latest existing webapp object (if any) to get its id
+            $existingIds = $this->core->getIDs(
+                ['type' => 'webapp'],
+                '0, 1',
+                'id',
+                'DESC',
+                false
+            );
+
+            $webappObject = [
+                'type'    => 'webapp',
+                'slug'    => 'webapp',
+                'blueprint' => $json,
+            ];
+
+            if (!empty($existingIds)) {
+                // Update the existing record so there is always exactly one
+                $existingWebapp = $this->core->getObject($existingIds[0]['id']);
+                $webappObject   = array_merge($existingWebapp, $webappObject);
+            }
+
+            $this->core->pushObject($webappObject);
+            $dbSaved = true;
+        } catch (\Throwable $e) {
+            error_log('[pushTypesObject] DB save failed: ' . $e->getMessage());
         }
-        $types_file_path = $folder_path.'/types-'.time().'.json';
-        file_put_contents($types_file_path, json_encode($object['data']['attributes']['modules'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+        // ── Fallback: write to folder if DB save failed ───────────────────────
+        if (!$dbSaved) {
+            $folder_path = 'uploads/types';
+            if (!is_dir($folder_path)) {
+                mkdir($folder_path, 0755, true);
+            }
+            $types_file_path = $folder_path . '/types-' . time() . '.json';
+            file_put_contents($types_file_path, $json);
+        }
+
         unset($object['attributes']);
     }
 
@@ -993,21 +1031,131 @@ class API {
     }
 
     public function getTypesObject() {
-        $object = $this->config->getTypes();
+        global $_ENV;
 
-        foreach ($object as $key => $value) {
-            $object[$key]['total_objects'] = $this->core->getTypeObjectsCount($key);
+        // ── 1. Load the blueprint from the DB webapp record (any ID resolves to the one webapp) ──
+        $blueprint = null;
+        try {
+            $existingIds = $this->core->getIDs(
+                ['type' => 'webapp'],
+                '0, 1',
+                'id',
+                'DESC',
+                false
+            );
+
+            if (!empty($existingIds)) {
+                $webappRecord = $this->core->getObject($existingIds[0]['id']);
+                if (!empty($webappRecord['blueprint'])) {
+                    $decoded = json_decode($webappRecord['blueprint'], true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $blueprint = $decoded;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[getTypesObject] DB blueprint load failed: ' . $e->getMessage());
         }
 
-        $sizeRaw = $this->core->executeShellCommand('du -s uploads');
-        $objectsCount = $this->sql->executeSQL("SELECT COUNT(*) AS `count` FROM `data`");
-        $object['webapp']['size_in_gb'] = $this->parseSizeToGB($sizeRaw);
-        $object['webapp']['total_objects'] = $objectsCount[0]['count'];
+        // ── 2. Fall back to folder-based blueprint if DB had nothing ─────────
+        if ($blueprint === null) {
+            $folder_path = 'uploads/types';
+            if (is_dir($folder_path)) {
+                $files = glob($folder_path . '/types-*.json');
+                if (!empty($files)) {
+                    // Pick the most recent file
+                    usort($files, fn($a, $b) => filemtime($b) - filemtime($a));
+                    $raw = file_get_contents($files[0]);
+                    $decoded = json_decode($raw, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $blueprint = $decoded;
+                    }
+                }
+            }
+        }
+
+        // ── 3. Base object comes from config; merge blueprint on top ──────────
+        $object = $this->config->getTypes();
+        if ($blueprint !== null) {
+            $object = array_replace_recursive($object, $blueprint);
+        }
+
+        // ── 4. Conditionally calculate per-type total_objects ─────────────────
+        $cacheWebappTotalObjects = filter_var(
+            $_ENV['CACHE_WEBAPP_TOTAL_OBJECTS'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+
+        if (!$cacheWebappTotalObjects) {
+            // Fetch all type counts in a single query for performance
+            $typeCounts = $this->core->getTypeObjectsCounts(array_keys($object));
+
+            foreach ($object as $key => $value) {
+                $object[$key]['total_objects'] = $typeCounts[$key] ?? 0;
+            }
+
+            $sizeRaw = $this->core->executeShellCommand('du -s uploads');
+            $objectsCount = $this->sql->executeSQL("SELECT COUNT(*) AS `count` FROM `data`");
+            $object['webapp']['size_in_gb']    = $this->parseSizeToGB($sizeRaw);
+            $object['webapp']['total_objects'] = $objectsCount[0]['count'];
+        }
 
         $document = new ResourceDocument($this->type, 0);
         $document->add('modules', $object);
         $document->add('slug', ($object['slug'] ?? 'webapp'));
         $document->sendResponse();
+    }
+
+    /**
+     * Recalculate and persist total_objects for all types.
+     * Call this when CACHE_WEBAPP_TOTAL_OBJECTS=true and a fresh
+     * count is explicitly needed (e.g. from a scheduled job or admin action).
+     */
+    public function recalculateTotalObjects(): void
+    {
+        $object = $this->config->getTypes();
+
+        $typeCounts   = $this->core->getTypeObjectsCounts(array_keys($object));
+        $objectsCount = $this->sql->executeSQL("SELECT COUNT(*) AS `count` FROM `data`");
+        $sizeRaw      = $this->core->executeShellCommand('du -s uploads');
+
+        foreach ($object as $key => $value) {
+            $object[$key]['total_objects'] = $typeCounts[$key] ?? 0;
+        }
+        $object['webapp']['size_in_gb']    = $this->parseSizeToGB($sizeRaw);
+        $object['webapp']['total_objects'] = $objectsCount[0]['count'];
+
+        // Persist the updated counts back into the DB webapp record
+        try {
+            $existingIds = $this->core->getIDs(
+                ['type' => 'webapp'],
+                '0, 1',
+                'id',
+                'DESC',
+                false
+            );
+
+            if (!empty($existingIds)) {
+                $webappRecord = $this->core->getObject($existingIds[0]['id']);
+                // Merge counts into existing blueprint
+                $existingBlueprint = [];
+                if (!empty($webappRecord['blueprint'])) {
+                    $existingBlueprint = json_decode($webappRecord['blueprint'], true) ?? [];
+                }
+                foreach ($object as $key => $value) {
+                    $existingBlueprint[$key]['total_objects'] = $value['total_objects'];
+                }
+                $existingBlueprint['webapp']['size_in_gb'] = $object['webapp']['size_in_gb'];
+
+                $webappRecord['blueprint'] = json_encode(
+                    $existingBlueprint,
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                );
+                $this->core->pushObject($webappRecord);
+            }
+        } catch (\Throwable $e) {
+            error_log('[recalculateTotalObjects] DB update failed: ' . $e->getMessage());
+        }
     }
 
     /**

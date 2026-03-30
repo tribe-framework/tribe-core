@@ -38,7 +38,7 @@ class Config {
 
 	public function getTypeLinkedModules(string $posttype)
 	{
-		$types = $this->newestValidTypesInUploads();
+		$types = $this->newestValidTypes();
 		$or = [];
 		if (isset($types[$posttype]['modules'])) {
 			foreach ($types[$posttype]['modules'] as $module) {
@@ -49,6 +49,58 @@ class Config {
 			}
 		}
 		return $or;
+	}
+
+	/**
+	 * Load the webapp blueprint JSON from the database (type=webapp, newest record).
+	 * Falls back to the folder-based types files if the DB has nothing.
+	 * Returns the decoded array on success, or null if nothing is available.
+	 */
+	private function getWebappBlueprintFromDB(): ?array
+	{
+		try {
+			$sql  = new \Tribe\MySQL();
+
+			// Fetch the single canonical webapp record (newest wins)
+			$rows = $sql->executeSQL(
+				"SELECT `content` FROM `data`
+				 WHERE `content`->>'$.type' = 'webapp'
+				 ORDER BY `id` DESC
+				 LIMIT 1"
+			);
+
+			if (!empty($rows[0]['content'])) {
+				$record = json_decode($rows[0]['content'], true);
+
+				if (json_last_error() === JSON_ERROR_NONE && !empty($record['blueprint'])) {
+					$blueprint = json_decode($record['blueprint'], true);
+
+					if (json_last_error() === JSON_ERROR_NONE && is_array($blueprint)) {
+						return $blueprint;
+					}
+				}
+			}
+		} catch (\Throwable $e) {
+			error_log('[Config::getWebappBlueprintFromDB] ' . $e->getMessage());
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the newest valid types array, preferring the DB webapp blueprint
+	 * and falling back to the uploads/types folder.
+	 */
+	public function newestValidTypes(): ?array
+	{
+		// 1. Try DB first
+		$fromDb = $this->getWebappBlueprintFromDB();
+		if ($fromDb !== null) {
+			return $fromDb;
+		}
+
+		// 2. Fall back to folder
+		return $this->newestValidTypesInUploads();
 	}
 
 	public function getMenus($json_path = 'config/menus.json')
@@ -84,7 +136,7 @@ class Config {
 
 	public function getTypes()
 	{
-		$newest_json = $this->newestValidTypesInUploads();
+		$newest_json = $this->newestValidTypes();
 
 		if ($newest_json) {
 			$types_json = $newest_json;
