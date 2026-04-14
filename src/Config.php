@@ -128,8 +128,9 @@ class Config {
 		try {
 			$core = new \Tribe\Core();
 
-			// Determine a title from the webapp entry if available
-			$title = $typesJson['webapp']['name'] ?? 'Migrated Blueprint';
+			// Ensure webapp is always present before reading from it
+			$typesJson = $this->ensureWebapp($typesJson);
+			$title = $typesJson['webapp']['name'] ?: 'Migrated Blueprint';
 
 			$blueprintJson = json_encode($typesJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
@@ -180,6 +181,39 @@ class Config {
 			return false;
 	}
 
+	/**
+	 * Default webapp definition. Used as a baseline when webapp is missing or
+	 * partially defined. Existing keys in the stored config take precedence.
+	 */
+	private function defaultWebapp(): array
+	{
+		return [
+			'name'                         => 'ember-tribe',
+			'slug'                         => 'webapp',
+			'description'                  => 'An app built using Tribe Framework',
+			'format'                       => 'types.json',
+			'project_description'          => '',
+			'implementation_summary'       => '',
+			'version'                      => '1.0',
+			'block_read_access_without_apikey' => false,
+			'allow_type_change'            => false,
+			'display_activity_log'         => false,
+			'soft_delete_records'          => true,
+		];
+	}
+
+	/**
+	 * Guarantee that a types array always contains a fully-populated webapp key.
+	 * Stored values win over defaults; the junction.json merge can never remove
+	 * or replace webapp because we re-apply it after the merge.
+	 */
+	private function ensureWebapp(array $types): array
+	{
+		$existing = $types['webapp'] ?? [];
+		$types['webapp'] = array_merge($this->defaultWebapp(), $existing);
+		return $types;
+	}
+
 	public function getTypes()
 	{
 		$newest_json = $this->newestValidTypes();
@@ -202,7 +236,10 @@ class Config {
 			die("<em><b>Error:</b> types</em> validation failed");
 		}
 
+		// Merge junction types first, then restore/guarantee webapp so that
+		// junction.json can never clobber the webapp key.
 		$types = array_merge($types_json, ($types_json_junction ?? []));
+		$types = $this->ensureWebapp($types);
 		
 		foreach ($types as $key => $type) {
 			$type_slug = $type['slug'] ?? ($key ?? 'undefined');
