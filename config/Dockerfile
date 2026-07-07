@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install -y \
     # ── imaging ──
     imagemagick \
     libmagickwand-dev \
+    # ── docs ──
+    libreoffice-nogui \
+    librsvg2-bin \
     # ── PHP build deps ──
     libpng-dev \
     libonig-dev \

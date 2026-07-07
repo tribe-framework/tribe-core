@@ -1183,7 +1183,11 @@ class API {
 
             $result = $transcriber->transcribe($object['url']);
 
-            if ($result && !empty($result['transcription']['text'])) {
+            if ($result && (
+                !empty($result['transcription']['text'])
+                || !empty($result['transcription']['html'])
+                || !empty($result['transcription']['xml'])
+            )) {
                 $object['transcription'] = $result['transcription'];
                 $this->core->pushObject($object);
                 $object = $this->core->getObject($object['id']);

@@ -27,6 +27,18 @@ class Transcriber
         'epub', 'odt', 'ods', 'odp', 'md', 'log',
     ];
 
+    /** OOXML/OPC packages whose raw XML parts are captured into transcription.xml */
+    private const OOXML_EXTENSIONS = ['docx', 'xlsx', 'pptx', 'potx', 'thmx'];
+
+    /** Primary content parts per package; slides/sheets globbed separately */
+    private const OOXML_PRIMARY_PARTS = [
+        'docx' => ['word/document.xml'],
+        'xlsx' => ['xl/workbook.xml'],
+        'pptx' => ['ppt/presentation.xml'],
+        'potx' => ['ppt/presentation.xml'],
+        'thmx' => ['theme/theme/theme1.xml'],
+    ];
+
     public function __construct()
     {
         $tikaHost = $_ENV['TIKA_HOST'] ?? 'tika';
@@ -67,11 +79,91 @@ class Transcriber
         }
 
         try {
-            return $this->extractViaTika($filePath);
+            if ($extension === 'html' || $extension === 'htm') {
+                return $this->extractHtml($filePath);
+            }
+
+            $result = $this->extractViaTika($filePath);
+
+            if (in_array($extension, self::OOXML_EXTENSIONS, true)) {
+                $xml = $this->extractOoxml($filePath, $extension);
+                if ($xml !== null) {
+                    $result ??= ['transcription' => ['text' => '', 'tool' => 'Apache Tika']];
+                    $result['transcription']['xml'] = $xml;
+                }
+            }
+
+            return $result;
         } catch (\Throwable $e) {
             error_log("[Transcriber] Error transcribing {$urlPath}: " . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Retain full markup, derive a text-only rendition.
+     */
+    private function extractHtml(string $filePath): ?array
+    {
+        $html = file_get_contents($filePath);
+        if ($html === false) {
+            return null;
+        }
+
+        $stripped = preg_replace(
+            ['#<script\b[^>]*>.*?</script>#is', '#<style\b[^>]*>.*?</style>#is'],
+            ' ',
+            $html
+        );
+        $text = html_entity_decode(strip_tags($stripped), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim(preg_replace('/\s+/u', ' ', $text));
+
+        return [
+            'transcription' => [
+                'text' => $text,
+                'html' => $html,
+                'tool' => 'PHP strip_tags',
+            ]
+        ];
+    }
+
+    /**
+     * Concatenate primary content parts plus every slide/sheet XML into one blob.
+     */
+    private function extractOoxml(string $filePath, string $extension): ?string
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($filePath) !== true) {
+            return null;
+        }
+
+        $parts = self::OOXML_PRIMARY_PARTS[$extension] ?? [];
+        $globs = [
+            'pptx' => '#^ppt/slides/slide\d+\.xml$#',
+            'potx' => '#^ppt/slides/slide\d+\.xml$#',
+            'xlsx' => '#^xl/worksheets/sheet\d+\.xml$#',
+        ];
+        $pattern = $globs[$extension] ?? null;
+
+        $matched = [];
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $name = $zip->getNameIndex($i);
+            if ($pattern && preg_match($pattern, $name)) {
+                $matched[] = $name;
+            }
+        }
+        sort($matched, SORT_NATURAL);
+
+        $segments = [];
+        foreach (array_merge($parts, $matched) as $part) {
+            $content = $zip->getFromName($part);
+            if ($content !== false && $content !== '') {
+                $segments[] = "<!-- {$part} -->\n" . $content;
+            }
+        }
+        $zip->close();
+
+        return $segments ? implode("\n", $segments) : null;
     }
 
     /**

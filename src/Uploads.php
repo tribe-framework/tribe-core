@@ -36,6 +36,7 @@ class Uploads {
 		'application/zip'           => ['zip'],
 		'application/x-rar-compressed' => ['rar'],
 		'text/plain'                => ['txt'],
+		'text/html'                 => ['html', 'htm'],
 		'text/csv'                  => ['csv'],
 		'text/vtt'                  => ['vtt'],
 		'application/x-subrip'      => ['srt'],
@@ -63,7 +64,11 @@ class Uploads {
 			mkdir($folder_path . '/md', 0755, true);
 			mkdir($folder_path . '/lg', 0755, true);
 			mkdir($folder_path . '/xl', 0755, true);
+			mkdir($folder_path . '/tb', 0755, true);
 			mkdir($folder_path . '/hls', 0755, true);
+		}
+		else if (!is_dir($folder_path . '/tb')) {
+			mkdir($folder_path . '/tb', 0755, true);
 		}
 
 		return array('upload_dir' => $folder_path, 'upload_url' => '/'.$folder_path);
@@ -146,6 +151,14 @@ class Uploads {
 			}
 		}
 
+		$tb_base = pathinfo($filename, PATHINFO_FILENAME) . '.png';
+		$tb_path = '/uploads/' . $year . '/' . $month . '/' . $day . '/tb/' . $tb_base;
+		if (file_exists($tb_path)) {
+			$file_arr['path']['tb'] = $tb_path;
+			$file_arr['url']['tb'] = '/uploads/' . $year . '/' . $month . '/' . $day . '/tb/' . rawurlencode($tb_base);
+			$file_arr['url']['thumbnail_url'] = $file_arr['url']['tb'];
+		}
+
 		// Check for HLS version ONLY for MP4 and MOV videos
 		if (preg_match('/\.(mp4|mov)$/i', $file_url)) {
 			$hls_path = '/uploads/' . $year . '/' . $month . '/' . $day . '/hls/' . pathinfo($filename, PATHINFO_FILENAME) . '.m3u8';
@@ -193,6 +206,10 @@ class Uploads {
 
 		if ($object['file']['xs']['url'] ?? false) {
 			unlink($object['file']['xs']['url']);
+		}
+
+		if ($object['file']['thumbnail_url'] ?? false) {
+			@unlink($object['file']['thumbnail_url']);
 		}
 
 		// Delete HLS files
@@ -1004,6 +1021,184 @@ class Uploads {
 		return $result;
 	}
 
+	private int $thumbnail_max = 350;
+
+	/**
+	 * Whether a shell binary is resolvable on PATH.
+	 */
+	private function binaryExists(string $bin): bool
+	{
+		$which = trim((string) @shell_exec('command -v ' . escapeshellarg($bin) . ' 2>/dev/null'));
+		return $which !== '';
+	}
+
+	/**
+	 * Downscale an already-decodable GD source into tb/ as PNG.
+	 * Returns the tb-relative filename on success.
+	 */
+	private function thumbnailFromImageFile(string $source_path, string $tb_dir, string $out_name): ?string
+	{
+		if (!file_exists($source_path)) {
+			return null;
+		}
+		$out_path = $tb_dir . '/' . $out_name;
+		return $this->resizeImage($source_path, $out_path, $this->thumbnail_max, $this->thumbnail_max)
+			? $out_name : null;
+	}
+
+	/**
+	 * Rasterize the first page/frame of complex sources via external tooling,
+	 * always landing a PNG in tb/. Any missing binary yields null, never fatal.
+	 */
+	private function generateThumbnail(
+		string $source_path,
+		string $ext,
+		string $mime,
+		string $tb_dir,
+		string $file_body
+	): ?string {
+		$out_name = $file_body . '.png';
+		$out_path = $tb_dir . '/' . $out_name;
+
+		// Images GD can decode directly.
+		if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true)) {
+			return $this->thumbnailFromImageFile($source_path, $tb_dir, $out_name);
+		}
+
+		// SVG → raster.
+		if ($ext === 'svg') {
+			if ($this->binaryExists('rsvg-convert')) {
+				@shell_exec(sprintf(
+					'rsvg-convert -w %d %s -o %s 2>/dev/null',
+					$this->thumbnail_max, escapeshellarg($source_path), escapeshellarg($out_path)
+				));
+			} elseif ($this->binaryExists('convert')) {
+				@shell_exec(sprintf(
+					'convert -background none -resize %dx%d %s %s 2>/dev/null',
+					$this->thumbnail_max, $this->thumbnail_max,
+					escapeshellarg($source_path . '[0]'), escapeshellarg($out_path)
+				));
+			}
+			return file_exists($out_path) ? $out_name : null;
+		}
+
+		// PDF → first page.
+		if ($ext === 'pdf') {
+			if ($this->binaryExists('pdftoppm')) {
+				$prefix = $tb_dir . '/' . $file_body;
+				@shell_exec(sprintf(
+					'pdftoppm -png -singlefile -scale-to %d %s %s 2>/dev/null',
+					$this->thumbnail_max, escapeshellarg($source_path), escapeshellarg($prefix)
+				));
+			} elseif ($this->binaryExists('convert')) {
+				@shell_exec(sprintf(
+					'convert -resize %dx%d %s %s 2>/dev/null',
+					$this->thumbnail_max, $this->thumbnail_max,
+					escapeshellarg($source_path . '[0]'), escapeshellarg($out_path)
+				));
+			}
+			return file_exists($out_path) ? $out_name : null;
+		}
+
+		// Video → representative frame.
+		if (in_array($ext, ['mp4', 'mov', 'avi', 'mkv', 'webm'], true)) {
+			if ($this->binaryExists('ffmpeg')) {
+				@shell_exec(sprintf(
+					'ffmpeg -y -ss 1 -i %s -frames:v 1 -vf %s %s 2>/dev/null',
+					escapeshellarg($source_path),
+					escapeshellarg('scale=' . $this->thumbnail_max . ':-2'),
+					escapeshellarg($out_path)
+				));
+			}
+			return file_exists($out_path) ? $out_name : null;
+		}
+
+		// Office documents → LibreOffice to PDF, then rasterize page one.
+		if (in_array($ext, ['doc','docx','xls','xlsx','ppt','pptx','potx','thmx','odt','ods','odp'], true)) {
+			return $this->thumbnailViaLibreOffice($source_path, $tb_dir, $file_body);
+		}
+
+		// Audio, text, json, csv, archives: no meaningful visual preview.
+		return null;
+	}
+
+	/**
+	 * Convert an office document to PDF in a scratch dir, rasterize its first
+	 * page into tb/, then clean up. Returns tb-relative filename or null.
+	 */
+	private function thumbnailViaLibreOffice(string $source_path, string $tb_dir, string $file_body): ?string
+	{
+		if (!$this->binaryExists('libreoffice') && !$this->binaryExists('soffice')) {
+			return null;
+		}
+		$soffice = $this->binaryExists('libreoffice') ? 'libreoffice' : 'soffice';
+
+		$scratch = sys_get_temp_dir() . '/tb_' . uniqid();
+		if (!mkdir($scratch, 0755, true)) {
+			return null;
+		}
+
+		@shell_exec(sprintf(
+			'%s --headless --convert-to pdf --outdir %s %s 2>/dev/null',
+			$soffice, escapeshellarg($scratch), escapeshellarg($source_path)
+		));
+
+		$pdf = glob($scratch . '/*.pdf')[0] ?? null;
+		$out_name = null;
+		if ($pdf) {
+			$out_name = $this->generateThumbnail($pdf, 'pdf', 'application/pdf', $tb_dir, $file_body);
+		}
+
+		array_map('unlink', glob($scratch . '/*') ?: []);
+		@rmdir($scratch);
+		return $out_name;
+	}
+
+	/**
+	 * Emit png/jpg/gif siblings of an uploaded webp, downscaled to lg bounds,
+	 * into their respective size folders. Returns [ext => url].
+	 */
+	private function convertWebp(string $source_path, string $upload_dir, string $upload_url, string $file_body): array
+	{
+		$src = @imagecreatefromwebp($source_path);
+		if (!$src) {
+			return [];
+		}
+		$w = imagesx($src);
+		$h = imagesy($src);
+		imagealphablending($src, false);
+		imagesavealpha($src, true);
+
+		$targets = ['png', 'jpg', 'gif'];
+		$out = [];
+		foreach ($targets as $ext) {
+			$name = $file_body . '.' . $ext;
+			$path = $upload_dir . '/' . $name;
+
+			$canvas = $src;
+			if ($ext === 'jpg') {
+				$canvas = imagecreatetruecolor($w, $h);
+				$white = imagecolorallocate($canvas, 255, 255, 255);
+				imagefilledrectangle($canvas, 0, 0, $w, $h, $white);
+				imagecopy($canvas, $src, 0, 0, 0, 0, $w, $h);
+			}
+
+			$ok = match ($ext) {
+				'png' => imagepng($canvas, $path, 6),
+				'jpg' => imagejpeg($canvas, $path, 85),
+				'gif' => imagegif($canvas, $path),
+			};
+			if ($canvas !== $src) {
+				imagedestroy($canvas);
+			}
+			if ($ok) {
+				$out[$ext] = $upload_url . '/' . $name;
+			}
+		}
+		imagedestroy($src);
+		return $out;
+	}
+
 	/**
 	 * Handle the full upload workflow: validation, move, resize, video conversion.
 	 * Drop-in replacement for the previous verot-based handleUpload().
@@ -1085,6 +1280,33 @@ class Uploads {
 				'qualities' => array_keys($this->getVideoQualitySettings())
 			);
 		}
+
+		$source_path = $uploader_path['upload_dir'] . '/' . $final_name;
+
+		// ── webp → png/jpg/gif siblings ──────────────────────────────────────
+		if ($file_extension === 'webp') {
+			$converted = $this->convertWebp(
+				$source_path,
+				$uploader_path['upload_dir'],
+				$uploader_path['upload_url'],
+				$file_body
+			);
+			if ($converted) {
+				$file['converted'] = $converted;
+			}
+		}
+
+		// ── Universal thumbnail ──────────────────────────────────────────────
+		$tb_name = $this->generateThumbnail(
+			$source_path,
+			$file_extension,
+			$detected_mime,
+			$uploader_path['upload_dir'] . '/tb',
+			$file_body
+		);
+		$file['thumbnail_url'] = $tb_name
+			? $uploader_path['upload_url'] . '/tb/' . $tb_name
+			: null;
 
 		return array('status'=>'success', 'success'=>1, 'error'=>0, 'file'=>$file);
 	}
